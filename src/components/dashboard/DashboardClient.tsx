@@ -288,17 +288,21 @@ export function DashboardClient({ profile, attendance, completions, achievements
           </div>
         </div>
 
-        {/* Marcar hoje */}
+        {/* Registrar treino — CTA principal */}
         {!trainedToday && (
-          <Link href="/calendar"
-            className="block w-full text-center bg-[#CC0000] text-white font-black py-4 rounded-full text-sm shadow-lg shadow-red-900/20 mb-3 hover:bg-[#A80000] transition-colors">
-            🥋 Marcar treino de hoje
+          <Link href="/treino/novo"
+            className="block w-full text-center bg-[#CC0000] text-white font-black py-4 rounded-2xl text-sm shadow-lg shadow-red-900/20 mb-3 hover:bg-[#A80000] transition-colors">
+            🥋 Registrar treino
           </Link>
         )}
         {trainedToday && (
-          <div className="flex items-center justify-center gap-2 py-3 mb-3 bg-[#F0FDF4] rounded-2xl text-[#16A34A] font-bold text-sm border border-[#86EFAC]">
-            <span>✅</span> Treino de hoje registrado!
-          </div>
+          <Link href="/treino/novo"
+            className="flex items-center justify-between gap-2 py-3 px-4 mb-3 bg-[#F0FDF4] rounded-2xl text-[#16A34A] font-bold text-sm border border-[#86EFAC] hover:bg-[#DCFCE7] transition-colors">
+            <div className="flex items-center gap-2">
+              <span>✅</span> Treino de hoje registrado!
+            </div>
+            <span className="text-[11px]">+ Outro treino</span>
+          </Link>
         )}
 
         {/* Explore belts */}
