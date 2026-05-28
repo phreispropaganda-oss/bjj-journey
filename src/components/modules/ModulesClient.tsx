@@ -1,0 +1,324 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
+import { getCurriculumByBelt, BELTS } from '@/lib/curriculum'
+import { useProgressStore } from '@/store/progress'
+import { useUserStore } from '@/store/user'
+import { createClient } from '@/lib/supabase/client'
+import BottomNav from '@/components/ui/BottomNav'
+import type { BeltId } from '@/lib/supabase/types'
+import type { Technique } from '@/lib/curriculum'
+
+interface Props { beltId: string }
+
+// ── Technique Detail Sheet ──
+function TechDetail({ tech, color, onClose, onToggle, done }: {
+  tech: Technique; color: string; onClose: () => void; onToggle: () => void; done: boolean
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-end justify-center"
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white w-full max-w-[480px] rounded-t-3xl max-h-[85vh] flex flex-col"
+        style={{ animation: 'slideUp .25s ease' }}>
+        {/* Handle */}
+        <div className="flex items-center justify-between px-5 pt-4 pb-3 flex-shrink-0">
+          <div className="w-8 h-1 bg-[#E5E5E5] rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-3" />
+          <h3 className="font-black text-base text-[#0D0D0D] mt-1 flex-1">{tech.name}</h3>
+          <button onClick={onClose} className="text-[#AAA] text-xl ml-2">✕</button>
+        </div>
+
+        <div className="overflow-y-auto scrollbar-none flex-1 px-5 pb-6">
+          {/* Entry position */}
+          <div className="bg-[#F8F7F5] rounded-xl p-3 mb-3 border-l-2" style={{ borderColor: color }}>
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#AAA] block mb-1">Posição de entrada</span>
+            <p className="text-sm text-[#555] leading-relaxed">{tech.entryPosition}</p>
+          </div>
+
+          {/* Description */}
+          <p className="text-sm text-[#555] leading-relaxed mb-3">{tech.description}</p>
+
+          {/* Steps */}
+          <div className="space-y-2 mb-3">
+            {tech.steps.map((s, i) => (
+              <div key={i} className="flex gap-2.5 text-sm">
+                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 mt-0.5 text-white"
+                  style={{ background: color }}>
+                  {i + 1}
+                </div>
+                <span className="text-[#333] leading-relaxed">{s}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Mistake */}
+          <div className="flex gap-2 bg-red-50 border border-red-200 rounded-xl p-2.5 mb-2 text-xs text-[#555] leading-relaxed">
+            <span className="text-red-400 flex-shrink-0 mt-0.5">⚠️</span>
+            <span>{tech.commonMistake}</span>
+          </div>
+
+          {/* Tip */}
+          <div className="flex gap-2 bg-amber-50 border border-amber-200 rounded-xl p-2.5 mb-4 text-xs text-[#555] leading-relaxed">
+            <span className="text-amber-500 flex-shrink-0 mt-0.5">💡</span>
+            <span>{tech.tip}</span>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-2 flex-wrap">
+            {[3, 5, 10].map(m => (
+              <button key={m}
+                className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-[#E5E5E5] bg-white text-[#555]">
+                ⏱ {m}min
+              </button>
+            ))}
+            <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(tech.youtubeQuery)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-[#E5E5E5] bg-white text-[#555]">
+              ▶ YouTube
+            </a>
+          </div>
+        </div>
+
+        {/* Mark done */}
+        <div className="px-5 pb-6 pt-3 border-t border-[#F2F0ED] flex-shrink-0">
+          <button onClick={onToggle}
+            className={`w-full py-3 rounded-full font-black text-sm transition-all ${
+              done
+                ? 'bg-[#F0FDF4] border-2 border-[#86EFAC] text-[#16A34A]'
+                : 'bg-[#CC0000] text-white shadow-lg shadow-red-900/20'
+            }`}>
+            {done ? '✓ Técnica concluída' : 'Marcar como feita →'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function ModulesClient({ beltId }: Props) {
+  const curriculum = getCurriculumByBelt(beltId as BeltId)
+  const { isCompleted, toggle, getCount, setCompleted } = useProgressStore()
+  const { addXP } = useUserStore()
+  const [openMods, setOpenMods] = useState<Record<string, boolean>>({})
+  const [openCats, setOpenCats] = useState<Record<string, boolean>>({})
+  const [selected, setSelected] = useState<{ tech: Technique; color: string; key: string } | null>(null)
+  const [tdah, setTdah] = useState(false)
+  const [xpShow, setXpShow] = useState(false)
+  const belt = BELTS.find(b => b.id === beltId) ?? BELTS[0]
+
+  // Sync from Supabase on mount
+  const syncFromSupabase = useCallback(async () => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data } = await supabase
+      .from('technique_completions')
+      .select('belt_id, module_id, technique_name')
+      .eq('user_id', user.id)
+      .eq('belt_id', beltId)
+    if (data) {
+      const rows = data as { belt_id: string; module_id: string; technique_name: string }[]
+      setCompleted(rows.map(c => `${c.belt_id}-${c.module_id}-${c.technique_name.replace(/\s/g, '_')}`))
+    }
+  }, [beltId, setCompleted])
+
+  useEffect(() => { syncFromSupabase() }, [syncFromSupabase])
+
+  if (!curriculum || !belt) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#F8F7F5]">
+      <p className="text-[#AAA]">Faixa não encontrada.</p>
+    </div>
+  )
+
+  async function handleComplete(bId: string, modId: string, techName: string) {
+    const key = `${bId}-${modId}-${techName.replace(/\s/g, '_')}`
+    const wasDone = isCompleted(key)
+    toggle(key)
+
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    if (!wasDone) {
+      addXP(10)
+      setXpShow(true)
+      setTimeout(() => setXpShow(false), 2200)
+      await (supabase.from('technique_completions') as ReturnType<typeof supabase.from>).insert({
+        user_id: user.id, belt_id: bId, module_id: modId, technique_name: techName,
+      } as never)
+      await (supabase as any).rpc('increment_xp', { user_id: user.id, amount: 10 }).catch(() => null)
+    } else {
+      await supabase.from('technique_completions' as never)
+        .delete().match({ user_id: user.id, belt_id: bId, module_id: modId, technique_name: techName } as never)
+    }
+  }
+
+  const totalTechs = curriculum.modules.reduce((a, m) =>
+    a + m.categories.reduce((b, c) => b + c.techniques.length, 0), 0)
+  const doneTechs  = curriculum.modules.reduce((a, m) =>
+    a + m.categories.reduce((b, c) =>
+      b + c.techniques.filter(t => isCompleted(`${beltId}-${m.id}-${t.name.replace(/\s/g, '_')}`)).length, 0), 0)
+  const beltPct = totalTechs > 0 ? Math.round((doneTechs / totalTechs) * 100) : 0
+
+  return (
+    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
+      {/* XP toast */}
+      {xpShow && (
+        <div className="fixed top-16 right-4 z-50 bg-white border border-[#F59E0B] rounded-2xl px-3 py-2 flex items-center gap-2 shadow-lg"
+          style={{ animation: 'fadeUp .25s ease' }}>
+          <span className="text-yellow-500 text-lg">⚡</span>
+          <span className="text-sm font-black text-[#0D0D0D]">+10 XP</span>
+        </div>
+      )}
+
+      {/* Top bar */}
+      <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex-shrink-0">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <p className="text-[11px] text-[#AAA] font-bold uppercase tracking-wider">Módulos</p>
+            <h1 className="text-lg font-black tracking-tight">Faixa {belt.name}</h1>
+          </div>
+          <button onClick={() => setTdah(!tdah)}
+            className={`px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${
+              tdah
+                ? 'bg-[#0D0D0D] border-[#0D0D0D] text-white'
+                : 'border-[#E5E5E5] text-[#555]'
+            }`}>
+            🧠 Foco
+          </button>
+        </div>
+        {/* Belt progress bar */}
+        <div className="h-1.5 bg-[#F2F0ED] rounded-full overflow-hidden">
+          <div className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${beltPct}%`, background: belt.color }} />
+        </div>
+        <p className="text-[11px] text-[#AAA] mt-1">{doneTechs}/{totalTechs} técnicas · {beltPct}%</p>
+      </div>
+
+      {/* Belt selector */}
+      <div className="bg-white border-b border-[#E5E5E5] px-3 py-2 flex gap-2 overflow-x-auto scrollbar-none flex-shrink-0">
+        {BELTS.map(b => (
+          <Link key={b.id} href={`/modules/${b.id}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border-2 flex-shrink-0 text-xs font-black transition-all ${
+              b.id === beltId
+                ? 'text-white border-transparent shadow-sm'
+                : 'bg-white border-[#E5E5E5] text-[#555]'
+            }`}
+            style={b.id === beltId ? { background: belt.color, borderColor: belt.color } : {}}>
+            <div className="w-3 h-2 rounded-sm border border-black/10" style={{ background: b.color }} />
+            {b.name}
+          </Link>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-3 pb-24">
+        {curriculum.modules.map(mod => {
+          const modTotal = mod.categories.reduce((a, c) => a + c.techniques.length, 0)
+          const modDone  = getCount(beltId, mod.id)
+          const modPct   = modTotal > 0 ? Math.round((modDone / modTotal) * 100) : 0
+          const isOpen   = openMods[mod.id]
+
+          return (
+            <div key={mod.id} className="bg-white rounded-2xl mb-2.5 overflow-hidden shadow-sm">
+              {/* Module header */}
+              <div
+                className="flex items-center gap-3 px-4 py-3.5 cursor-pointer active:bg-[#F8F7F5]"
+                onClick={() => setOpenMods(o => ({ ...o, [mod.id]: !o[mod.id] }))}>
+                <span className="text-2xl font-black min-w-[32px] leading-none"
+                  style={{ color: mod.color }}>{mod.number}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-black text-sm text-[#0D0D0D]">{mod.label}</p>
+                  <p className="text-[11px] text-[#AAA] truncate">{mod.description}</p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-xs font-black" style={{ color: mod.color }}>{modPct}%</span>
+                  <span className={`text-[#AAA] text-sm transition-transform ${isOpen ? 'rotate-180' : ''}`}>▾</span>
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="h-0.5 bg-[#F2F0ED]">
+                <div className="h-full transition-all" style={{ width: `${modPct}%`, background: mod.color }} />
+              </div>
+
+              {/* Categories */}
+              {isOpen && (
+                <div className="border-t border-[#F2F0ED]">
+                  {mod.categories.map(cat => {
+                    const catOpen = openCats[cat.id]
+                    const catDone = cat.techniques.filter(t =>
+                      isCompleted(`${beltId}-${mod.id}-${t.name.replace(/\s/g, '_')}`)
+                    ).length
+                    const catPct = cat.techniques.length > 0
+                      ? Math.round((catDone / cat.techniques.length) * 100) : 0
+
+                    return (
+                      <div key={cat.id} className="border-t border-[#F2F0ED]">
+                        <div
+                          className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer active:bg-[#F8F7F5]"
+                          onClick={() => setOpenCats(o => ({ ...o, [cat.id]: !o[cat.id] }))}>
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                            style={{ background: cat.bgColor }}>
+                            <div className="w-2.5 h-2.5 rounded-full" style={{ background: cat.color }} />
+                          </div>
+                          <span className="flex-1 text-sm font-bold text-[#0D0D0D]">{cat.name}</span>
+                          <span className="text-xs text-[#AAA]">{catDone}/{cat.techniques.length}</span>
+                          <span className="text-xs font-black" style={{ color: cat.color }}>{catPct}%</span>
+                          <span className={`text-[#AAA] text-sm transition-transform ${catOpen ? 'rotate-180' : ''}`}>▾</span>
+                        </div>
+
+                        {catOpen && (
+                          <div className="bg-[#F8F7F5]">
+                            {cat.techniques.map((tech, i) => {
+                              const key = `${beltId}-${mod.id}-${tech.name.replace(/\s/g, '_')}`
+                              const isDone = isCompleted(key)
+                              return (
+                                <div key={tech.name}
+                                  className={`border-t border-[#EEEBE6] ${isDone ? 'opacity-60' : ''}`}>
+                                  <div
+                                    className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer active:bg-white"
+                                    onClick={() => setSelected({ tech, color: mod.color, key })}>
+                                    <span className="text-[11px] text-[#AAA] min-w-[18px] tabular-nums">{i + 1}</span>
+                                    <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: mod.color }} />
+                                    <span className="flex-1 text-sm font-medium text-[#0D0D0D]">{tech.name}</span>
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                                      isDone ? 'bg-[#DCFCE7] text-[#16A34A]' : 'bg-[#F2F0ED] text-[#AAA]'
+                                    }`}>
+                                      {isDone ? '✓ feito' : 'pendente'}
+                                    </span>
+                                    <span className="text-[#AAA] text-xs">›</span>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Technique detail sheet */}
+      {selected && (
+        <TechDetail
+          tech={selected.tech}
+          color={selected.color}
+          done={isCompleted(selected.key)}
+          onClose={() => setSelected(null)}
+          onToggle={() => {
+            const [bId, modId] = selected.key.split('-')
+            handleComplete(bId, modId, selected.tech.name)
+          }}
+        />
+      )}
+
+      <BottomNav active="modules" />
+    </div>
+  )
+}
