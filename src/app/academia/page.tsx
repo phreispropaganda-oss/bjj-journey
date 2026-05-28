@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import ViewAsStudentToggle from '@/components/ui/ViewAsStudentToggle'
+import { isViewingAsStudent } from '@/lib/view-mode'
 
 const BELT_COLOR: Record<string, string> = {
   white: '#E8E8E8', blue: '#2563EB', purple: '#7C3AED',
@@ -27,6 +29,8 @@ export default async function AcademiaPage() {
   const isOwner = !!(await supabase.from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle()).data
 
   if (!member && !isOwner) redirect('/dashboard')
+
+  const viewAsStudent = await isViewingAsStudent()
 
   // Owner without academy → prompt to create
   if (!member && isOwner) {
@@ -97,7 +101,10 @@ export default async function AcademiaPage() {
             <p className="text-[10px] text-[#555] font-bold uppercase tracking-wider">Painel Academia</p>
             <h1 className="text-white font-black text-base">{acad?.name as string ?? '—'}</h1>
           </div>
-          <Link href="/dashboard" className="text-[#555] text-sm">← App</Link>
+          <div className="flex items-center gap-2">
+            <ViewAsStudentToggle active={viewAsStudent} variant="dark" />
+            <Link href="/dashboard" className="text-[#555] text-sm">← App</Link>
+          </div>
         </div>
         {/* Tab nav */}
         <div className="flex gap-3 mt-3 overflow-x-auto scrollbar-none">

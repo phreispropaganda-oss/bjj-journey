@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import StudentViewBanner from '@/components/ui/StudentViewBanner'
 
 export const metadata: Metadata = {
   title: 'Belt Rise — Domine o tatame',
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="max-w-[480px] mx-auto min-h-screen bg-[#F8F7F5]">
+        <StudentViewBanner />
         {children}
       </body>
     </html>

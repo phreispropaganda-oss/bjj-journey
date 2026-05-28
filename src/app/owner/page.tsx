@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import ViewAsStudentToggle from '@/components/ui/ViewAsStudentToggle'
+import { isViewingAsStudent } from '@/lib/view-mode'
 
 const BELT_COLOR: Record<string, string> = {
   white: '#E8E8E8', blue: '#2563EB', purple: '#7C3AED',
@@ -18,6 +20,8 @@ export default async function OwnerPage() {
   const { data: adminCheck } = await supabase
     .from('admin_users').select('user_id').eq('user_id', user.id).single()
   if (!adminCheck) redirect('/dashboard')
+
+  const viewAsStudent = await isViewingAsStudent()
 
   // ── Métricas globais ──
   const [
@@ -75,7 +79,10 @@ export default async function OwnerPage() {
           <span className="text-white font-black text-base">Owner Panel</span>
           <span className="bg-[#CC0000] text-white text-[10px] font-black rounded-full px-2 py-0.5 ml-1">OWNER</span>
         </div>
-        <Link href="/dashboard" className="text-[#666] text-sm">← App</Link>
+        <div className="flex items-center gap-2">
+          <ViewAsStudentToggle active={viewAsStudent} variant="dark" />
+          <Link href="/dashboard" className="text-[#666] text-sm">← App</Link>
+        </div>
       </div>
 
       <div className="px-4 py-4 space-y-4 max-w-2xl mx-auto pb-10">
