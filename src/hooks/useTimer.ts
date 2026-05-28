@@ -1,35 +1,39 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 export function useTimer(initialSeconds: number) {
   const [seconds, setSeconds] = useState(initialSeconds)
   const [running, setRunning] = useState(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Keep running in a ref so the interval callback doesn't create stale closures
+  const runningRef = useRef(running)
+  runningRef.current = running
 
   useEffect(() => {
-    if (running && seconds > 0) {
-      intervalRef.current = setInterval(() => {
-        setSeconds(s => {
-          if (s <= 1) { setRunning(false); return 0 }
-          return s - 1
-        })
-      }, 1000)
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [running, seconds])
+    if (!running) return
+    const id = setInterval(() => {
+      setSeconds(s => {
+        if (s <= 1) {
+          setRunning(false)
+          return 0
+        }
+        return s - 1
+      })
+    }, 1000)
+    return () => clearInterval(id)
+  }, [running]) // only re-run when running changes, not every tick
 
-  function start(mins?: number) {
+  const start = useCallback((mins?: number) => {
     if (mins) setSeconds(mins * 60)
     setRunning(true)
-  }
+  }, [])
 
-  function pause() { setRunning(false) }
+  const pause = useCallback(() => setRunning(false), [])
 
-  function reset(mins?: number) {
+  const reset = useCallback((mins?: number) => {
     setRunning(false)
     setSeconds(mins ? mins * 60 : initialSeconds)
-  }
+  }, [initialSeconds])
 
   const minutes = Math.floor(seconds / 60)
   const secs = seconds % 60

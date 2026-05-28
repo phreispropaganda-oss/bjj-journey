@@ -40,7 +40,7 @@ export function DashboardClient({ profile, attendance, completions }: Props) {
       <div className="bg-white border-b border-[#E8E3DC] px-4 py-3 flex items-center justify-between">
         <span className="font-bold text-lg">🥋 BJJ Journey</span>
         <Link href={`/profile/${profile.username}`} className="w-9 h-9 rounded-full bg-[#FF6B2B] flex items-center justify-center text-white font-bold text-sm">
-          {profile.name.charAt(0).toUpperCase()}
+          {(profile.name?.charAt(0) ?? '?').toUpperCase()}
         </Link>
       </div>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { BELTS } from '@/lib/curriculum'
@@ -10,6 +10,19 @@ const STEPS = 3
 
 export default function OnboardingPage() {
   const router = useRouter()
+
+  // Guard: redirect already-onboarded users to dashboard
+  useEffect(() => {
+    async function checkProfile() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push('/login'); return }
+      const { data } = await supabase.from('profiles').select('name').eq('id', user.id).single()
+      const profileData = data as { name: string } | null
+      if (profileData?.name) router.push('/dashboard')
+    }
+    checkProfile()
+  }, [router])
   const [step, setStep] = useState(1)
   const [name, setName] = useState('')
   const [beltId, setBeltId] = useState<BeltId>('white')

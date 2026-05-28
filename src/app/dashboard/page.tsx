@@ -11,31 +11,28 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  const { data: profileRaw } = await supabase
+  const { data: profileRaw, error: profileError } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
 
-  const profile = profileRaw as Profile | null
+  // Explicit null/error check before any cast
+  if (profileError || !profileRaw) redirect('/onboarding')
 
-  if (!profile?.name) redirect('/onboarding')
+  const profile = profileRaw as Profile
 
-  const { data: attendance } = await supabase
-    .from('attendance')
-    .select('date')
-    .eq('user_id', user.id)
-    .order('date', { ascending: false })
-    .limit(60)
+  if (!profile.name || profile.name.trim() === '') redirect('/onboarding')
 
-  const { data: completions } = await supabase
-    .from('technique_completions')
-    .select('belt_id, module_id, technique_name')
-    .eq('user_id', user.id)
+  const [{ data: attendance }, { data: completions }] = await Promise.all([
+    supabase.from('attendance').select('date').eq('user_id', user.id)
+      .order('date', { ascending: false }).limit(60),
+    supabase.from('technique_completions').select('belt_id, module_id, technique_name').eq('user_id', user.id),
+  ])
 
   return (
     <DashboardClient
-      profile={profile!}
+      profile={profile}
       attendance={(attendance ?? []) as { date: string }[]}
       completions={(completions ?? []) as { belt_id: string; module_id: string; technique_name: string }[]}
     />
