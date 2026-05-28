@@ -3,25 +3,62 @@
 @tailwind utilities;
 
 :root {
-  --bg: #F7F4F0;
-  --border: #E8E3DC;
-  --text: #1A1A2E;
-  --or: #FF6B2B;
+  /* Belt Rise — vermelho/preto/branco */
+  --red:       #CC0000;
+  --red2:      #A80000;
+  --red3:      #E52222;
+  --red-light: #FFF0F0;
+  --red-mid:   #FFCCCC;
+
+  --black:  #0D0D0D;
+  --dark:   #1A1A1A;
+  --dark2:  #2A2A2A;
+  --mid:    #555555;
+  --light:  #999999;
+  --border: #E5E5E5;
+  --border2:#D0D0D0;
+  --bg:     #F8F7F5;
+  --bg2:    #FFFFFF;
+  --bg3:    #F2F0ED;
+
+  --gold:  #F59E0B;
+  --green: #16A34A;
+  --blue:  #2563EB;
 }
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
   background: var(--bg);
   font-family: 'DM Sans', sans-serif;
+  color: var(--dark);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
 }
+
+.scrollbar-none { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
 
 @layer components {
   .btn-primary {
-    @apply bg-[#FF6B2B] text-white rounded-full px-6 py-3.5 font-bold w-full active:bg-[#E85A1A] transition-colors;
+    @apply bg-[#CC0000] text-white rounded-full px-6 py-3.5 font-bold text-base w-full
+           active:bg-[#A80000] transition-colors tracking-wide;
   }
+  .btn-ghost {
+    @apply border-2 border-[#CC0000] text-[#CC0000] rounded-full px-6 py-3 font-bold text-sm
+           hover:bg-[#FFF0F0] transition-colors;
+  }
+  .card { @apply bg-white rounded-2xl p-4 shadow-sm; }
   .field-label {
-    @apply text-[11px] font-bold uppercase tracking-wider text-[#666] mb-1.5 block;
+    @apply text-[11px] font-bold uppercase tracking-wider text-[#555] mb-1.5 block;
   }
   .field-input {
-    @apply w-full bg-[#F0EDE8] border-[1.5px] border-[#DDD8D0] rounded-lg px-3.5 py-3 text-base outline-none focus:border-[#FF6B2B] transition-colors;
+    @apply w-full bg-[#F2F0ED] border-[1.5px] border-[#D0D0D0] rounded-xl px-3.5 py-3
+           text-base text-[#1A1A1A] outline-none focus:border-[#CC0000] transition-colors;
   }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

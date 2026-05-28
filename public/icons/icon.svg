@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <!-- Background -->
+  <rect width="192" height="192" rx="42" fill="#CC0000"/>
+  <!-- Belt symbol: horizontal bars representing a belt with tip -->
+  <!-- Main belt body -->
+  <rect x="28" y="82" width="136" height="28" rx="4" fill="white" opacity="0.95"/>
+  <!-- Belt tip (right side, slightly longer) -->
+  <rect x="148" y="75" width="22" height="42" rx="4" fill="white" opacity="0.95"/>
+  <!-- Center knot accent -->
+  <rect x="84" y="78" width="24" height="36" rx="3" fill="#CC0000" opacity="0.9"/>
+  <!-- BR letters -->
+  <text x="96" y="66" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="18" fill="white" letter-spacing="3" opacity="0.9">BELT RISE</text>
+  <!-- Degree dots (3 dots = graus) -->
+  <circle cx="62" cy="138" r="5" fill="white" opacity="0.7"/>
+  <circle cx="80" cy="138" r="5" fill="white" opacity="0.7"/>
+  <circle cx="98" cy="138" r="5" fill="white" opacity="0.7"/>
+</svg>

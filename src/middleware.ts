@@ -28,6 +28,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/modules') ||
     pathname.startsWith('/onboarding') ||
+    pathname.startsWith('/calendar') ||
+    pathname.startsWith('/profile') ||
     pathname.startsWith('/admin')
 
   if (isProtected && !user) {
