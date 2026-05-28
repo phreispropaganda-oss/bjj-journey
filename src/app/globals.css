@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F7F4F0;
+  --border: #E8E3DC;
+  --text: #1A1A2E;
+  --or: #FF6B2B;
+}
+
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[#FF6B2B] text-white rounded-full px-6 py-3.5 font-bold w-full active:bg-[#E85A1A] transition-colors;
+  }
+  .field-label {
+    @apply text-[11px] font-bold uppercase tracking-wider text-[#666] mb-1.5 block;
+  }
+  .field-input {
+    @apply w-full bg-[#F0EDE8] border-[1.5px] border-[#DDD8D0] rounded-lg px-3.5 py-3 text-base outline-none focus:border-[#FF6B2B] transition-colors;
+  }
+}
