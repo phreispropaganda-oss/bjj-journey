@@ -6,7 +6,7 @@ const NAV = [
   { id: 'dashboard', label: 'Início',    icon: '⌂',   href: '/dashboard' },
   { id: 'modules',   label: 'Módulos',   icon: '🥋',  href: '/modules/white' },
   { id: 'calendar',  label: 'Treinos',   icon: '📅',  href: '/calendar' },
-  { id: 'profile',   label: 'Perfil',    icon: '👤',  href: '/profile' },
+  { id: 'profile',   label: 'Perfil',    icon: '👤',  href: '/profile'   },
 ]
 
 export default function BottomNav({ active }: { active: string }) {
