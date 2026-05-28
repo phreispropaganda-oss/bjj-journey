@@ -120,6 +120,21 @@ export default function AlunosPage() {
           <h1 className="text-white font-black text-base flex-1">Alunos</h1>
           <span className="bg-[#2A2A2A] text-[#555] text-xs px-2 py-0.5 rounded-full font-bold">{students.length}</span>
         </div>
+        <div className="flex gap-3 overflow-x-auto scrollbar-none mb-3">
+          {[
+            { href: '/academia',            label: '📊 Visão Geral' },
+            { href: '/academia/alunos',     label: '👥 Alunos' },
+            { href: '/academia/frequencia', label: '✅ Presenças' },
+            { href: '/academia/promover',   label: '🏅 Promover' },
+          ].map(t => (
+            <Link key={t.href} href={t.href}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold ${
+                t.href === '/academia/alunos' ? 'bg-[#CC0000] text-white' : 'bg-[#222] text-[#555]'
+              }`}>
+              {t.label}
+            </Link>
+          ))}
+        </div>
         <input
           className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2 text-white text-sm outline-none placeholder:text-[#444] focus:border-[#CC0000]"
           placeholder="Buscar aluno..."

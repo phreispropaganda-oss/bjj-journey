@@ -102,9 +102,10 @@ export default function PromoverPage() {
         </div>
         <div className="flex gap-3 overflow-x-auto scrollbar-none">
           {[
-            { href: '/academia',          label: '📊 Visão Geral' },
-            { href: '/academia/alunos',   label: '👥 Alunos' },
-            { href: '/academia/promover', label: '🏅 Promover' },
+            { href: '/academia',            label: '📊 Visão Geral' },
+            { href: '/academia/alunos',     label: '👥 Alunos' },
+            { href: '/academia/frequencia', label: '✅ Presenças' },
+            { href: '/academia/promover',   label: '🏅 Promover' },
           ].map(t => (
             <Link key={t.href} href={t.href}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${

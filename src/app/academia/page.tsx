@@ -102,9 +102,10 @@ export default async function AcademiaPage() {
         {/* Tab nav */}
         <div className="flex gap-3 mt-3 overflow-x-auto scrollbar-none">
           {[
-            { href: '/academia',          label: '📊 Visão Geral' },
-            { href: '/academia/alunos',   label: '👥 Alunos' },
-            { href: '/academia/promover', label: '🏅 Promover' },
+            { href: '/academia',            label: '📊 Visão Geral' },
+            { href: '/academia/alunos',     label: '👥 Alunos' },
+            { href: '/academia/frequencia', label: '✅ Presenças' },
+            { href: '/academia/promover',   label: '🏅 Promover' },
           ].map(t => (
             <Link key={t.href} href={t.href}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
@@ -205,16 +206,16 @@ export default async function AcademiaPage() {
 
         {/* Quick actions */}
         <div className="grid grid-cols-2 gap-3">
-          <Link href="/academia/alunos"
-            className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
-            <span className="text-2xl">👥</span>
-            <p className="text-white font-black text-sm">Gerenciar Alunos</p>
-            <p className="text-[#555] text-xs">Cadastrar, planos, status</p>
+          <Link href="/academia/frequencia"
+            className="bg-[#CC0000]/10 border border-[#CC0000]/30 rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+            <span className="text-2xl">✅</span>
+            <p className="text-[#CC0000] font-black text-sm">Confirmar Presença</p>
+            <p className="text-[#555] text-xs">Aula de hoje</p>
           </Link>
           <Link href="/academia/promover"
-            className="bg-[#CC0000]/10 border border-[#CC0000]/30 rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
+            className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
             <span className="text-2xl">🥋</span>
-            <p className="text-[#CC0000] font-black text-sm">Promover Faixas</p>
+            <p className="text-white font-black text-sm">Promover Faixas</p>
             <p className="text-[#555] text-xs">Registrar graduações</p>
           </Link>
         </div>
