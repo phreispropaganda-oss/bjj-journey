@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import BottomNav from '@/components/ui/BottomNav'
 import FeedClient from '@/components/feed/FeedClient'
+import SocialTabs from '@/components/feed/SocialTabs'
 
 const BELT_COLOR: Record<string, string> = {
   white:'#E8E8E8', blue:'#2563EB', purple:'#7C3AED', brown:'#92400E', black:'#1A1A1A',
@@ -132,6 +133,7 @@ export default async function FeedPage() {
         </div>
         <span className="text-xs text-[#AAA] font-bold">{feedItems.length} treinos</span>
       </div>
+      <SocialTabs active="feed" />
 
       <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-3 pb-24 space-y-3">
         {feedItems.length === 0 ? (
