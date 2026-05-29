@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 const NAV = [
   { id: 'dashboard', label: 'Início',   icon: '⌂',  href: '/dashboard' },
-  { id: 'modules',   label: 'Módulos',  icon: '🥋', href: '/modules/white' },
+  { id: 'feed',      label: 'Feed',     icon: '🔥', href: '/feed' },
   { id: 'record',    label: '',         icon: '+',  href: '/treino/novo', center: true },
   { id: 'calendar',  label: 'Treinos',  icon: '📅', href: '/calendar' },
   { id: 'profile',   label: 'Perfil',   icon: '👤', href: '/profile' },

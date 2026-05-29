@@ -4,6 +4,7 @@ import { createClient as createPublicClient } from '@supabase/supabase-js'
 import { BELTS, getCurriculumByBelt, getTotalTechniques } from '@/lib/curriculum'
 import { createClient } from '@/lib/supabase/server'
 import ShareButton from '@/components/profile/ShareButton'
+import FollowButton from '@/components/profile/FollowButton'
 import Link from 'next/link'
 
 interface Props { params: Promise<{ username: string }> }
@@ -70,16 +71,30 @@ export default async function PublicProfilePage({ params }: Props) {
   const doneTech  = completions.filter(c => c.belt_id === profile.belt_id).length
   const pct       = totalTech > 0 ? Math.round((doneTech / totalTech) * 100) : 0
 
-  // Check if viewer is the owner (for edit button)
+  // Check viewer identity & social state
   let isOwner = false
+  let viewerId: string | null = null
+  let isFollowing = false
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
+      viewerId = user.id
       const { data: own } = await supabase.from('profiles').select('username').eq('id', user.id).single()
       isOwner = (own as { username: string } | null)?.username === username
+      if (!isOwner) {
+        const { data: f } = await supabase
+          .from('follows').select('follower_id')
+          .eq('follower_id', user.id).eq('following_id', profile.id).maybeSingle()
+        isFollowing = !!f
+      }
     }
   } catch { /* not logged in */ }
+
+  // Counts of follows
+  const { count: followerCount } = await supabasePublic
+    .from('follows').select('follower_id', { count: 'exact', head: true })
+    .eq('following_id', profile.id)
 
   // Attendance heatmap — last 52 weeks
   const attendSet = new Set(attendance.map(a => a.date))
@@ -117,11 +132,19 @@ export default async function PublicProfilePage({ params }: Props) {
               )}
               <p className="text-white/30 text-xs mt-0.5">@{profile.username}</p>
             </div>
-            {isOwner && (
-              <Link href="/dashboard" className="ml-auto text-[#CC0000] text-xs font-bold border border-[#CC0000]/30 px-2.5 py-1 rounded-full">
-                Editar
-              </Link>
-            )}
+            <div className="ml-auto">
+              {isOwner ? (
+                <Link href="/profile" className="text-[#CC0000] text-xs font-bold border border-[#CC0000]/30 px-2.5 py-1 rounded-full">
+                  Editar
+                </Link>
+              ) : viewerId ? (
+                <FollowButton
+                  targetUserId={profile.id}
+                  initialFollowing={isFollowing}
+                  initialCount={followerCount ?? 0}
+                />
+              ) : null}
+            </div>
           </div>
 
           {/* Belt + degrees */}
