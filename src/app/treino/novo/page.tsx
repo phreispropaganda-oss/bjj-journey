@@ -126,11 +126,9 @@ export default function NovoTreinoPage() {
     const finalAcademy = customAcademy.trim() || academyName
 
     const photoUrl = await uploadPhoto(user.id)
-
-    // ISO timestamp from date input
     const trainedAt = new Date(`${date}T${new Date().toTimeString().slice(0, 8)}`).toISOString()
 
-    const { error: err } = await (supabase.from('training_sessions') as ReturnType<typeof supabase.from>)
+    const { data: inserted, error: err } = await (supabase.from('training_sessions') as ReturnType<typeof supabase.from>)
       .insert({
         user_id:      user.id,
         academy_id:   academyId,
@@ -146,6 +144,8 @@ export default function NovoTreinoPage() {
         note:         note || null,
         photo_url:    photoUrl,
       } as never)
+      .select('id')
+      .single()
 
     if (finalAcademy && finalAcademy !== profile?.academy_name) {
       await (supabase.from('profiles') as ReturnType<typeof supabase.from>)
@@ -153,9 +153,10 @@ export default function NovoTreinoPage() {
     }
 
     setSaving(false)
-    if (err) { setError(err.message); return }
-    router.push('/dashboard?treino=ok')
-    router.refresh()
+    if (err || !inserted) { setError(err?.message ?? 'Erro ao salvar'); return }
+
+    const sessionId = (inserted as { id: string }).id
+    router.push(`/treino/${sessionId}/share`)
   }
 
   const calories = duration ? estimateCalories(duration, profile?.weight_kg ?? null) : 0

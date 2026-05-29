@@ -23,6 +23,7 @@ export default function UsuariosClient({ profiles, beltColor, currentUserId }: P
   const [search, setSearch] = useState('')
   const [pending, startTransition] = useTransition()
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<{ kind: 'ok' | 'err'; msg: string } | null>(null)
 
   const filtered = profiles.filter(p => {
     if (filter === 'active'   && !p.active)            return false
@@ -33,23 +34,32 @@ export default function UsuariosClient({ profiles, beltColor, currentUserId }: P
     return true
   })
 
+  function showFeedback(r: { ok?: boolean; error?: string }, okMsg: string) {
+    if (r.error) setFeedback({ kind: 'err', msg: r.error })
+    else setFeedback({ kind: 'ok', msg: okMsg })
+    setTimeout(() => setFeedback(null), 3000)
+  }
+
   function toggleActive(p: Profile) {
     startTransition(async () => {
-      await setUserActive(p.id, !p.active)
+      const r = await setUserActive(p.id, !p.active)
+      showFeedback(r, `${p.name} ${p.active ? 'inativado' : 'ativado'}`)
     })
   }
 
   function handleDelete(p: Profile) {
     if (confirmDelete !== p.id) { setConfirmDelete(p.id); return }
     startTransition(async () => {
-      await softDeleteUser(p.id)
+      const r = await softDeleteUser(p.id)
+      showFeedback(r, `${p.name} excluído`)
       setConfirmDelete(null)
     })
   }
 
   function handleRestore(p: Profile) {
     startTransition(async () => {
-      await restoreUser(p.id)
+      const r = await restoreUser(p.id)
+      showFeedback(r, `${p.name} restaurado`)
     })
   }
 
@@ -62,6 +72,17 @@ export default function UsuariosClient({ profiles, beltColor, currentUserId }: P
 
   return (
     <div className="space-y-3">
+      {/* Feedback toast */}
+      {feedback && (
+        <div className={`rounded-xl px-3 py-2 text-sm font-bold ${
+          feedback.kind === 'ok'
+            ? 'bg-green-900/30 border border-green-700 text-green-400'
+            : 'bg-red-900/30 border border-red-700 text-red-400'
+        }`}>
+          {feedback.kind === 'ok' ? '✓' : '⚠️'} {feedback.msg}
+        </div>
+      )}
+
       {/* Search */}
       <input
         className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none placeholder:text-[#555] focus:border-[#CC0000]"

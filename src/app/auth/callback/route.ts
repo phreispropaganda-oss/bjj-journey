@@ -49,16 +49,16 @@ export async function GET(request: NextRequest) {
   if (user) {
     const { data: profileData } = await supabase
       .from('profiles')
-      .select('name')
+      .select('onboarded_at, belt_id')
       .eq('id', user.id)
       .single()
 
-    const profile = profileData as { name: string } | null
+    const profile = profileData as { onboarded_at: string | null; belt_id: string | null } | null
 
-    if (!profile?.name) {
+    // Always send to onboarding until user explicitly completes it
+    if (!profile?.onboarded_at) {
       const onboardUrl = new URL('/onboarding', origin)
       const onboardResponse = NextResponse.redirect(onboardUrl)
-      // Copy all cookies to the onboarding redirect too
       response.cookies.getAll().forEach(({ name, value, ...rest }) => {
         onboardResponse.cookies.set(name, value, rest as Parameters<typeof onboardResponse.cookies.set>[2])
       })

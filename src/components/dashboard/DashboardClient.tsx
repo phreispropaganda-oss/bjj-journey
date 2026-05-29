@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { BELTS, getTotalTechniques, getCurriculumByBelt } from '@/lib/curriculum'
 import { getXPLevel, getXPProgress } from '@/store/user'
 import BottomNav from '@/components/ui/BottomNav'
+import NotificationBell from '@/components/ui/NotificationBell'
 import type { Database } from '@/lib/supabase/types'
 import type { BeltId } from '@/lib/supabase/types'
 
@@ -170,10 +171,13 @@ export function DashboardClient({ profile, attendance, completions, achievements
           </div>
           <span className="font-black text-[#0D0D0D] text-base tracking-tight">Belt Rise</span>
         </div>
-        <Link href="/profile"
-          className="w-9 h-9 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-sm shadow-md shadow-red-900/20">
-          {initial}
-        </Link>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <Link href="/profile"
+            className="w-9 h-9 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-sm shadow-md shadow-red-900/20">
+            {initial}
+          </Link>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-4 pb-24">

@@ -72,9 +72,9 @@ export default function OnboardingPage() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/login'); return }
-      const { data } = await supabase.from('profiles').select('name').eq('id', user.id).single()
-      const profile = data as { name: string } | null
-      if (profile?.name) router.push('/dashboard')
+      const { data } = await supabase.from('profiles').select('onboarded_at').eq('id', user.id).single()
+      const profile = data as { onboarded_at: string | null } | null
+      if (profile?.onboarded_at) router.push('/dashboard')
     }
     check()
   }, [router])
@@ -114,6 +114,7 @@ export default function OnboardingPage() {
         belt_id: beltId,
         degrees,
         academy_name: finalAcademy || null,
+        onboarded_at: new Date().toISOString(),
         username,
       } as never)
       .eq('id', user.id)

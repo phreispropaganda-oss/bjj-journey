@@ -25,7 +25,7 @@ const BADGES: Record<string, { emoji: string; name: string }> = {
 }
 
 interface Props {
-  profile: Profile & { weight_kg?: number | null; height_cm?: number | null }
+  profile: Profile & { weight_kg?: number | null; height_cm?: number | null; avatar_url?: string | null; bio?: string | null }
   achievements: { badge_id: string; unlocked_at: string }[]
   attendanceCount: number
   appUrl: string
@@ -54,6 +54,26 @@ export default function ProfileClient({
   const [customAcad,  setCustomAcad]  = useState('')
   const [weight,      setWeight]      = useState(profile.weight_kg ? String(profile.weight_kg) : '')
   const [height,      setHeight]      = useState(profile.height_cm ? String(profile.height_cm) : '')
+  const [bio,         setBio]         = useState(profile.bio ?? '')
+  const [avatarUrl,   setAvatarUrl]   = useState(profile.avatar_url ?? null)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+
+  async function uploadAvatar(file: File) {
+    if (file.size > 3 * 1024 * 1024) { setError('Avatar deve ter no máximo 3MB'); return }
+    setUploadingAvatar(true); setError('')
+    const supabase = createClient()
+    const ext = file.name.split('.').pop()
+    const path = `${profile.id}/avatar-${Date.now()}.${ext}`
+    const { error: upErr } = await supabase.storage
+      .from('avatars').upload(path, file, { cacheControl: '3600', upsert: true })
+    if (upErr) { setError(`Erro upload: ${upErr.message}`); setUploadingAvatar(false); return }
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+    await (supabase.from('profiles') as ReturnType<typeof supabase.from>)
+      .update({ avatar_url: publicUrl } as never).eq('id', profile.id)
+    setAvatarUrl(publicUrl)
+    setUploadingAvatar(false)
+    router.refresh()
+  }
   const [saving,  setSaving]  = useState(false)
   const [saved,   setSaved]   = useState(false)
   const [error,   setError]   = useState('')
@@ -75,6 +95,7 @@ export default function ProfileClient({
         academy_name: finalAcademy,
         weight_kg:    weight ? parseFloat(weight) : null,
         height_cm:    height ? parseInt(height) : null,
+        bio:          bio.trim() || null,
       } as never)
       .eq('id', profile.id)
 
@@ -119,9 +140,23 @@ export default function ProfileClient({
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#CC0000] rounded-full opacity-10 -translate-y-1/2 translate-x-1/2" />
           <div className="px-5 pt-6 pb-5 relative z-10">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-2xl border-2 border-white/20">
-                {initial}
-              </div>
+              <label className="relative cursor-pointer group">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarUrl} alt={profile.name}
+                    className="w-16 h-16 rounded-full object-cover border-2 border-white/20" />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-2xl border-2 border-white/20">
+                    {initial}
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <span className="text-white text-xs font-bold">{uploadingAvatar ? '...' : '📷'}</span>
+                </div>
+                <input type="file" accept="image/*" className="hidden"
+                  onChange={e => e.target.files?.[0] && uploadAvatar(e.target.files[0])}
+                  disabled={uploadingAvatar} />
+              </label>
               <div className="flex-1">
                 {editing ? (
                   <input
@@ -259,8 +294,19 @@ export default function ProfileClient({
               />
             </div>
 
+            {/* Bio */}
+            <div className="pt-2 border-t border-[#F2F0ED]">
+              <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Bio (curta)</label>
+              <textarea rows={2} maxLength={140}
+                className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#CC0000] resize-none"
+                placeholder="Conte algo sobre sua jornada..."
+                value={bio}
+                onChange={e => setBio(e.target.value)} />
+              <p className="text-[10px] text-[#AAA] text-right">{bio.length}/140</p>
+            </div>
+
             {/* Peso / altura */}
-            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#F2F0ED]">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Peso (kg)</label>
                 <input type="number" min={20} max={250} step={0.1}

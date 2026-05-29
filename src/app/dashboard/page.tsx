@@ -15,8 +15,8 @@ export default async function DashboardPage() {
     .from('profiles').select('*').eq('id', user.id).single()
 
   if (profileError || !profileRaw) redirect('/onboarding')
-  const profile = profileRaw as Profile
-  if (!profile.name?.trim()) redirect('/onboarding')
+  const profile = profileRaw as Profile & { onboarded_at?: string | null }
+  if (!profile.onboarded_at) redirect('/onboarding')
 
   const [
     { data: attendance },

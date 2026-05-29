@@ -212,18 +212,21 @@ export default async function AcademiaPage() {
         )}
 
         {/* Quick actions */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           <Link href="/academia/frequencia"
-            className="bg-[#CC0000]/10 border border-[#CC0000]/30 rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
-            <span className="text-2xl">✅</span>
-            <p className="text-[#CC0000] font-black text-sm">Confirmar Presença</p>
-            <p className="text-[#555] text-xs">Aula de hoje</p>
+            className="bg-[#CC0000]/10 border border-[#CC0000]/30 rounded-2xl p-3 flex flex-col items-center gap-1 text-center">
+            <span className="text-xl">✅</span>
+            <p className="text-[#CC0000] font-black text-xs">Presenças</p>
           </Link>
           <Link href="/academia/promover"
-            className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl p-4 flex flex-col items-center gap-2 text-center">
-            <span className="text-2xl">🥋</span>
-            <p className="text-white font-black text-sm">Promover Faixas</p>
-            <p className="text-[#555] text-xs">Registrar graduações</p>
+            className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl p-3 flex flex-col items-center gap-1 text-center">
+            <span className="text-xl">🥋</span>
+            <p className="text-white font-black text-xs">Promover</p>
+          </Link>
+          <Link href="/owner/desafios"
+            className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl p-3 flex flex-col items-center gap-1 text-center">
+            <span className="text-xl">🎯</span>
+            <p className="text-white font-black text-xs">Desafios</p>
           </Link>
         </div>
       </div>

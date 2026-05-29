@@ -41,7 +41,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   const { data: profileRaw } = await supabasePublic
     .from('profiles')
-    .select('id, name, username, belt_id, degrees, xp, streak, academy_name, is_public')
+    .select('id, name, username, belt_id, degrees, xp, streak, academy_name, is_public, avatar_url, bio, weight_kg, height_cm, years_training, active')
     .eq('username', username)
     .eq('is_public', true)
     .single()
@@ -49,8 +49,12 @@ export default async function PublicProfilePage({ params }: Props) {
   if (!profileRaw) notFound()
   const profile = profileRaw as {
     id: string; name: string; username: string; belt_id: string; degrees: number;
-    xp: number; streak: number; academy_name: string | null; is_public: boolean
+    xp: number; streak: number; academy_name: string | null; is_public: boolean;
+    avatar_url: string | null; bio: string | null;
+    weight_kg: number | null; height_cm: number | null; years_training: number | null;
+    active: boolean;
   }
+  if (!profile.active) notFound()
 
   const [
     { data: completionsRaw },
@@ -74,15 +78,32 @@ export default async function PublicProfilePage({ params }: Props) {
   const calories    = (caloriesRaw as unknown as number) ?? 0
   const mostTrained = (mostTrainedRaw as unknown as string) ?? null
 
-  // Total training minutes
-  const { data: sessionsRaw } = await supabasePublic
-    .from('training_sessions').select('duration_min').eq('user_id', profile.id)
+  const [
+    { data: sessionsRaw },
+    { count: followersCount },
+    { count: followingCount },
+    { data: weightClassRaw },
+    { count: sessionCount },
+  ] = await Promise.all([
+    supabasePublic.from('training_sessions').select('duration_min').eq('user_id', profile.id),
+    supabasePublic.from('follows').select('follower_id', { count: 'exact', head: true }).eq('following_id', profile.id),
+    supabasePublic.from('follows').select('following_id', { count: 'exact', head: true }).eq('follower_id', profile.id),
+    profile.weight_kg
+      ? (supabasePublic as unknown as { rpc: (n: string, p: Record<string, number>) => Promise<{ data: string | null }> })
+          .rpc('weight_class', { p_kg: profile.weight_kg })
+      : Promise.resolve({ data: null }),
+    supabasePublic.from('training_sessions').select('id', { count: 'exact', head: true }).eq('user_id', profile.id),
+  ])
+
   const totalMinutes = ((sessionsRaw ?? []) as { duration_min: number }[])
     .reduce((sum, s) => sum + (s.duration_min ?? 0), 0)
   const totalHours = Math.round(totalMinutes / 60)
-
-  // Unique training days
   const uniqueDays = new Set(attendance.map(a => a.date)).size
+  const weightClass = weightClassRaw as unknown as string | null
+  const totalSessions = sessionCount ?? 0
+
+  // Selo: maior frequência da academia (atual streak >= 7)
+  const hasStreakBadge = (profile.streak ?? 0) >= 7
 
   const belt      = BELTS.find(b => b.id === profile.belt_id) ?? BELTS[0]
   const totalTech = getTotalTechniques(profile.belt_id as import('@/lib/supabase/types').BeltId)
@@ -138,30 +159,90 @@ export default async function PublicProfilePage({ params }: Props) {
         <div className="absolute top-0 right-0 w-48 h-48 bg-[#CC0000] rounded-full opacity-10 -translate-y-1/2 translate-x-1/2" />
 
         <div className="px-5 pt-10 pb-6 relative z-10">
-          {/* Avatar + name */}
-          <div className="flex items-center gap-4 mb-5">
-            <div className="w-16 h-16 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-2xl border-2 border-white/20 shadow-lg shadow-red-900/30">
-              {profile.name.charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <h1 className="text-white font-black text-xl tracking-tight">{profile.name}</h1>
-              {profile.academy_name && (
-                <p className="text-white/50 text-sm mt-0.5">{profile.academy_name}</p>
+          {/* Avatar central (estilo WhatsApp) */}
+          <div className="flex flex-col items-center mb-4">
+            <div className="relative">
+              {profile.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={profile.avatar_url} alt={profile.name}
+                  className="w-28 h-28 rounded-full object-cover border-4 border-white/20 shadow-2xl shadow-red-900/40" />
+              ) : (
+                <div className="w-28 h-28 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-5xl border-4 border-white/20 shadow-2xl shadow-red-900/40">
+                  {profile.name.charAt(0).toUpperCase()}
+                </div>
               )}
-              <p className="text-white/30 text-xs mt-0.5">@{profile.username}</p>
+              {hasStreakBadge && (
+                <div className="absolute -bottom-1 -right-1 w-9 h-9 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-base shadow-lg border-2 border-[#0D0D0D]" title={`${profile.streak} dias consecutivos`}>
+                  🔥
+                </div>
+              )}
             </div>
-            <div className="ml-auto">
+            <h1 className="text-white font-black text-2xl tracking-tight mt-4 text-center">{profile.name}</h1>
+            <p className="text-white/30 text-xs mt-0.5">@{profile.username}</p>
+            {profile.bio && (
+              <p className="text-white/70 text-sm mt-2 text-center max-w-xs leading-relaxed">{profile.bio}</p>
+            )}
+            {profile.academy_name && (
+              <p className="text-white/50 text-xs mt-2 flex items-center gap-1">
+                <span>🏢</span> {profile.academy_name}
+              </p>
+            )}
+
+            {/* Follow / Edit action */}
+            <div className="mt-4">
               {isOwner ? (
-                <Link href="/profile" className="text-[#CC0000] text-xs font-bold border border-[#CC0000]/30 px-2.5 py-1 rounded-full">
-                  Editar
+                <Link href="/profile" className="text-[#CC0000] text-xs font-bold border border-[#CC0000]/30 px-4 py-1.5 rounded-full inline-block">
+                  ✏️ Editar perfil
                 </Link>
               ) : viewerId ? (
                 <FollowButton
                   targetUserId={profile.id}
                   initialFollowing={isFollowing}
-                  initialCount={followerCount ?? 0}
+                  initialCount={followersCount ?? 0}
                 />
               ) : null}
+            </div>
+          </div>
+
+          {/* Badges row */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5 mb-4">
+            {weightClass && (
+              <span className="bg-white/10 backdrop-blur text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-white/20">
+                ⚖️ {weightClass} · {profile.weight_kg}kg
+              </span>
+            )}
+            {(profile.years_training ?? 0) >= 5 && (
+              <span className="bg-yellow-500/20 text-yellow-300 text-[10px] font-black px-2.5 py-1 rounded-full border border-yellow-500/40">
+                ⭐ Veterano · {profile.years_training}+ anos
+              </span>
+            )}
+            {totalSessions >= 100 && (
+              <span className="bg-[#CC0000]/30 text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-[#CC0000]/50">
+                🏆 +{Math.floor(totalSessions / 100) * 100} treinos
+              </span>
+            )}
+            {hasStreakBadge && (
+              <span className="bg-orange-500/20 text-orange-300 text-[10px] font-black px-2.5 py-1 rounded-full border border-orange-500/40">
+                🔥 Maior frequência · {profile.streak}d
+              </span>
+            )}
+          </div>
+
+          {/* Followers / following counts */}
+          <div className="flex items-center justify-center gap-6 mb-4 py-3 border-y border-white/10">
+            <div className="text-center">
+              <p className="text-white font-black text-lg leading-none">{(followersCount ?? 0).toLocaleString()}</p>
+              <p className="text-white/40 text-[10px] uppercase tracking-wider mt-0.5">Seguidores</p>
+            </div>
+            <div className="w-px h-8 bg-white/10" />
+            <div className="text-center">
+              <p className="text-white font-black text-lg leading-none">{(followingCount ?? 0).toLocaleString()}</p>
+              <p className="text-white/40 text-[10px] uppercase tracking-wider mt-0.5">Seguindo</p>
+            </div>
+            <div className="w-px h-8 bg-white/10" />
+            <div className="text-center">
+              <p className="text-white font-black text-lg leading-none">{totalSessions.toLocaleString()}</p>
+              <p className="text-white/40 text-[10px] uppercase tracking-wider mt-0.5">Treinos</p>
             </div>
           </div>
 
