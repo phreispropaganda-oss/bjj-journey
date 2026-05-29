@@ -66,8 +66,36 @@ export default function OnboardingPage() {
   // Step 6
   const [goals, setGoals] = useState<string[]>([])
 
+  // ── Restore draft from localStorage on mount ──
   useEffect(() => {
-    // Guard: already onboarded → dashboard
+    try {
+      const raw = localStorage.getItem('belt-rise-onboarding')
+      if (raw) {
+        const d = JSON.parse(raw)
+        if (d.name)        setName(d.name)
+        if (d.age)         setAge(d.age)
+        if (d.beltId)      setBeltId(d.beltId)
+        if (d.degrees !== undefined) setDegrees(d.degrees)
+        if (d.practiceTime) setPracticeTime(d.practiceTime)
+        if (d.frequency)    setFrequency(d.frequency)
+        if (d.academy)      setAcademy(d.academy)
+        if (d.academyCustom) setAcademyCustom(d.academyCustom)
+        if (Array.isArray(d.goals)) setGoals(d.goals)
+        if (typeof d.step === 'number' && d.step >= 1 && d.step <= TOTAL_STEPS) setStep(d.step)
+      }
+    } catch { /* ignore parse errors */ }
+  }, [])
+
+  // ── Persist draft on every change ──
+  useEffect(() => {
+    try {
+      localStorage.setItem('belt-rise-onboarding', JSON.stringify({
+        name, age, beltId, degrees, practiceTime, frequency, academy, academyCustom, goals, step,
+      }))
+    } catch { /* localStorage full or disabled */ }
+  }, [name, age, beltId, degrees, practiceTime, frequency, academy, academyCustom, goals, step])
+
+  useEffect(() => {
     async function check() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
@@ -120,6 +148,8 @@ export default function OnboardingPage() {
       .eq('id', user.id)
 
     if (err) { setError(err.message); setSaving(false); return }
+    // Clear draft on success
+    try { localStorage.removeItem('belt-rise-onboarding') } catch { /* ok */ }
     router.push('/dashboard')
   }
 

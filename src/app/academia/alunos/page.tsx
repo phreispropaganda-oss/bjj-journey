@@ -23,6 +23,8 @@ export default function AlunosPage() {
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
   const [academyId, setAcademyId] = useState<string | null>(null)
+  const [studentLimit, setStudentLimit] = useState<number>(10)
+  const [academyPlan, setAcademyPlan] = useState<string>('free')
   const [search, setSearch] = useState('')
   const [addEmail, setAddEmail] = useState('')
   const [adding, setAdding] = useState(false)
@@ -42,6 +44,15 @@ export default function AlunosPage() {
       const aId = (mem as { academy_id: string } | null)?.academy_id
       if (!aId) return
       setAcademyId(aId)
+
+      // Get academy plan + limit
+      const { data: acad } = await supabase.from('academies')
+        .select('plan, student_limit').eq('id', aId).single()
+      const ac = acad as { plan: string; student_limit: number } | null
+      if (ac) {
+        setAcademyPlan(ac.plan)
+        setStudentLimit(ac.student_limit)
+      }
 
       const { data: members } = await supabase
         .from('academy_members')
@@ -75,24 +86,54 @@ export default function AlunosPage() {
 
   async function addStudent() {
     if (!addEmail.trim() || !academyId) return
+
+    const activeStudents = students.filter(s => s.member_active && s.member_role === 'student').length
+    if (activeStudents >= studentLimit) {
+      setAddMsg(`⚠️ Limite atingido (${studentLimit} alunos no plano ${academyPlan.toUpperCase()}). Faça upgrade para adicionar mais.`)
+      return
+    }
+
     setAdding(true); setAddMsg('')
     const supabase = createClient()
-    // Find by email or username
-    const { data: p } = await supabase.from('profiles').select('id, name')
-      .or(`username.eq.${addEmail.trim()},id.eq.${addEmail.trim()}`)
-      .maybeSingle()
-    const profile = p as { id: string; name: string } | null
-    if (!profile) {
-      // Try by auth email
-      setAddMsg('⚠️ Usuário não encontrado. Peça para ele criar uma conta primeiro.')
+    const query = addEmail.trim().replace(/^@/, '')
+
+    // Use RPC lookup that searches across username AND email (returns auth.users.email)
+    const { data: results, error: rpcErr } = await (supabase as unknown as {
+      rpc: (n: string, p: Record<string, string>) => Promise<{
+        data: { id: string; name: string; username: string; email: string }[] | null
+        error: { message: string } | null
+      }>
+    }).rpc('lookup_user_for_academy', { p_query: query })
+
+    if (rpcErr) { setAddMsg(`⚠️ ${rpcErr.message}`); setAdding(false); return }
+    const found = results ?? []
+    if (found.length === 0) {
+      setAddMsg(`⚠️ Nenhum usuário encontrado para "${query}". O aluno precisa ter conta no Belt Rise.`)
       setAdding(false); return
     }
-    await (supabase.from('academy_members') as ReturnType<typeof supabase.from>).upsert({
+    // Exact match preferred; otherwise take first result
+    const exact = found.find(f =>
+      f.username?.toLowerCase() === query.toLowerCase() ||
+      f.email?.toLowerCase()    === query.toLowerCase()
+    )
+    const profile = exact ?? found[0]
+
+    // Already a member?
+    if (students.some(s => s.id === profile.id)) {
+      setAddMsg(`⚠️ ${profile.name} já está cadastrado nesta academia.`)
+      setAdding(false); return
+    }
+
+    const { error } = await (supabase.from('academy_members') as ReturnType<typeof supabase.from>).upsert({
       academy_id: academyId, user_id: profile.id, role: 'student', active: true,
     } as never)
-    setAddMsg(`✅ ${profile.name} adicionado!`)
+    if (error) {
+      setAddMsg(`⚠️ ${error.message}`)
+      setAdding(false); return
+    }
+    setAddMsg(`✅ ${profile.name} (@${profile.username}) adicionado!`)
     setAddEmail(''); setAdding(false)
-    setTimeout(() => window.location.reload(), 1000)
+    setTimeout(() => window.location.reload(), 1200)
   }
 
   async function updateStudent(studentId: string, field: string, value: string | boolean) {
@@ -144,13 +185,48 @@ export default function AlunosPage() {
       </div>
 
       <div className="px-4 py-4 space-y-4 max-w-2xl mx-auto pb-10">
+        {/* Capacity indicator */}
+        {(() => {
+          const activeCount = students.filter(s => s.member_active && s.member_role === 'student').length
+          const pct = Math.min(100, (activeCount / studentLimit) * 100)
+          const atLimit = activeCount >= studentLimit
+          return (
+            <div className="bg-[#1A1A1A] rounded-2xl p-4 border border-[#2A2A2A]">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">Capacidade</p>
+                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                  atLimit ? 'bg-red-900/40 text-red-400' :
+                  pct > 80 ? 'bg-yellow-900/40 text-yellow-400' :
+                  'bg-green-900/40 text-green-400'
+                }`}>
+                  Plano {academyPlan.toUpperCase()}
+                </span>
+              </div>
+              <div className="flex items-end justify-between mb-1.5">
+                <span className="text-white font-black text-2xl">
+                  {activeCount}<span className="text-base text-[#555]"> / {studentLimit === 9999 ? '∞' : studentLimit}</span>
+                </span>
+                <span className="text-[#555] text-xs">alunos ativos</span>
+              </div>
+              <div className="h-2 bg-[#222] rounded-full overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${
+                  atLimit ? 'bg-red-500' : pct > 80 ? 'bg-yellow-500' : 'bg-[#CC0000]'
+                }`} style={{ width: `${pct}%` }} />
+              </div>
+              {atLimit && (
+                <p className="text-[10px] text-red-400 mt-2">⚠️ Limite atingido. Fale com o owner para upgrade.</p>
+              )}
+            </div>
+          )
+        })()}
+
         {/* Add student */}
         <div className="bg-[#1A1A1A] rounded-2xl p-4 border border-[#2A2A2A]">
           <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">+ Adicionar aluno</p>
           <div className="flex gap-2">
             <input
               className="flex-1 bg-[#222] border border-[#333] rounded-xl px-3 py-2 text-white text-sm outline-none placeholder:text-[#444] focus:border-[#CC0000]"
-              placeholder="username do aluno"
+              placeholder="@username ou email@dominio.com"
               value={addEmail}
               onChange={e => setAddEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addStudent()}
@@ -161,6 +237,7 @@ export default function AlunosPage() {
             </button>
           </div>
           {addMsg && <p className="text-sm mt-2 text-[#AAA]">{addMsg}</p>}
+          <p className="text-[10px] text-[#555] mt-2">Busque pelo @username ou pelo email do aluno (precisa ter conta no Belt Rise).</p>
         </div>
 
         {/* Students list */}

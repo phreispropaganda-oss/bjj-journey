@@ -53,8 +53,10 @@ export default function NovoTreinoPage() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [techSearch, setTechSearch] = useState('')
   const [showTechPicker, setShowTechPicker] = useState(false)
+  const [visibility, setVisibility] = useState<'public' | 'followers' | 'private'>('followers')
 
   const [saving, setSaving] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState('')
   const [error, setError] = useState('')
   const [profile, setProfile] = useState<{ belt_id: string; academy_name: string | null; weight_kg: number | null } | null>(null)
   const [academies, setAcademies] = useState<{ id: string; name: string }[]>([])
@@ -92,21 +94,49 @@ export default function NovoTreinoPage() {
     setTechniques(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])
   }
 
+  const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
+
   function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
     if (!f) return
+    if (!ALLOWED_TYPES.includes(f.type) && !f.type.startsWith('image/')) {
+      setError('Apenas imagens são aceitas (JPG, PNG, WEBP)'); return
+    }
     if (f.size > 5 * 1024 * 1024) { setError('Foto deve ter no máximo 5MB'); return }
+    setError('')
     setPhotoFile(f)
     setPhotoPreview(URL.createObjectURL(f))
+  }
+
+  // Resize image to max 1200px wide / 1200px tall, JPEG 85% quality
+  async function compressImage(file: File): Promise<Blob> {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    await new Promise<void>((res, rej) => { img.onload = () => res(); img.onerror = () => rej(); img.src = url })
+    URL.revokeObjectURL(url)
+    const maxDim = 1200
+    let { width, height } = img
+    if (width > height && width > maxDim) { height = (height * maxDim) / width; width = maxDim }
+    else if (height > maxDim) { width = (width * maxDim) / height; height = maxDim }
+    const canvas = document.createElement('canvas')
+    canvas.width = width; canvas.height = height
+    const ctx = canvas.getContext('2d')!
+    ctx.drawImage(img, 0, 0, width, height)
+    return await new Promise<Blob>((res, rej) =>
+      canvas.toBlob(b => b ? res(b) : rej(), 'image/jpeg', 0.85)
+    )
   }
 
   async function uploadPhoto(userId: string): Promise<string | null> {
     if (!photoFile) return null
     const supabase = createClient()
-    const ext = photoFile.name.split('.').pop()
-    const path = `${userId}/${Date.now()}.${ext}`
+    let blob: Blob = photoFile
+    try { blob = await compressImage(photoFile) } catch { /* fallback to original */ }
+    const path = `${userId}/${Date.now()}.jpg`
     const { error: upErr } = await supabase.storage
-      .from('training-photos').upload(path, photoFile, { cacheControl: '3600', upsert: false })
+      .from('training-photos').upload(path, blob, {
+        cacheControl: '3600', upsert: false, contentType: 'image/jpeg',
+      })
     if (upErr) return null
     const { data: { publicUrl } } = supabase.storage.from('training-photos').getPublicUrl(path)
     return publicUrl
@@ -125,7 +155,14 @@ export default function NovoTreinoPage() {
     const academyId = (mem as { academy_id: string } | null)?.academy_id ?? null
     const finalAcademy = customAcademy.trim() || academyName
 
-    const photoUrl = await uploadPhoto(user.id)
+    // Upload photo first (may take time, show progress separately)
+    let photoUrl: string | null = null
+    if (photoFile) {
+      setUploadProgress('Enviando foto...')
+      photoUrl = await uploadPhoto(user.id)
+      setUploadProgress('')
+    }
+
     const trainedAt = new Date(`${date}T${new Date().toTimeString().slice(0, 8)}`).toISOString()
 
     const { data: inserted, error: err } = await (supabase.from('training_sessions') as ReturnType<typeof supabase.from>)
@@ -143,19 +180,37 @@ export default function NovoTreinoPage() {
         feeling,
         note:         note || null,
         photo_url:    photoUrl,
+        visibility,
+        is_public:    visibility === 'public',
       } as never)
       .select('id')
       .single()
 
+    if (err || !inserted) {
+      setError(err?.message ?? 'Erro ao salvar')
+      setSaving(false)
+      return
+    }
+
+    const sessionId = (inserted as { id: string }).id
+
+    // Confirm session is readable before navigating (avoids 404 race)
+    const { data: confirm } = await supabase
+      .from('training_sessions').select('id').eq('id', sessionId).maybeSingle()
+
+    if (!confirm) {
+      setError('Treino salvo mas não pôde ser lido. Recarregue a página.')
+      setSaving(false)
+      return
+    }
+
+    // Update profile academy_name (non-blocking)
     if (finalAcademy && finalAcademy !== profile?.academy_name) {
-      await (supabase.from('profiles') as ReturnType<typeof supabase.from>)
+      void (supabase.from('profiles') as ReturnType<typeof supabase.from>)
         .update({ academy_name: finalAcademy } as never).eq('id', user.id)
     }
 
     setSaving(false)
-    if (err || !inserted) { setError(err?.message ?? 'Erro ao salvar'); return }
-
-    const sessionId = (inserted as { id: string }).id
     router.push(`/treino/${sessionId}/share`)
   }
 
@@ -413,6 +468,29 @@ export default function NovoTreinoPage() {
             onChange={e => setNote(e.target.value)} />
         </div>
 
+        {/* Visibility */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <p className="field-label mb-3">Quem pode ver este treino?</p>
+          <div className="grid grid-cols-3 gap-2">
+            {([
+              { v: 'public',    icon: '🌍', label: 'Global',    desc: 'Feed público' },
+              { v: 'followers', icon: '👥', label: 'Seguidores', desc: 'Quem te segue' },
+              { v: 'private',   icon: '🔒', label: 'Privado',   desc: 'Só você' },
+            ] as const).map(opt => (
+              <button key={opt.v} onClick={() => setVisibility(opt.v)}
+                className={`py-3 px-2 rounded-xl border-2 text-center transition-all ${
+                  visibility === opt.v
+                    ? 'border-[#CC0000] bg-[#FFF0F0]'
+                    : 'border-[#E5E5E5] bg-white'
+                }`}>
+                <div className="text-lg mb-1">{opt.icon}</div>
+                <p className={`text-xs font-black ${visibility === opt.v ? 'text-[#CC0000]' : 'text-[#555]'}`}>{opt.label}</p>
+                <p className="text-[10px] text-[#AAA] mt-0.5">{opt.desc}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 text-red-600 font-bold text-sm">
             ⚠️ {error}
@@ -423,7 +501,7 @@ export default function NovoTreinoPage() {
       <div className="bg-white border-t border-[#E5E5E5] px-4 py-3 sticky bottom-0">
         <button onClick={save} disabled={saving || !duration}
           className="btn-primary disabled:opacity-40">
-          {saving ? 'Salvando...' : '🥋 Salvar treino'}
+          {saving ? (uploadProgress || 'Salvando...') : '🥋 Salvar treino'}
         </button>
       </div>
     </div>

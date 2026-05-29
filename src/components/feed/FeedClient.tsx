@@ -3,6 +3,8 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { toggleOss, postComment } from '@/app/feed/actions'
+import { deleteTrainingSession, updateSessionVisibility } from '@/app/treino/actions'
+import { useRouter } from 'next/navigation'
 
 interface ProfileLite {
   id: string; name: string; username: string;
@@ -14,10 +16,11 @@ interface CommentItem {
 }
 interface Item {
   session: {
-    id: string; type: string; duration_min: number; trained_at: string;
+    id: string; user_id: string; type: string; duration_min: number; trained_at: string;
     instructor: string | null; techniques: string[];
     rolls: number; subs_for: number; subs_against: number;
     feeling: number | null; note: string | null; photo_url: string | null;
+    visibility?: 'public' | 'followers' | 'private';
   };
   author?: ProfileLite;
   kudosCount: number;
@@ -50,11 +53,16 @@ export default function FeedClient({
   beltColor: Record<string, string>
   beltName: Record<string, string>
 }) {
+  const router = useRouter()
   const [optimisticOssed, setOptimisticOssed] = useState(item.iOssed)
   const [optimisticCount, setOptimisticCount] = useState(item.kudosCount)
   const [showComments, setShowComments] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
+  const [removed, setRemoved] = useState(false)
   const [comments, setComments] = useState(item.comments)
   const [newComment, setNewComment] = useState('')
+
+  const isAuthor = item.session.user_id === currentUserId
   const [pendingOss, startOssTransition] = useTransition()
   const [pendingComment, startCommentTransition] = useTransition()
 
@@ -88,6 +96,31 @@ export default function FeedClient({
 
   const initial = (a?.name?.charAt(0) ?? '?').toUpperCase()
 
+  async function handleDelete() {
+    if (!confirm('Apagar este treino? Esta ação não pode ser desfeita.')) return
+    const r = await deleteTrainingSession(item.session.id)
+    if (r.error) { alert('Erro ao apagar: ' + r.error); return }
+    setRemoved(true)
+    setShowMenu(false)
+    router.refresh()
+  }
+
+  async function handleVisibility(v: 'public' | 'followers' | 'private') {
+    setShowMenu(false)
+    const r = await updateSessionVisibility(item.session.id, v)
+    if (r.error) { alert('Erro: ' + r.error); return }
+    router.refresh()
+  }
+
+  if (removed) return null
+
+  const currentVisibility = item.session.visibility ?? 'followers'
+  const VISIBILITY_META: Record<string, { icon: string; label: string }> = {
+    public:    { icon: '🌍', label: 'Global' },
+    followers: { icon: '👥', label: 'Seguidores' },
+    private:   { icon: '🔒', label: 'Privado' },
+  }
+
   return (
     <article className="bg-white rounded-2xl shadow-sm overflow-hidden">
       {/* Header: author + time */}
@@ -105,10 +138,47 @@ export default function FeedClient({
           <div className="flex items-center gap-1.5 text-[11px] text-[#888]">
             <div className="w-2.5 h-1.5 rounded-sm border border-black/10" style={{ background: beltC }} />
             <span>Faixa {beltN}</span>
-            {a.academy_name && <span>· {a.academy_name}</span>}
+            {a.academy_name && <span className="truncate">· {a.academy_name}</span>}
             <span>· {timeAgo(item.session.trained_at)}</span>
+            {isAuthor && (
+              <span className="ml-1" title={VISIBILITY_META[currentVisibility].label}>
+                · {VISIBILITY_META[currentVisibility].icon}
+              </span>
+            )}
           </div>
         </div>
+
+        {isAuthor && (
+          <div className="relative flex-shrink-0">
+            <button onClick={() => setShowMenu(s => !s)}
+              className="w-8 h-8 rounded-full hover:bg-[#F2F0ED] flex items-center justify-center text-[#888] font-black">
+              ⋯
+            </button>
+            {showMenu && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
+                <div className="absolute right-0 top-10 w-52 bg-white rounded-2xl shadow-xl border border-[#E5E5E5] z-40 overflow-hidden">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-[#AAA] px-3 pt-3 pb-1">Visibilidade</p>
+                  {(['public','followers','private'] as const).map(v => (
+                    <button key={v} onClick={() => handleVisibility(v)}
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[#F8F7F5] ${
+                        currentVisibility === v ? 'bg-[#FFF0F0]' : ''
+                      }`}>
+                      <span>{VISIBILITY_META[v].icon}</span>
+                      <span className="font-bold text-[#0D0D0D]">{VISIBILITY_META[v].label}</span>
+                      {currentVisibility === v && <span className="ml-auto text-[#CC0000] text-xs">✓</span>}
+                    </button>
+                  ))}
+                  <div className="border-t border-[#F2F0ED]" />
+                  <button onClick={handleDelete}
+                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 font-bold">
+                    <span>🗑</span> Apagar treino
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Type badge + duration */}

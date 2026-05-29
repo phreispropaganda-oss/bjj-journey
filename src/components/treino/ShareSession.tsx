@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { BELTS } from '@/lib/curriculum'
+import { generateStoryImage, shareToInstagramStories } from '@/lib/storyImage'
 
 const TYPE_META: Record<string, { emoji: string; label: string }> = {
   gi:          { emoji:'🥋', label:'Gi' },
@@ -30,9 +31,43 @@ interface Props {
 
 export default function ShareSession({ session, profile, calories, profileUrl }: Props) {
   const [showPhoto, setShowPhoto] = useState(!!session.photo_url)
+  const [generatingStory, setGeneratingStory] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
 
   const belt = BELTS.find(b => b.id === profile.belt_id) ?? BELTS[0]
+
+  async function shareInstagramStory() {
+    const tm = TYPE_META[session.type] ?? { emoji: '🥋', label: session.type }
+    setGeneratingStory(true)
+    try {
+      const blob = await generateStoryImage({
+        authorName:    profile.name,
+        authorInitial: (profile.name?.charAt(0) ?? '?').toUpperCase(),
+        avatarUrl:     profile.avatar_url,
+        beltColor:     belt.color,
+        beltName:      belt.name,
+        degrees:       profile.degrees,
+        typeEmoji:     tm.emoji,
+        typeLabel:     tm.label,
+        durationMin:   session.duration_min,
+        calories,
+        rolls:         session.rolls,
+        subsFor:       session.subs_for,
+        subsAgainst:   session.subs_against,
+        feeling:       session.feeling,
+        techniques:    session.techniques,
+        photoUrl:      showPhoto ? session.photo_url : null,
+        appUrl:        profileUrl.split('/profile/')[0],
+        username:      profile.username,
+      })
+      const r = await shareToInstagramStories(blob, `belt-rise-${session.id}.jpg`)
+      if (r.downloaded) alert('Imagem 9:16 baixada! Abra o Instagram > Stories e use a foto da galeria.')
+    } catch (err) {
+      alert('Erro ao gerar imagem: ' + (err as Error).message)
+    } finally {
+      setGeneratingStory(false)
+    }
+  }
   const typeMeta = TYPE_META[session.type] ?? { emoji: '🥋', label: session.type }
   const initial = (profile.name?.charAt(0) ?? '?').toUpperCase()
   const trainedDate = new Date(session.trained_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })
@@ -224,6 +259,14 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
         {/* Share buttons */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Compartilhar nas redes</p>
+
+          {/* Instagram Stories — destaque */}
+          <button onClick={shareInstagramStory} disabled={generatingStory}
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white font-black rounded-2xl py-3.5 mb-2 disabled:opacity-60 transition-opacity">
+            <span className="text-xl">📸</span>
+            <span className="text-sm">{generatingStory ? 'Gerando imagem 9:16...' : 'Instagram Stories'}</span>
+          </button>
+
           <div className="grid grid-cols-3 gap-2 mb-2">
             <button onClick={shareWhatsApp}
               className="flex flex-col items-center gap-1.5 bg-green-500 text-white font-black rounded-2xl py-3 hover:bg-green-600 transition-colors">
@@ -242,7 +285,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
             </button>
           </div>
           <p className="text-[10px] text-[#AAA] text-center pt-2">
-            Print da tela ou compartilhe diretamente para mostrar seu treino
+            O botão Instagram gera uma imagem 9:16 perfeita para Stories
           </p>
         </div>
 

@@ -22,6 +22,7 @@ export default async function DashboardPage() {
     { data: attendance },
     { data: completions },
     { data: achievements },
+    { data: sessionsRaw },
   ] = await Promise.all([
     supabase.from('attendance').select('date').eq('user_id', user.id)
       .order('date', { ascending: false }).limit(90),
@@ -30,7 +31,13 @@ export default async function DashboardPage() {
     supabase.from('achievements')
       .select('badge_id, unlocked_at').eq('user_id', user.id)
       .order('unlocked_at', { ascending: false }),
+    supabase.from('training_sessions')
+      .select('id, type, duration_min, trained_at')
+      .eq('user_id', user.id)
+      .gte('trained_at', new Date(Date.now() - 90 * 86400000).toISOString())
+      .order('trained_at', { ascending: false }),
   ])
+  const sessions = (sessionsRaw ?? []) as { id: string; type: string; duration_min: number; trained_at: string }[]
 
   // Recalculate streak from attendance
   const sortedDates = (attendance ?? [])
@@ -60,6 +67,7 @@ export default async function DashboardPage() {
       attendance={(attendance ?? []) as { date: string }[]}
       completions={(completions ?? []) as { belt_id: string; module_id: string; technique_name: string }[]}
       achievements={(achievements ?? []) as { badge_id: string; unlocked_at: string }[]}
+      sessions={sessions}
     />
   )
 }

@@ -9,9 +9,12 @@ export default function NovaAcademiaPage() {
   const router = useRouter()
   const [form, setForm] = useState({
     name: '', email: '', phone: '', city: '',
-    plan: 'free', student_limit: 30, billing_email: '',
+    plan: 'free', student_limit: 10, billing_email: '',
     admin_search: '',
   })
+
+  // Plan limits — match DB function plan_student_limit()
+  const PLAN_LIMITS: Record<string, number> = { free: 10, pro: 100, enterprise: 9999 }
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -30,8 +33,8 @@ export default function NovaAcademiaPage() {
     check()
   }, [router])
 
-  function set(k: string, v: string | number) {
-    setForm(f => ({ ...f, [k]: v }))
+  function set(k: string, v: string | number, extraLimit?: number) {
+    setForm(f => ({ ...f, [k]: v, ...(extraLimit !== undefined ? { student_limit: extraLimit } : {}) }))
   }
 
   async function save() {
@@ -166,28 +169,26 @@ export default function NovaAcademiaPage() {
           <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Plano</p>
           <div className="grid grid-cols-3 gap-2 mb-3">
             {[
-              { v: 'free',       label: 'Free',       desc: 'Até 30 alunos' },
-              { v: 'pro',        label: 'Pro',        desc: 'Até 100 alunos' },
-              { v: 'enterprise', label: 'Enterprise', desc: 'Ilimitado' },
+              { v: 'free',       label: 'Free',       desc: 'Até 10 alunos',  priceMonth: 'Grátis' },
+              { v: 'pro',        label: 'Pro',        desc: 'Até 100 alunos', priceMonth: 'R$99/mês' },
+              { v: 'enterprise', label: 'Enterprise', desc: 'Ilimitado',      priceMonth: 'Sob consulta' },
             ].map(p => (
-              <button key={p.v} onClick={() => set('plan', p.v)}
-                className={`py-2.5 px-2 rounded-xl border-2 text-center transition-all ${
+              <button key={p.v}
+                onClick={() => set('plan', p.v, PLAN_LIMITS[p.v])}
+                className={`py-3 px-2 rounded-xl border-2 text-center transition-all ${
                   form.plan === p.v
                     ? 'border-[#CC0000] bg-[#CC0000]/10'
                     : 'border-[#333] bg-[#222]'
                 }`}>
                 <p className={`text-xs font-black ${form.plan === p.v ? 'text-[#CC0000]' : 'text-white'}`}>{p.label}</p>
-                <p className="text-[10px] text-[#555] mt-0.5">{p.desc}</p>
+                <p className="text-[10px] text-[#555] mt-1">{p.desc}</p>
+                <p className={`text-[10px] mt-1 font-bold ${form.plan === p.v ? 'text-[#CC0000]' : 'text-[#888]'}`}>{p.priceMonth}</p>
               </button>
             ))}
           </div>
-          <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider text-[#555] block mb-1">Limite de alunos</label>
-            <input type="number" min={1} max={9999}
-              className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-[#CC0000]"
-              value={form.student_limit}
-              onChange={e => set('student_limit', parseInt(e.target.value) || 30)}
-            />
+          <div className="bg-[#222] rounded-xl px-3 py-2.5 text-[#888] text-xs flex items-center gap-2">
+            <span>📊</span>
+            <span>Limite definido automaticamente: <strong className="text-white">{form.student_limit === 9999 ? 'ilimitado' : form.student_limit + ' alunos'}</strong></span>
           </div>
         </div>
 

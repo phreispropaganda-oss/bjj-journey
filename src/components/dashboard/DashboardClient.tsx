@@ -5,6 +5,10 @@ import { BELTS, getTotalTechniques, getCurriculumByBelt } from '@/lib/curriculum
 import { getXPLevel, getXPProgress } from '@/store/user'
 import BottomNav from '@/components/ui/BottomNav'
 import NotificationBell from '@/components/ui/NotificationBell'
+import ActivityRings from '@/components/dashboard/charts/ActivityRings'
+import MinutesBarChart from '@/components/dashboard/charts/MinutesBarChart'
+import TypeBreakdown from '@/components/dashboard/charts/TypeBreakdown'
+import StreakHeatmap from '@/components/dashboard/charts/StreakHeatmap'
 import type { Database } from '@/lib/supabase/types'
 import type { BeltId } from '@/lib/supabase/types'
 
@@ -15,6 +19,7 @@ interface Props {
   attendance: { date: string }[]
   completions: { belt_id: string; module_id: string; technique_name: string }[]
   achievements: { badge_id: string; unlocked_at: string }[]
+  sessions: { id: string; type: string; duration_min: number; trained_at: string }[]
 }
 
 // Badge definitions
@@ -51,31 +56,6 @@ function BeltBar({ beltId, degrees }: { beltId: string; degrees: number }) {
         <div key={i} className="w-1.5 h-[65%] bg-white/70 rounded-sm mr-0.5" />
       ))}
       <div className="w-3 h-full bg-black/80" />
-    </div>
-  )
-}
-
-function MiniHeatmap({ attendance }: { attendance: { date: string }[] }) {
-  const today = new Date()
-  const attendSet = new Set(attendance.map(a => a.date))
-  const days: { date: string; present: boolean; isToday: boolean }[] = []
-  for (let i = 34; i >= 0; i--) {
-    const d = new Date(today)
-    d.setDate(today.getDate() - i)
-    const ds = d.toISOString().split('T')[0]
-    days.push({ date: ds, present: attendSet.has(ds), isToday: i === 0 })
-  }
-  return (
-    <div className="flex gap-0.5 flex-wrap">
-      {days.map(d => (
-        <div key={d.date}
-          title={d.date}
-          className={`w-4 h-4 rounded-sm ${
-            d.present ? 'bg-[#CC0000]' :
-            d.isToday ? 'bg-[#FFCCCC] border border-[#CC0000]' :
-            'bg-[#F2F0ED]'
-          }`} />
-      ))}
     </div>
   )
 }
@@ -141,7 +121,7 @@ function NextTechniqueCard({ beltId, completions }: {
   )
 }
 
-export function DashboardClient({ profile, attendance, completions, achievements }: Props) {
+export function DashboardClient({ profile, attendance, completions, achievements, sessions }: Props) {
   const belt    = BELTS.find(b => b.id === profile.belt_id) ?? BELTS[0]
   const total   = getTotalTechniques(profile.belt_id as BeltId)
   const done    = completions.filter(c => c.belt_id === profile.belt_id).length
@@ -160,6 +140,11 @@ export function DashboardClient({ profile, attendance, completions, achievements
   const weekTrains = attendance.filter(a => new Date(a.date) >= weekStart).length
 
   const trainedToday = attendance.some(a => a.date === today.toISOString().split('T')[0])
+
+  // Activity Rings metrics
+  const weekMinutes = sessions
+    .filter(s => new Date(s.trained_at) >= weekStart)
+    .reduce((sum, s) => sum + (s.duration_min ?? 0), 0)
 
   return (
     <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
@@ -273,23 +258,32 @@ export function DashboardClient({ profile, attendance, completions, achievements
         {/* Next technique */}
         <NextTechniqueCard beltId={profile.belt_id} completions={completions} />
 
-        {/* Mini attendance heatmap */}
-        <div className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">Últimos 35 dias</p>
-            <Link href="/calendar" className="text-[#CC0000] text-xs font-bold">Ver tudo →</Link>
+        {/* Activity Rings — Apple Fitness style weekly goals */}
+        <div className="mb-3">
+          <ActivityRings
+            weekMinutes={weekMinutes}
+            weekTrainings={weekTrains}
+            currentStreak={streak}
+          />
+        </div>
+
+        {/* Minutes bar chart — 30 days workload */}
+        {sessions.length > 0 && (
+          <div className="mb-3">
+            <MinutesBarChart sessions={sessions} />
           </div>
-          <MiniHeatmap attendance={attendance} />
-          <div className="flex items-center gap-3 mt-2.5">
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-sm bg-[#CC0000]" />
-              <span className="text-[10px] text-[#AAA]">treinou</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-sm bg-[#F2F0ED]" />
-              <span className="text-[10px] text-[#AAA]">não treinou</span>
-            </div>
+        )}
+
+        {/* Type breakdown */}
+        {sessions.length >= 3 && (
+          <div className="mb-3">
+            <TypeBreakdown sessions={sessions} />
           </div>
+        )}
+
+        {/* 90-day heatmap */}
+        <div className="mb-3">
+          <StreakHeatmap attendance={attendance} trainingSessions={sessions} />
         </div>
 
         {/* Registrar treino — CTA principal */}

@@ -24,6 +24,7 @@ interface SessionRow {
   trained_at: string; instructor: string | null; techniques: string[];
   rolls: number; subs_for: number; subs_against: number;
   feeling: number | null; note: string | null; photo_url: string | null;
+  visibility?: 'public' | 'followers' | 'private';
 }
 interface ProfileLite {
   id: string; name: string; username: string;
@@ -47,7 +48,7 @@ export default async function FeedPage() {
   if (visibleUserIds.length > 1) {
     const { data } = await supabase
       .from('training_sessions')
-      .select('id, user_id, type, duration_min, trained_at, instructor, techniques, rolls, subs_for, subs_against, feeling, note, photo_url')
+      .select('id, user_id, type, duration_min, trained_at, instructor, techniques, rolls, subs_for, subs_against, feeling, note, photo_url, visibility')
       .in('user_id', visibleUserIds)
       .order('trained_at', { ascending: false })
       .limit(30)
@@ -59,8 +60,8 @@ export default async function FeedPage() {
   if (discoverMode) {
     const { data } = await supabase
       .from('training_sessions')
-      .select('id, user_id, type, duration_min, trained_at, instructor, techniques, rolls, subs_for, subs_against, feeling, note, photo_url')
-      .eq('is_public', true)
+      .select('id, user_id, type, duration_min, trained_at, instructor, techniques, rolls, subs_for, subs_against, feeling, note, photo_url, visibility')
+      .eq('visibility', 'public')
       .order('trained_at', { ascending: false })
       .limit(30)
     sessions = (data ?? []) as SessionRow[]

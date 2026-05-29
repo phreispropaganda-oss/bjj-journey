@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { createChallenge, toggleChallengeActive, deleteChallenge } from '@/app/owner/desafios/actions'
 
 const METRICS = [
   { v: 'training_count',   label: 'Treinos completados',  unit: 'treinos' },
@@ -47,29 +47,22 @@ export default function DesafiosManager({
     setForm(f => ({ ...f, [k]: v }))
   }
 
-  async function createChallenge() {
+  async function handleCreate() {
     if (!form.title.trim()) { setFeedback('⚠️ Título obrigatório'); return }
     if (form.target < 1) { setFeedback('⚠️ Meta inválida'); return }
     startTransition(async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      const payload = {
-        title: form.title.trim(),
-        description: form.description.trim() || form.title.trim(),
+      const r = await createChallenge({
+        title: form.title,
+        description: form.description,
         emoji: form.emoji,
         metric: form.metric,
         target: form.target,
-        scope: form.scope,
+        scope: form.scope as 'global' | 'academy',
         academy_id: form.scope === 'academy' ? form.academy_id : null,
         starts_at: form.starts_at,
         ends_at: form.ends_at,
-        active: true,
-        created_by: user.id,
-      }
-      const { error } = await (supabase.from('challenges') as ReturnType<typeof supabase.from>)
-        .insert(payload as never)
-      if (error) { setFeedback(`⚠️ ${error.message}`); return }
+      })
+      if ('error' in r && r.error) { setFeedback(`⚠️ ${r.error}`); return }
       setFeedback('✅ Desafio criado!')
       setShowForm(false)
       router.refresh()
@@ -77,20 +70,19 @@ export default function DesafiosManager({
     })
   }
 
-  async function toggleActive(c: Challenge) {
+  async function handleToggleActive(c: Challenge) {
     startTransition(async () => {
-      const supabase = createClient()
-      await (supabase.from('challenges') as ReturnType<typeof supabase.from>)
-        .update({ active: !c.active } as never).eq('id', c.id)
+      const r = await toggleChallengeActive(c.id, !c.active)
+      if ('error' in r && r.error) { setFeedback(`⚠️ ${r.error}`); return }
       router.refresh()
     })
   }
 
-  async function deleteChallenge(c: Challenge) {
+  async function handleDelete(c: Challenge) {
     if (!confirm(`Excluir desafio "${c.title}"?`)) return
     startTransition(async () => {
-      const supabase = createClient()
-      await supabase.from('challenges' as never).delete().eq('id', c.id)
+      const r = await deleteChallenge(c.id)
+      if ('error' in r && r.error) { setFeedback(`⚠️ ${r.error}`); return }
       router.refresh()
     })
   }
@@ -211,7 +203,7 @@ export default function DesafiosManager({
             )}
           </div>
 
-          <button onClick={createChallenge} disabled={pending}
+          <button onClick={handleCreate} disabled={pending}
             className="w-full bg-[#CC0000] text-white font-black py-3 rounded-full text-sm disabled:opacity-50 mt-2">
             {pending ? 'Criando...' : '✓ Criar desafio'}
           </button>
@@ -242,14 +234,14 @@ export default function DesafiosManager({
                 </p>
               </div>
               <div className="flex gap-1 flex-shrink-0">
-                <button onClick={() => toggleActive(c)} disabled={pending}
+                <button onClick={() => handleToggleActive(c)} disabled={pending}
                   className={`text-[10px] font-bold px-2 py-1 rounded-md ${
                     c.active ? 'bg-green-900/30 text-green-400 border border-green-700'
                     : 'bg-yellow-900/30 text-yellow-400 border border-yellow-700'
                   }`}>
                   {c.active ? 'Ativo' : 'Pausado'}
                 </button>
-                <button onClick={() => deleteChallenge(c)} disabled={pending}
+                <button onClick={() => handleDelete(c)} disabled={pending}
                   className="text-[10px] font-bold px-2 py-1 rounded-md bg-red-900/30 text-red-400 border border-red-700">
                   🗑
                 </button>

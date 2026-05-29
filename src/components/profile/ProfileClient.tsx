@@ -58,21 +58,51 @@ export default function ProfileClient({
   const [avatarUrl,   setAvatarUrl]   = useState(profile.avatar_url ?? null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
+  async function compressAvatar(file: File): Promise<Blob> {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    await new Promise<void>((res, rej) => { img.onload = () => res(); img.onerror = () => rej(); img.src = url })
+    URL.revokeObjectURL(url)
+    // Square crop centered
+    const size = Math.min(img.width, img.height, 600)
+    const canvas = document.createElement('canvas')
+    canvas.width = size; canvas.height = size
+    const ctx = canvas.getContext('2d')!
+    const sx = (img.width  - Math.min(img.width, img.height)) / 2
+    const sy = (img.height - Math.min(img.width, img.height)) / 2
+    ctx.drawImage(img, sx, sy, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, size, size)
+    return await new Promise<Blob>((res, rej) =>
+      canvas.toBlob(b => b ? res(b) : rej(), 'image/jpeg', 0.85)
+    )
+  }
+
   async function uploadAvatar(file: File) {
-    if (file.size > 3 * 1024 * 1024) { setError('Avatar deve ter no máximo 3MB'); return }
+    // Validate type
+    if (!file.type.startsWith('image/')) {
+      setError('Apenas imagens são aceitas'); return
+    }
+    if (file.size > 5 * 1024 * 1024) { setError('Avatar deve ter no máximo 5MB'); return }
     setUploadingAvatar(true); setError('')
-    const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const path = `${profile.id}/avatar-${Date.now()}.${ext}`
-    const { error: upErr } = await supabase.storage
-      .from('avatars').upload(path, file, { cacheControl: '3600', upsert: true })
-    if (upErr) { setError(`Erro upload: ${upErr.message}`); setUploadingAvatar(false); return }
-    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
-    await (supabase.from('profiles') as ReturnType<typeof supabase.from>)
-      .update({ avatar_url: publicUrl } as never).eq('id', profile.id)
-    setAvatarUrl(publicUrl)
-    setUploadingAvatar(false)
-    router.refresh()
+    try {
+      const supabase = createClient()
+      let blob: Blob = file
+      try { blob = await compressAvatar(file) } catch { /* keep original */ }
+      const path = `${profile.id}/avatar-${Date.now()}.jpg`
+      const { error: upErr } = await supabase.storage
+        .from('avatars').upload(path, blob, {
+          cacheControl: '3600', upsert: true, contentType: 'image/jpeg',
+        })
+      if (upErr) { setError(`Erro upload: ${upErr.message}`); return }
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+      // Cache-bust the URL so the new image shows immediately
+      const cacheBustedUrl = `${publicUrl}?v=${Date.now()}`
+      await (supabase.from('profiles') as ReturnType<typeof supabase.from>)
+        .update({ avatar_url: publicUrl } as never).eq('id', profile.id)
+      setAvatarUrl(cacheBustedUrl)
+      router.refresh()
+    } finally {
+      setUploadingAvatar(false)
+    }
   }
   const [saving,  setSaving]  = useState(false)
   const [saved,   setSaved]   = useState(false)
