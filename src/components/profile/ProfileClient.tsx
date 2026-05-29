@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { BELTS } from '@/lib/curriculum'
 import BottomNav from '@/components/ui/BottomNav'
 import { signOut } from '@/app/(auth)/login/actions'
+import SignalGraduation from './SignalGraduation'
 import type { Database } from '@/lib/supabase/types'
 import type { BeltId } from '@/lib/supabase/types'
 
@@ -24,18 +25,21 @@ const BADGES: Record<string, { emoji: string; name: string }> = {
 }
 
 interface Props {
-  profile: Profile
+  profile: Profile & { weight_kg?: number | null; height_cm?: number | null }
   achievements: { badge_id: string; unlocked_at: string }[]
   attendanceCount: number
   appUrl: string
   isOwner: boolean
   isAcademyAdmin: boolean
   academies: { id: string; name: string }[]
+  mostTrainedPosition: string | null
+  totalCalories: number
 }
 
 export default function ProfileClient({
   profile, achievements, attendanceCount, appUrl,
   isOwner, isAcademyAdmin, academies,
+  mostTrainedPosition, totalCalories,
 }: Props) {
   const router = useRouter()
   const belt = BELTS.find(b => b.id === profile.belt_id) ?? BELTS[0]
@@ -48,6 +52,8 @@ export default function ProfileClient({
   const [isPublic,    setIsPublic]    = useState(profile.is_public ?? false)
   const [academyName, setAcademyName] = useState(profile.academy_name ?? '')
   const [customAcad,  setCustomAcad]  = useState('')
+  const [weight,      setWeight]      = useState(profile.weight_kg ? String(profile.weight_kg) : '')
+  const [height,      setHeight]      = useState(profile.height_cm ? String(profile.height_cm) : '')
   const [saving,  setSaving]  = useState(false)
   const [saved,   setSaved]   = useState(false)
   const [error,   setError]   = useState('')
@@ -67,6 +73,8 @@ export default function ProfileClient({
         degrees,
         is_public:    isPublic,
         academy_name: finalAcademy,
+        weight_kg:    weight ? parseFloat(weight) : null,
+        height_cm:    height ? parseInt(height) : null,
       } as never)
       .eq('id', profile.id)
 
@@ -151,18 +159,29 @@ export default function ProfileClient({
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {[
-                { n: attendanceCount, l: 'Treinos' },
-                { n: profile.xp,     l: 'XP' },
-                { n: profile.streak, l: 'Sequência' },
+                { n: attendanceCount,                 l: 'Treinos'   },
+                { n: profile.streak,                  l: 'Sequência' },
+                { n: profile.xp,                      l: 'XP'        },
+                { n: totalCalories.toLocaleString(),  l: 'Kcal'      },
               ].map(s => (
                 <div key={s.l} className="text-center">
-                  <p className="text-white font-black text-xl leading-none">{s.n}</p>
-                  <p className="text-white/40 text-[10px] uppercase tracking-wider mt-1">{s.l}</p>
+                  <p className="text-white font-black text-base leading-none">{s.n}</p>
+                  <p className="text-white/40 text-[9px] uppercase tracking-wider mt-1">{s.l}</p>
                 </div>
               ))}
             </div>
+
+            {mostTrainedPosition && (
+              <div className="mt-3 bg-white/10 rounded-xl px-3 py-2 flex items-center gap-2">
+                <span className="text-lg">🥋</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white/40 text-[9px] uppercase tracking-wider">Posição mais treinada</p>
+                  <p className="text-white text-sm font-bold truncate">{mostTrainedPosition}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -240,11 +259,32 @@ export default function ProfileClient({
               />
             </div>
 
+            {/* Peso / altura */}
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#F2F0ED]">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Peso (kg)</label>
+                <input type="number" min={20} max={250} step={0.1}
+                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#CC0000]"
+                  placeholder="Ex: 78"
+                  value={weight}
+                  onChange={e => setWeight(e.target.value)} />
+                <p className="text-[10px] text-[#AAA] mt-1">Para cálculo de calorias</p>
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Altura (cm)</label>
+                <input type="number" min={100} max={250}
+                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#CC0000]"
+                  placeholder="Ex: 178"
+                  value={height}
+                  onChange={e => setHeight(e.target.value)} />
+              </div>
+            </div>
+
             {/* Public toggle */}
             <div className="flex items-center justify-between py-2 border-t border-[#F2F0ED]">
               <div>
                 <p className="text-sm font-bold">Perfil público</p>
-                <p className="text-xs text-[#AAA] mt-0.5">Permite compartilhar seu perfil</p>
+                <p className="text-xs text-[#AAA] mt-0.5">Aparece em rankings, feed e link de compartilhamento</p>
               </div>
               <button onClick={() => setIsPublic(p => !p)}
                 className={`w-12 h-6 rounded-full transition-colors relative flex-shrink-0 ${isPublic ? 'bg-[#CC0000]' : 'bg-[#E5E5E5]'}`}>
@@ -257,6 +297,16 @@ export default function ProfileClient({
               {saving ? 'Salvando...' : '✓ Salvar alterações'}
             </button>
           </div>
+        )}
+
+        {/* Sinalizar graduação — para todos */}
+        {!editing && (
+          <SignalGraduation
+            currentBelt={profile.belt_id}
+            currentDegrees={profile.degrees ?? 0}
+            username={profile.username}
+            appUrl={appUrl}
+          />
         )}
 
         {/* Achievements */}

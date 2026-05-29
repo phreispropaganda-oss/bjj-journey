@@ -49,7 +49,6 @@ export default async function RankingsPage({ searchParams }: Props) {
       : 'Você ainda não está em uma academia'
 
     if (myAcademyId) {
-      // Get all academy members
       const { data: members } = await supabase
         .from('academy_members').select('user_id')
         .eq('academy_id', myAcademyId).eq('active', true)
@@ -58,12 +57,15 @@ export default async function RankingsPage({ searchParams }: Props) {
       if (ids.length > 0) {
         const [{ data: lb }, { data: profs }] = await Promise.all([
           supabase.from('leaderboard_monthly').select('*').in('user_id', ids),
-          supabase.from('profiles').select('id, name, username, belt_id, degrees, academy_name, xp, streak').in('id', ids),
+          supabase.from('profiles')
+            .select('id, name, username, belt_id, degrees, academy_name, xp, streak, is_public, active')
+            .in('id', ids),
         ])
         const lbData = (lb ?? []) as { user_id: string; total_minutes: number; session_count: number }[]
         const lbMap = Object.fromEntries(lbData.map(l => [l.user_id, l]))
-        const profList = (profs ?? []) as ProfileLite[]
+        const profList = (profs ?? []) as (ProfileLite & { is_public: boolean; active: boolean })[]
         const enriched = profList
+          .filter(p => p.active && (p.is_public || p.id === user.id))
           .map(p => ({
             ...p,
             value: lbMap[p.id]?.total_minutes ?? 0,
@@ -79,25 +81,33 @@ export default async function RankingsPage({ searchParams }: Props) {
     }
   } else if (tab === 'streak') {
     title = '🔥 Top Sequências'
-    subtitle = 'Maiores streaks ativas da plataforma'
+    subtitle = 'Maiores streaks ativas — apenas perfis públicos'
     const { data: profs } = await supabase
-      .from('profiles').select('id, name, username, belt_id, degrees, academy_name, xp, streak')
+      .from('profiles')
+      .select('id, name, username, belt_id, degrees, academy_name, xp, streak, is_public, active')
       .gt('streak', 0)
+      .eq('active', true)
       .order('streak', { ascending: false })
-      .limit(50)
-    const profList = (profs ?? []) as ProfileLite[]
+      .limit(80)
+    const profList = ((profs ?? []) as (ProfileLite & { is_public: boolean; active: boolean })[])
+      .filter(p => p.is_public || p.id === user.id)
+      .slice(0, 50)
     ranking = profList.map((p, i) => ({
       ...p, value: p.streak, rank: i + 1, subLabel: `${p.streak} dias consecutivos`,
     }))
   } else {
     title = '⚡ Top XP'
-    subtitle = 'Maiores XP acumulados'
+    subtitle = 'Maiores XP acumulados — apenas perfis públicos'
     const { data: profs } = await supabase
-      .from('profiles').select('id, name, username, belt_id, degrees, academy_name, xp, streak')
+      .from('profiles')
+      .select('id, name, username, belt_id, degrees, academy_name, xp, streak, is_public, active')
       .gt('xp', 0)
+      .eq('active', true)
       .order('xp', { ascending: false })
-      .limit(50)
-    const profList = (profs ?? []) as ProfileLite[]
+      .limit(80)
+    const profList = ((profs ?? []) as (ProfileLite & { is_public: boolean; active: boolean })[])
+      .filter(p => p.is_public || p.id === user.id)
+      .slice(0, 50)
     ranking = profList.map((p, i) => ({
       ...p, value: p.xp, rank: i + 1, subLabel: `${p.xp.toLocaleString()} XP totais`,
     }))

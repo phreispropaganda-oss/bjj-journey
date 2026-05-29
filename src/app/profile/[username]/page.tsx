@@ -56,15 +56,33 @@ export default async function PublicProfilePage({ params }: Props) {
     { data: completionsRaw },
     { data: attendanceRaw },
     { data: promotionsRaw },
+    { data: caloriesRaw },
+    { data: mostTrainedRaw },
   ] = await Promise.all([
     supabasePublic.from('technique_completions').select('belt_id, module_id, technique_name, completed_at').eq('user_id', profile.id),
     supabasePublic.from('attendance').select('date').eq('user_id', profile.id).order('date', { ascending: false }).limit(90),
     supabasePublic.from('belt_promotions').select('from_belt, to_belt, to_degrees, promoted_at').eq('user_id', profile.id).order('promoted_at'),
+    (supabasePublic as unknown as { rpc: (n: string, p: Record<string, string>) => Promise<{ data: number | null }> })
+      .rpc('total_calories', { p_user_id: profile.id }),
+    (supabasePublic as unknown as { rpc: (n: string, p: Record<string, string>) => Promise<{ data: string | null }> })
+      .rpc('most_trained_position', { p_user_id: profile.id }),
   ])
 
   const completions = (completionsRaw ?? []) as { belt_id: string; module_id: string; technique_name: string; completed_at: string }[]
   const attendance  = (attendanceRaw ?? []) as { date: string }[]
   const promotions  = (promotionsRaw ?? []) as { from_belt: string; to_belt: string; to_degrees: number; promoted_at: string }[]
+  const calories    = (caloriesRaw as unknown as number) ?? 0
+  const mostTrained = (mostTrainedRaw as unknown as string) ?? null
+
+  // Total training minutes
+  const { data: sessionsRaw } = await supabasePublic
+    .from('training_sessions').select('duration_min').eq('user_id', profile.id)
+  const totalMinutes = ((sessionsRaw ?? []) as { duration_min: number }[])
+    .reduce((sum, s) => sum + (s.duration_min ?? 0), 0)
+  const totalHours = Math.round(totalMinutes / 60)
+
+  // Unique training days
+  const uniqueDays = new Set(attendance.map(a => a.date)).size
 
   const belt      = BELTS.find(b => b.id === profile.belt_id) ?? BELTS[0]
   const totalTech = getTotalTechniques(profile.belt_id as import('@/lib/supabase/types').BeltId)
@@ -162,19 +180,30 @@ export default async function PublicProfilePage({ params }: Props) {
             )}
           </div>
 
-          {/* Stats row */}
-          <div className="grid grid-cols-3 gap-2">
+          {/* Stats row — métricas BJJ */}
+          <div className="grid grid-cols-4 gap-2">
             {[
-              { n: attendance.length, l: 'Treinos' },
-              { n: profile.xp, l: 'XP Total' },
-              { n: doneTech, l: 'Técnicas' },
+              { n: uniqueDays,                  l: 'Dias treino' },
+              { n: `${totalHours}h`,            l: 'No tatame'   },
+              { n: calories.toLocaleString(),   l: 'Kcal'        },
+              { n: doneTech,                    l: 'Técnicas'    },
             ].map(s => (
               <div key={s.l} className="text-center">
-                <p className="text-white font-black text-xl leading-none">{s.n}</p>
-                <p className="text-white/40 text-[10px] uppercase tracking-wider mt-1">{s.l}</p>
+                <p className="text-white font-black text-base leading-none">{s.n}</p>
+                <p className="text-white/40 text-[9px] uppercase tracking-wider mt-1">{s.l}</p>
               </div>
             ))}
           </div>
+
+          {mostTrained && (
+            <div className="mt-3 bg-white/10 rounded-xl px-3 py-2 flex items-center gap-2">
+              <span className="text-lg">🥋</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-white/40 text-[9px] uppercase tracking-wider">Posição mais treinada</p>
+                <p className="text-white text-sm font-bold truncate">{mostTrained}</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
