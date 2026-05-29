@@ -2,6 +2,28 @@ export type BeltId = 'white' | 'blue' | 'purple' | 'brown' | 'black'
 export type PlanType = 'free' | 'pro' | 'academy'
 export type SubscriptionStatus = 'active' | 'canceled' | 'past_due' | 'trialing' | 'incomplete'
 
+// ── PRD v2 — Schema fundacional ──
+export type Modality =
+  | 'bjj' | 'muay_thai' | 'boxe' | 'judo' | 'wrestling'
+  | 'mma' | 'karate' | 'taekwondo' | 'grappling' | 'kickboxing'
+
+export type LogSource = 'manual' | 'geofencing' | 'academy_qr' | 'academy_admin'
+export type BeltStatus = 'declared' | 'pending' | 'verified' | 'rejected'
+export type Visibility = 'public' | 'followers' | 'private'
+
+export const MODALITY_META: Record<Modality, { label: string; emoji: string }> = {
+  bjj:        { label: 'Jiu-Jitsu',    emoji: '🥋' },
+  muay_thai:  { label: 'Muay Thai',    emoji: '🥊' },
+  boxe:       { label: 'Boxe',         emoji: '🥊' },
+  judo:       { label: 'Judô',         emoji: '🥋' },
+  wrestling:  { label: 'Wrestling',    emoji: '🤼' },
+  mma:        { label: 'MMA',          emoji: '🥋' },
+  karate:     { label: 'Karatê',       emoji: '🥋' },
+  taekwondo:  { label: 'Taekwondo',    emoji: '🥋' },
+  grappling:  { label: 'Grappling',    emoji: '🤼' },
+  kickboxing: { label: 'Kickboxing',   emoji: '🥊' },
+}
+
 export interface Database {
   public: {
     Tables: {
