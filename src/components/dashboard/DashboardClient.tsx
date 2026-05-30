@@ -147,19 +147,19 @@ export function DashboardClient({ profile, attendance, completions, achievements
     .reduce((sum, s) => sum + (s.duration_min ?? 0), 0)
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top bar */}
-      <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#CC0000] rounded-lg flex items-center justify-center">
-            <span className="text-white font-black text-[10px] tracking-tighter">BR</span>
+          <div className="w-7 h-7 bg-blood rounded-lg flex items-center justify-center">
+            <span className="text-ink-primary font-display text-[12px]">M</span>
           </div>
-          <span className="font-black text-[#0D0D0D] text-base tracking-tight">Belt Rise</span>
+          <span className="font-display text-ink-primary text-base">MICHI</span>
         </div>
         <div className="flex items-center gap-2">
           <NotificationBell />
           <Link href="/profile"
-            className="w-9 h-9 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-sm shadow-md shadow-red-900/20">
+            className="w-10 h-10 rounded-full bg-blood flex items-center justify-center text-ink-primary font-black text-sm shadow-glow-blood min-h-tap min-w-tap">
             {initial}
           </Link>
         </div>

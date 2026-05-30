@@ -104,22 +104,22 @@ export default function NotificationBell() {
   return (
     <div ref={popoverRef} className="relative">
       <button onClick={() => setOpen(o => !o)}
-        className="w-9 h-9 rounded-full bg-[#F8F7F5] hover:bg-[#F2F0ED] flex items-center justify-center relative transition-colors">
+        className="w-10 h-10 rounded-full bg-brand-elev hover:bg-brand-hover flex items-center justify-center relative transition-colors min-h-tap min-w-tap">
         <span className="text-lg">🔔</span>
         {unread > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#CC0000] text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white">
+          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-blood text-ink-primary text-[9px] font-black rounded-full flex items-center justify-center border-2 border-brand-surface animate-pulse-glow">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-11 w-80 max-w-[calc(100vw-32px)] bg-white rounded-2xl shadow-xl border border-[#E5E5E5] z-50 overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#F2F0ED]">
-            <p className="text-sm font-black tracking-tight">Notificações</p>
+        <div className="absolute right-0 top-12 w-80 max-w-[calc(100vw-32px)] bg-brand-surface rounded-2xl shadow-xl border border-brand-elev z-50 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-brand-elev">
+            <p className="text-sm font-display text-ink-primary">Notificações</p>
             {unread > 0 && (
               <button onClick={markAllRead} disabled={loading}
-                className="text-[11px] text-[#CC0000] font-black">
+                className="text-[11px] text-blood font-black">
                 Marcar todas como lidas
               </button>
             )}
@@ -128,22 +128,22 @@ export default function NotificationBell() {
             {notifs.length === 0 ? (
               <div className="text-center py-8 px-4">
                 <p className="text-3xl mb-2">🔔</p>
-                <p className="text-sm text-[#555] font-bold">Sem notificações</p>
-                <p className="text-xs text-[#AAA]">Quando alguém interagir, você verá aqui.</p>
+                <p className="text-sm text-ink-secondary font-bold">Sem notificações</p>
+                <p className="text-xs text-ink-muted">Quando alguém interagir, você verá aqui.</p>
               </div>
             ) : notifs.map(n => {
               const meta = TYPE_META[n.type]
               if (!meta) return null
               return (
                 <Link key={n.id} href={meta.href(n)} onClick={() => setOpen(false)}
-                  className={`flex items-start gap-2 px-4 py-3 border-b border-[#F2F0ED] last:border-none hover:bg-[#F8F7F5] transition-colors ${
-                    !n.read_at ? 'bg-[#FFF0F0]/40' : ''
+                  className={`flex items-start gap-2 px-4 py-3 border-b border-brand-elev last:border-none hover:bg-brand-elev transition-colors ${
+                    !n.read_at ? 'bg-blood/5' : ''
                   }`}>
-                  {!n.read_at && <div className="w-2 h-2 bg-[#CC0000] rounded-full mt-1.5 flex-shrink-0" />}
+                  {!n.read_at && <div className="w-2 h-2 bg-blood rounded-full mt-1.5 flex-shrink-0" />}
                   <span className="text-base flex-shrink-0">{meta.emoji}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] text-[#0D0D0D] leading-snug line-clamp-2">{meta.label(n)}</p>
-                    <p className="text-[10px] text-[#AAA] mt-0.5">{timeAgo(n.created_at)}</p>
+                    <p className="text-[13px] text-ink-primary leading-snug line-clamp-2">{meta.label(n)}</p>
+                    <p className="text-[10px] text-ink-muted mt-0.5">{timeAgo(n.created_at)}</p>
                   </div>
                 </Link>
               )

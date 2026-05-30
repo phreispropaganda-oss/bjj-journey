@@ -1,11 +1,11 @@
 {
-  "name": "Belt Rise",
-  "short_name": "Belt Rise",
-  "description": "Domine o tatame. Acompanhe técnicas, presença e progresso de faixa.",
+  "name": "MICHI — Domine o tatame",
+  "short_name": "MICHI",
+  "description": "Plataforma global de evolução para lutadores.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F8F7F5",
-  "theme_color": "#CC0000",
+  "background_color": "#080808",
+  "theme_color": "#080808",
   "orientation": "portrait",
   "categories": ["sports", "fitness", "education"],
   "lang": "pt-BR",
@@ -21,15 +21,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/icons/screenshot-1.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Dashboard Belt Rise"
     }
   ]
 }

@@ -3,17 +3,17 @@ import './globals.css'
 import StudentViewBanner from '@/components/ui/StudentViewBanner'
 
 export const metadata: Metadata = {
-  title: 'Belt Rise — Domine o tatame',
-  description: 'Acompanhe sua evolução no jiu-jitsu. Técnicas, presença, conquistas e progresso de faixa — tudo em um app.',
+  title: 'MICHI — Domine o tatame',
+  description: 'Plataforma global de evolução para lutadores. Treinos, técnicas, comunidade e legado marcial.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Belt Rise',
+    title: 'MICHI',
   },
   openGraph: {
-    title: 'Belt Rise — Domine o tatame',
-    description: 'Sua jornada no jiu-jitsu começa aqui.',
+    title: 'MICHI — Domine o tatame',
+    description: 'Treinar é mais do que vencer. É voltar.',
     type: 'website',
   },
 }
@@ -22,16 +22,18 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#CC0000',
+  themeColor: '#080808',  // PRD §2.1 — bg base
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className="dark">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* PRD §2.2 — Tipografia */}
         <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Urbanist:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
         {/* PWA iOS */}
@@ -40,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className="max-w-[480px] mx-auto min-h-screen bg-[#F8F7F5]">
+      <body className="max-w-[480px] mx-auto min-h-screen bg-brand-bg text-ink-primary">
         <StudentViewBanner />
         {children}
       </body>
