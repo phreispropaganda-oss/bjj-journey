@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { BELTS } from '@/lib/curriculum'
-import { generateStoryImage, shareToInstagramStories } from '@/lib/storyImage'
+import { generateStoryImage, shareToInstagramStories, TEMPLATE_META, type StoryTemplate } from '@/lib/storyImage'
 
 const TYPE_META: Record<string, { emoji: string; label: string }> = {
   gi:          { emoji:'🥋', label:'Gi' },
@@ -32,6 +32,7 @@ interface Props {
 export default function ShareSession({ session, profile, calories, profileUrl }: Props) {
   const [showPhoto, setShowPhoto] = useState(!!session.photo_url)
   const [generatingStory, setGeneratingStory] = useState(false)
+  const [template, setTemplate] = useState<StoryTemplate>('classic')
   const cardRef = useRef<HTMLDivElement>(null)
 
   const belt = BELTS.find(b => b.id === profile.belt_id) ?? BELTS[0]
@@ -59,8 +60,9 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
         photoUrl:      showPhoto ? session.photo_url : null,
         appUrl:        profileUrl.split('/profile/')[0],
         username:      profile.username,
+        template,
       })
-      const r = await shareToInstagramStories(blob, `belt-rise-${session.id}.jpg`)
+      const r = await shareToInstagramStories(blob, `michi-${template}-${session.id}.jpg`)
       if (r.downloaded) alert('Imagem 9:16 baixada! Abra o Instagram > Stories e use a foto da galeria.')
     } catch (err) {
       alert('Erro ao gerar imagem: ' + (err as Error).message)
@@ -259,6 +261,23 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
         {/* Share buttons */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Compartilhar nas redes</p>
+
+          {/* Template picker */}
+          <div className="grid grid-cols-4 gap-1.5 mb-3">
+            {(Object.keys(TEMPLATE_META) as StoryTemplate[]).map(k => (
+              <button key={k} onClick={() => setTemplate(k)}
+                className={`flex flex-col items-center gap-0.5 rounded-xl py-2 border-2 transition-all ${
+                  template === k
+                    ? 'border-[#9E0B13] bg-[#9E0B13]/10'
+                    : 'border-[#E5E5E5] bg-white hover:border-[#9E0B13]/40'
+                }`}>
+                <span className="text-lg leading-none">{TEMPLATE_META[k].emoji}</span>
+                <span className={`text-[10px] font-black ${template === k ? 'text-[#9E0B13]' : 'text-[#555]'}`}>
+                  {TEMPLATE_META[k].label}
+                </span>
+              </button>
+            ))}
+          </div>
 
           {/* Instagram Stories — destaque */}
           <button onClick={shareInstagramStory} disabled={generatingStory}
