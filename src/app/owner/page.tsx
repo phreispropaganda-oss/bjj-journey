@@ -161,18 +161,22 @@ export default async function OwnerPage() {
         </div>
 
         {/* Quick actions */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           <Link href="/owner/usuarios" className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-3 text-center hover:bg-[#222]">
             <p className="text-xl mb-1">👥</p>
             <p className="text-white text-xs font-black">Usuários</p>
           </Link>
           <Link href="/owner/academias/nova" className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-3 text-center hover:bg-[#222]">
             <p className="text-xl mb-1">🏢</p>
-            <p className="text-white text-xs font-black">+ Academia</p>
+            <p className="text-white text-[10px] font-black">+ Academia</p>
           </Link>
-          <Link href="/owner/desafios" className="bg-[#CC0000]/10 border border-[#CC0000]/30 rounded-xl p-3 text-center hover:bg-[#CC0000]/20">
+          <Link href="/owner/desafios" className="bg-[#9E0B13]/15 border border-[#9E0B13]/40 rounded-xl p-3 text-center hover:bg-[#9E0B13]/25">
             <p className="text-xl mb-1">🎯</p>
-            <p className="text-[#CC0000] text-xs font-black">Desafios</p>
+            <p className="text-[#FF6B6B] text-xs font-black">Desafios</p>
+          </Link>
+          <Link href="/owner/moderacao" className="bg-amber-500/15 border border-amber-500/40 rounded-xl p-3 text-center hover:bg-amber-500/25">
+            <p className="text-xl mb-1">🛡️</p>
+            <p className="text-amber-400 text-[11px] font-black">Moderação</p>
           </Link>
         </div>
 

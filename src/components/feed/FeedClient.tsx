@@ -8,6 +8,7 @@ import { deleteTrainingSession, updateSessionVisibility } from '@/app/treino/act
 import { createClient } from '@/lib/supabase/client'
 import SparksOverlay from './SparksOverlay'
 import MentionInput from './MentionInput'
+import ReportDialog from './ReportDialog'
 import { renderMentions } from './renderMentions'
 
 // ────────────────────────────────────────────────────────────────
@@ -83,6 +84,7 @@ export default function FeedClient({
 
   const [showComments, setShowComments] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+  const [showReport, setShowReport] = useState<'session' | 'profile' | null>(null)
   const [removed, setRemoved] = useState(false)
   const [comments, setComments] = useState(item.comments)
   const [newComment, setNewComment] = useState('')
@@ -304,38 +306,65 @@ export default function FeedClient({
           </div>
         </div>
 
-        {isAuthor && (
-          <div className="relative flex-shrink-0">
-            <button onClick={() => setShowMenu(s => !s)}
-              className="w-9 h-9 rounded-full hover:bg-brand-elev flex items-center justify-center text-ink-muted font-black min-h-tap min-w-tap">
-              ⋯
-            </button>
-            {showMenu && (
-              <>
-                <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-10 w-52 bg-brand-surface rounded-2xl shadow-xl border border-brand-elev z-40 overflow-hidden">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-ink-muted px-3 pt-3 pb-1">Visibilidade</p>
-                  {(['public','followers','private'] as const).map(v => (
-                    <button key={v} onClick={() => handleVisibility(v)}
-                      className={`w-full flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-brand-elev ${
-                        currentVisibility === v ? 'bg-blood/10' : ''
-                      }`}>
-                      <span>{VISIBILITY_META[v].icon}</span>
-                      <span className="font-bold text-ink-primary">{VISIBILITY_META[v].label}</span>
-                      {currentVisibility === v && <span className="ml-auto text-blood text-xs">✓</span>}
+        <div className="relative flex-shrink-0">
+          <button onClick={() => setShowMenu(s => !s)}
+            className="w-9 h-9 rounded-full hover:bg-brand-elev flex items-center justify-center text-ink-muted font-black min-h-tap min-w-tap">
+            ⋯
+          </button>
+          {showMenu && (
+            <>
+              <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
+              <div className="absolute right-0 top-10 w-52 bg-brand-surface rounded-2xl shadow-xl border border-brand-elev z-40 overflow-hidden">
+                {isAuthor ? (
+                  <>
+                    <p className="text-[10px] font-black uppercase tracking-wider text-ink-muted px-3 pt-3 pb-1">Visibilidade</p>
+                    {(['public','followers','private'] as const).map(v => (
+                      <button key={v} onClick={() => handleVisibility(v)}
+                        className={`w-full flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-brand-elev ${
+                          currentVisibility === v ? 'bg-blood/10' : ''
+                        }`}>
+                        <span>{VISIBILITY_META[v].icon}</span>
+                        <span className="font-bold text-ink-primary">{VISIBILITY_META[v].label}</span>
+                        {currentVisibility === v && <span className="ml-auto text-blood text-xs">✓</span>}
+                      </button>
+                    ))}
+                    <div className="border-t border-brand-elev" />
+                    <button onClick={handleDeleteSession}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-400 hover:bg-red-950/30 font-bold">
+                      <span>🗑</span> Apagar treino
                     </button>
-                  ))}
-                  <div className="border-t border-brand-elev" />
-                  <button onClick={handleDeleteSession}
-                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-400 hover:bg-red-950/30 font-bold">
-                    <span>🗑</span> Apagar treino
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => { setShowReport('session'); setShowMenu(false) }}
+                      className="w-full flex items-center gap-2 px-3 py-3 text-sm hover:bg-brand-elev text-ink-primary font-bold">
+                      <span>⚠️</span> Reportar treino
+                    </button>
+                    <button onClick={() => { setShowReport('profile'); setShowMenu(false) }}
+                      className="w-full flex items-center gap-2 px-3 py-3 text-sm hover:bg-brand-elev text-ink-primary font-bold border-t border-brand-elev">
+                      <span>🚫</span> Reportar perfil
+                    </button>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Report dialog */}
+      {showReport === 'session' && (
+        <ReportDialog
+          targetId={item.session.id}
+          targetKind="session"
+          onClose={() => setShowReport(null)} />
+      )}
+      {showReport === 'profile' && a && (
+        <ReportDialog
+          targetId={a.id}
+          targetKind="profile"
+          onClose={() => setShowReport(null)} />
+      )}
 
       {/* Type badge + duration */}
       <div className="px-4 pb-3 flex items-center gap-2 flex-wrap">
