@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { Check } from 'lucide-react'
 
+const STRIPE_ENABLED = process.env.NEXT_PUBLIC_STRIPE_ENABLED === 'true'
+
 const plans = [
   {
     key: 'free', name: 'Gratuito', price: { monthly: 0, annual: 0 },
@@ -42,9 +44,12 @@ export default function PricingPage() {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: planKey, interval: annual ? 'annual' : 'monthly' }),
+        body: JSON.stringify({ plan: planKey, period: annual ? 'annual' : 'monthly' }),
       })
       const { url, error } = await res.json()
+      if (error === 'stripe_disabled' || res.status === 503) {
+        setCheckoutError('Pagamentos ainda não estão ativos. Em breve!'); return
+      }
       if (error) { setCheckoutError(error); return }
       if (url) { window.location.href = url; return }
       setCheckoutError('Pagamentos ainda não estão ativos. Em breve!')
@@ -60,6 +65,11 @@ export default function PricingPage() {
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-[#1A1A2E] mb-2">Escolha seu plano</h1>
         <p className="text-sm text-[#666]">Invista na sua jornada no tatame</p>
+        {!STRIPE_ENABLED && (
+          <p className="mt-3 inline-block text-xs bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-bold">
+            🚧 Pagamentos em breve — todos têm acesso completo enquanto isso
+          </p>
+        )}
         <div className="flex items-center justify-center gap-3 mt-5">
           <span className={`text-sm font-medium ${!annual ? 'text-[#1A1A2E]' : 'text-[#AAA]'}`}>Mensal</span>
           <button onClick={() => setAnnual(a => !a)}
