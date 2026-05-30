@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { BELTS, getCurriculumByBelt } from '@/lib/curriculum'
-import type { BeltId } from '@/lib/supabase/types'
+import type { BeltId, Modality } from '@/lib/supabase/types'
+import IntensitySlider from '@/components/treino/IntensitySlider'
+import SmartTechChips from '@/components/treino/SmartTechChips'
+import VoiceNoteInput from '@/components/treino/VoiceNoteInput'
+import ModalitySelector from '@/components/treino/ModalitySelector'
 
 type TrainingType = 'gi' | 'no_gi' | 'drilling' | 'competition' | 'open_mat'
 
@@ -43,6 +47,8 @@ export default function NovoTreinoPage() {
   const router = useRouter()
 
   // Form state
+  const [modality, setModality] = useState<Modality>('bjj')
+  const [intensity, setIntensity] = useState<number | null>(null)
   const [type, setType] = useState<TrainingType>('gi')
   const [duration, setDuration] = useState<number | ''>(60)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -57,8 +63,7 @@ export default function NovoTreinoPage() {
   const [note, setNote] = useState('')
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const [techSearch, setTechSearch] = useState('')
-  const [showTechPicker, setShowTechPicker] = useState(false)
+  // (técnicas legadas — chips smart agora cuidam disso)
   const [visibility, setVisibility] = useState<'public' | 'followers' | 'private'>('followers')
 
   const [saving, setSaving] = useState(false)
@@ -74,27 +79,26 @@ export default function NovoTreinoPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/login'); return }
       const [{ data: p }, { data: acs }, { data: todayTrains }] = await Promise.all([
-        supabase.from('profiles').select('belt_id, academy_name, weight_kg').eq('id', user.id).single(),
+        supabase.from('profiles').select('belt_id, academy_name, weight_kg, current_modality').eq('id', user.id).single(),
         supabase.from('academies').select('id, name').eq('active', true).order('name'),
         supabase.from('training_sessions').select('id').eq('user_id', user.id)
           .gte('trained_at', new Date().toISOString().split('T')[0]),
       ])
-      const prof = p as { belt_id: string; academy_name: string | null; weight_kg: number | null } | null
+      const prof = p as {
+        belt_id: string; academy_name: string | null; weight_kg: number | null
+        current_modality?: Modality
+      } | null
       setProfile(prof)
       setAcademies((acs ?? []) as { id: string; name: string }[])
       setAcademyName(prof?.academy_name ?? '')
       setTodayCount((todayTrains ?? []).length)
+      if (prof?.current_modality) setModality(prof.current_modality)
     }
     load()
   }, [router])
 
-  const curriculum = profile ? getCurriculumByBelt(profile.belt_id as BeltId) : null
-  const allTechs = curriculum
-    ? curriculum.modules.flatMap(m => m.categories.flatMap(c => c.techniques.map(t => t.name)))
-    : []
-  const filteredTechs = allTechs.filter(t =>
-    !techSearch || t.toLowerCase().includes(techSearch.toLowerCase())
-  ).slice(0, 30)
+  // Curriculum referenciado por chips smart (mantido para compat futura)
+  if (profile) getCurriculumByBelt(profile.belt_id as BeltId)
 
   function toggleTech(t: string) {
     setTechniques(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])
@@ -175,6 +179,7 @@ export default function NovoTreinoPage() {
       .insert({
         user_id:      user.id,
         academy_id:   academyId,
+        modality,                       // PRD §1.3
         type,
         duration_min: duration,
         trained_at:   trainedAt,
@@ -183,7 +188,8 @@ export default function NovoTreinoPage() {
         rolls,
         subs_for:     subsFor,
         subs_against: subsAgainst,
-        feeling,
+        feeling,                        // sensação 1-5 (legado)
+        intensity,                      // PRD §2.2 (1-10)
         note:         note || null,
         photo_url:    photoUrl,
         visibility,
@@ -228,15 +234,15 @@ export default function NovoTreinoPage() {
     router.push(`/treino/${sessionId}/share`)
   }
 
-  const calories = duration ? estimateCalories(duration, profile?.weight_kg ?? null) : 0
+  const calories = duration ? estimateCalories(duration, profile?.weight_kg ?? null, modality) : 0
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
-      <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex items-center justify-between sticky top-0 z-10">
-        <Link href="/dashboard" className="text-[#555] text-sm">← Cancelar</Link>
-        <h1 className="font-black text-base tracking-tight">Novo treino</h1>
+    <div className="min-h-screen bg-brand-bg flex flex-col">
+      <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+        <Link href="/dashboard" className="text-ink-secondary text-sm min-h-tap min-w-tap flex items-center">← Cancelar</Link>
+        <h1 className="font-display text-base text-ink-primary">Novo treino</h1>
         <button onClick={save} disabled={saving || !duration}
-          className="text-[#CC0000] font-black text-sm disabled:opacity-30">
+          className="text-blood font-black text-sm disabled:opacity-30 min-h-tap min-w-tap">
           {saving ? '...' : 'Salvar'}
         </button>
       </div>
@@ -309,21 +315,32 @@ export default function NovoTreinoPage() {
             onChange={e => setDate(e.target.value)} />
         </div>
 
-        {/* Type */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        {/* Modalidade (PRD §1.3) */}
+        <div className="card-elev">
+          <ModalitySelector value={modality} onChange={setModality} />
+        </div>
+
+        {/* Tipo de treino */}
+        <div className="card-elev">
           <p className="field-label mb-3">Tipo de treino</p>
           <div className="grid grid-cols-3 gap-2">
             {TYPES.map(t => (
               <button key={t.value} onClick={() => setType(t.value)}
-                className={`py-3 px-2 rounded-xl border-2 text-center transition-all ${
-                  type === t.value ? 'border-[#CC0000] bg-[#FFF0F0]'
-                  : 'border-[#E5E5E5] bg-white'
+                className={`py-3 px-2 rounded-xl border-2 text-center transition-all min-h-tap ${
+                  type === t.value
+                    ? 'border-blood bg-blood/10'
+                    : 'border-brand-elev bg-brand-surface'
                 }`}>
                 <div className="text-xl mb-1">{t.emoji}</div>
-                <p className={`text-xs font-black ${type === t.value ? 'text-[#CC0000]' : 'text-[#555]'}`}>{t.label}</p>
+                <p className={`text-xs font-black ${type === t.value ? 'text-blood' : 'text-ink-secondary'}`}>{t.label}</p>
               </button>
             ))}
           </div>
+        </div>
+
+        {/* PRD §2.2 — Slider de intensidade 1-10 com haptic */}
+        <div className="card-elev">
+          <IntensitySlider value={intensity} onChange={setIntensity} />
         </div>
 
         {/* Academia + Professor */}
@@ -382,52 +399,13 @@ export default function NovoTreinoPage() {
           </div>
         </div>
 
-        {/* Techniques / positions */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <p className="field-label mb-0">Posições treinadas</p>
-            <button onClick={() => setShowTechPicker(s => !s)}
-              className="text-xs text-[#CC0000] font-black">
-              {showTechPicker ? 'Fechar' : '+ Adicionar'}
-            </button>
-          </div>
-
-          {techniques.length === 0 && !showTechPicker && (
-            <p className="text-xs text-[#AAA]">Nenhuma posição selecionada</p>
-          )}
-
-          {techniques.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-2">
-              {techniques.map(t => (
-                <button key={t} onClick={() => toggleTech(t)}
-                  className="bg-[#FFF0F0] border border-[#FFCCCC] text-[#CC0000] rounded-full px-2.5 py-1 text-xs font-bold">
-                  {t} ✕
-                </button>
-              ))}
-            </div>
-          )}
-
-          {showTechPicker && (
-            <div className="mt-2">
-              <input
-                className="field-input mb-2"
-                placeholder="Buscar posição..."
-                value={techSearch}
-                onChange={e => setTechSearch(e.target.value)} />
-              <div className="max-h-60 overflow-y-auto scrollbar-none space-y-1">
-                {filteredTechs.map(t => (
-                  <button key={t} onClick={() => toggleTech(t)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      techniques.includes(t)
-                        ? 'bg-[#FFF0F0] text-[#CC0000]'
-                        : 'bg-[#F8F7F5] text-[#555]'
-                    }`}>
-                    {techniques.includes(t) ? '✓ ' : ''}{t}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+        {/* PRD §2.3 — Smart chips (algoritmo user+gym+explore) */}
+        <div className="card-elev">
+          <SmartTechChips
+            selected={techniques}
+            onToggle={toggleTech}
+            modality={modality}
+          />
         </div>
 
         {/* Photo */}
@@ -471,15 +449,10 @@ export default function NovoTreinoPage() {
           </div>
         </div>
 
-        {/* Note */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        {/* PRD §2.1 — Anotações com voice-to-text */}
+        <div className="card-elev">
           <label className="field-label">Anotações</label>
-          <textarea
-            className="field-input"
-            rows={3}
-            placeholder="O que aprendeu hoje? Pontos a melhorar..."
-            value={note}
-            onChange={e => setNote(e.target.value)} />
+          <VoiceNoteInput value={note} onChange={setNote} />
         </div>
 
         {/* Visibility */}
@@ -512,7 +485,7 @@ export default function NovoTreinoPage() {
         )}
       </div>
 
-      <div className="bg-white border-t border-[#E5E5E5] px-4 py-3 sticky bottom-0">
+      <div className="bg-brand-surface border-t border-brand-elev px-4 py-3 sticky bottom-0">
         <button onClick={save} disabled={saving || !duration}
           className="btn-primary disabled:opacity-40">
           {saving ? (uploadProgress || 'Salvando...') : '🥋 Salvar treino'}
