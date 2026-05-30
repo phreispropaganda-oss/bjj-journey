@@ -97,7 +97,7 @@ function TechDetail({ tech, color, onClose, onToggle, done }: {
 
 export default function ModulesClient({ beltId }: Props) {
   const curriculum = getCurriculumByBelt(beltId as BeltId)
-  const { isCompleted, toggle, getCount, setCompleted } = useProgressStore()
+  const { isCompleted, toggle, getCount, setCompletedForBelt } = useProgressStore()
   const { addXP } = useUserStore()
   const [openMods, setOpenMods] = useState<Record<string, boolean>>({})
   const [openCats, setOpenCats] = useState<Record<string, boolean>>({})
@@ -116,11 +116,9 @@ export default function ModulesClient({ beltId }: Props) {
       .select('belt_id, module_id, technique_name')
       .eq('user_id', user.id)
       .eq('belt_id', beltId)
-    if (data) {
-      const rows = data as { belt_id: string; module_id: string; technique_name: string }[]
-      setCompleted(rows.map(c => `${c.belt_id}-${c.module_id}-${c.technique_name.replace(/\s/g, '_')}`))
-    }
-  }, [beltId, setCompleted])
+    const rows = (data ?? []) as { belt_id: string; module_id: string; technique_name: string }[]
+    setCompletedForBelt(beltId, rows.map(c => `${c.belt_id}-${c.module_id}-${c.technique_name.replace(/\s/g, '_')}`))
+  }, [beltId, setCompletedForBelt])
 
   useEffect(() => { syncFromSupabase() }, [syncFromSupabase])
 
