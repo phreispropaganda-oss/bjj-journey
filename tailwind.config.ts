@@ -21,6 +21,12 @@ const config: Config = {
           secondary: '#A0A0A0',
           muted:     '#6B6B6B',
         },
+        rise: {
+          DEFAULT: '#FF6B2B',
+          deep:    '#E55818',
+          soft:    'rgba(255,107,43,0.12)',
+          glow:    'rgba(255,107,43,0.35)',
+        },
         blood: {
           DEFAULT: '#9E0B13',
           deep:    '#6B0008',
@@ -46,6 +52,7 @@ const config: Config = {
         'tap-lg': '64px',
       },
       boxShadow: {
+        'glow-rise':  '0 8px 24px rgba(255,107,43,0.35)',
         'glow-blood': '0 8px 24px rgba(158,11,19,0.35)',
         'glow-volt':  '0 8px 24px rgba(222,255,154,0.25)',
       },

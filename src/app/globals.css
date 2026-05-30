@@ -19,9 +19,15 @@
   --text-secondary: #A0A0A0;   /* 8.2:1 — WCAG AAA */
   --text-muted:     #6B6B6B;   /* labels, hints */
 
-  /* ── Accent: Vermelho Sangue (PRD §2.1) ── */
-  --blood:       #9E0B13;   /* CTA crítico */
-  --blood-deep:  #6B0008;   /* hover/active */
+  /* ── Brand: Belt Rise Laranja (logo + primary CTA) ── */
+  --rise:        #FF6B2B;   /* CTA principal — laranja Belt Rise */
+  --rise-deep:   #E55818;   /* hover/active */
+  --rise-glow:   rgba(255,107,43,0.35);
+  --rise-soft:   rgba(255,107,43,0.12);
+
+  /* ── Accent: Vermelho Sangue (alertas/destructive) ── */
+  --blood:       #9E0B13;   /* destructive CTA */
+  --blood-deep:  #6B0008;
   --blood-glow:  rgba(158,11,19,0.35);
   --blood-soft:  rgba(158,11,19,0.12);
 
@@ -90,12 +96,20 @@ body {
     @apply rounded-full px-6 py-4 font-bold text-base w-full
            transition-all tracking-wide
            min-h-[56px];
+    background: var(--rise);
+    color: var(--text-primary);
+    box-shadow: 0 8px 24px var(--rise-glow);
+  }
+  .btn-primary:active { background: var(--rise-deep); }
+  .btn-primary:disabled { opacity: 0.4; box-shadow: none; }
+  .btn-danger {
+    @apply rounded-full px-6 py-4 font-bold text-base w-full
+           transition-all tracking-wide min-h-[56px];
     background: var(--blood);
     color: var(--text-primary);
     box-shadow: 0 8px 24px var(--blood-glow);
   }
-  .btn-primary:active { background: var(--blood-deep); }
-  .btn-primary:disabled { opacity: 0.4; box-shadow: none; }
+  .btn-danger:active { background: var(--blood-deep); }
 
   .btn-ghost {
     @apply rounded-full px-6 py-3 font-bold text-sm border-2

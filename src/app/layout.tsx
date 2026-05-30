@@ -6,17 +6,17 @@ import { ConfirmProvider } from '@/components/ui/ConfirmDialog'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
-  title: 'MICHI — Domine o tatame',
-  description: 'Plataforma global de evolução para lutadores. Treinos, técnicas, comunidade e legado marcial.',
+  title: 'Belt Rise — Treine. Suba. Conquiste.',
+  description: 'Plataforma de evolução para lutadores. Treinos, progresso de faixa, comunidade e legado marcial.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'MICHI',
+    title: 'Belt Rise',
   },
   openGraph: {
-    title: 'MICHI — Domine o tatame',
-    description: 'Treinar é mais do que vencer. É voltar.',
+    title: 'Belt Rise — Treine. Suba. Conquiste.',
+    description: 'Sua jornada no Jiu-Jitsu, rastreada com a precisão do Strava.',
     type: 'website',
   },
 }
@@ -25,7 +25,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#080808',  // PRD §2.1 — bg base
+  themeColor: '#080808',
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

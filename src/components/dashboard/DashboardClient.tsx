@@ -6,6 +6,7 @@ import { getXPLevel, getXPProgress } from '@/store/user'
 import BottomNav from '@/components/ui/BottomNav'
 import NotificationBell from '@/components/ui/NotificationBell'
 import TourOverlay from '@/components/onboarding/TourOverlay'
+import BeltRiseLogo from '@/components/ui/BeltRiseLogo'
 import ActivityRings from '@/components/dashboard/charts/ActivityRings'
 import MinutesBarChart from '@/components/dashboard/charts/MinutesBarChart'
 import TypeBreakdown from '@/components/dashboard/charts/TypeBreakdown'
@@ -173,18 +174,13 @@ export function DashboardClient({
 
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
-      {/* Top bar */}
+      {/* Top bar — Belt Rise logo */}
       <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-blood rounded-lg flex items-center justify-center">
-            <span className="text-ink-primary font-display text-[12px]">M</span>
-          </div>
-          <span className="font-display text-ink-primary text-base">MICHI</span>
-        </div>
+        <BeltRiseLogo size={32} />
         <div className="flex items-center gap-2">
           <NotificationBell />
           <Link href="/profile"
-            className="w-10 h-10 rounded-full bg-blood flex items-center justify-center text-ink-primary font-black text-sm shadow-glow-blood min-h-tap min-w-tap">
+            className="w-10 h-10 rounded-full bg-rise flex items-center justify-center text-ink-primary font-black text-sm shadow-glow-rise min-h-tap min-w-tap">
             {initial}
           </Link>
         </div>
@@ -192,9 +188,51 @@ export function DashboardClient({
 
       <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-4 pb-24">
 
-        {/* Hero */}
+        {/* INICIAR TREINO — botao central Belt Rise */}
+        <Link href="/treino/novo"
+          className="block bg-rise rounded-3xl py-5 px-6 text-center mb-4 shadow-glow-rise active:scale-[0.98] transition-transform">
+          <div className="text-4xl mb-1">🥊</div>
+          <p className="text-white font-display text-2xl tracking-wide">INICIAR TREINO</p>
+          <p className="text-white/80 text-xs mt-0.5">Registre sua sessao em segundos</p>
+        </Link>
+
+        {/* Progresso da Graduacao — Belt Rise hero card */}
+        {(() => {
+          const nextBeltIdx = BELTS.findIndex(b => b.id === profile.belt_id) + 1
+          const nextBelt = BELTS[nextBeltIdx]
+          const progressPct = belt.maxDeg > 0 ? Math.round((profile.degrees / belt.maxDeg) * 100) : 0
+          return (
+            <Link href={`/modules/${profile.belt_id}`}
+              className="block bg-brand-surface rounded-2xl border border-brand-elev p-4 mb-3 active:bg-brand-elev">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 flex items-center justify-center font-black text-ink-primary"
+                  style={{ borderColor: belt.color, background: belt.color }}>
+                  {initial}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-ink-secondary">Progresso da graduacao</p>
+                  <p className="font-display text-ink-primary text-lg">
+                    {progressPct}% para Faixa {nextBelt?.name ?? 'mestre'}
+                  </p>
+                </div>
+                <p className="font-display text-rise text-3xl tabular-nums">{progressPct}%</p>
+              </div>
+              {/* Barra ascendente "rise" */}
+              <div className="h-2.5 bg-brand-bg rounded-full overflow-hidden">
+                <div className="h-full rounded-full transition-all bg-gradient-to-r from-rise via-rise to-volt"
+                  style={{ width: `${progressPct}%` }} />
+              </div>
+              <div className="flex items-center justify-between mt-2 text-[10px] text-ink-muted font-bold uppercase tracking-wider">
+                <span>Faixa {belt.name} · {profile.degrees}/{belt.maxDeg} graus</span>
+                <span className="text-rise">↗ subir</span>
+              </div>
+            </Link>
+          )
+        })()}
+
+        {/* Hero atual (mantido com cor laranja brand) */}
         <div className="rounded-2xl p-4 text-white mb-3 relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #CC0000 0%, #E52222 100%)' }}>
+          style={{ background: 'linear-gradient(135deg, #FF6B2B 0%, #E55818 100%)' }}>
           <div className="absolute -right-6 -top-6 w-28 h-28 bg-white/10 rounded-full" />
           <div className="absolute -left-4 bottom-0 w-20 h-20 bg-black/10 rounded-full" />
           <div className="relative z-10">
