@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createChallenge, toggleChallengeActive, deleteChallenge } from '@/app/owner/desafios/actions'
+import { useConfirm } from '@/components/ui/ConfirmDialog'
 
 const METRICS = [
   { v: 'training_count',   label: 'Treinos completados',  unit: 'treinos' },
@@ -32,6 +33,7 @@ export default function DesafiosManager({
   const [pending, startTransition] = useTransition()
   const [showForm, setShowForm] = useState(false)
   const [feedback, setFeedback] = useState<string>('')
+  const confirm = useConfirm()
 
   // Form state
   const [form, setForm] = useState({
@@ -79,7 +81,12 @@ export default function DesafiosManager({
   }
 
   async function handleDelete(c: Challenge) {
-    if (!confirm(`Excluir desafio "${c.title}"?`)) return
+    const ok = await confirm({
+      title: `Excluir desafio "${c.title}"?`,
+      body: 'Os participantes perderão acesso ao progresso. Esta ação não pode ser desfeita.',
+      confirmLabel: 'Excluir', destructive: true,
+    })
+    if (!ok) return
     startTransition(async () => {
       const r = await deleteChallenge(c.id)
       if ('error' in r && r.error) { setFeedback(`⚠️ ${r.error}`); return }

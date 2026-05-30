@@ -10,6 +10,7 @@ import SparksOverlay from './SparksOverlay'
 import MentionInput from './MentionInput'
 import ReportDialog from './ReportDialog'
 import { renderMentions } from './renderMentions'
+import { useConfirm } from '@/components/ui/ConfirmDialog'
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -91,6 +92,9 @@ export default function FeedClient({
   const [replyTo, setReplyTo] = useState<{ id: string; authorName: string } | null>(null)
   const [sparksTrigger, setSparksTrigger] = useState(0)
   const [sparksPos, setSparksPos] = useState({ x: 0, y: 0 })
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null)
+  const [deletingSession, setDeletingSession] = useState(false)
+  const confirm = useConfirm()
 
   const cardRef = useRef<HTMLElement>(null)
   const lastTap = useRef(0)
@@ -229,19 +233,39 @@ export default function FeedClient({
   }
 
   async function handleDeleteComment(commentId: string) {
-    if (!confirm('Apagar este comentário?')) return
-    const r = await deleteComment(commentId)
-    if (r.error) { alert('Erro: ' + r.error); return }
-    setComments(prev => prev.filter(c => c.id !== commentId))
+    const ok = await confirm({
+      title: 'Apagar comentário?',
+      body: 'Esta ação não pode ser desfeita.',
+      confirmLabel: 'Apagar', destructive: true,
+    })
+    if (!ok || deletingCommentId) return
+    setDeletingCommentId(commentId)
+    try {
+      const r = await deleteComment(commentId)
+      if (r.error) { alert('Erro: ' + r.error); return }
+      setComments(prev => prev.filter(c => c.id !== commentId))
+    } finally {
+      setDeletingCommentId(null)
+    }
   }
 
   async function handleDeleteSession() {
-    if (!confirm('Apagar este treino? Esta ação não pode ser desfeita.')) return
-    const r = await deleteTrainingSession(item.session.id)
-    if (r.error) { alert('Erro ao apagar: ' + r.error); return }
-    setRemoved(true)
-    setShowMenu(false)
-    router.refresh()
+    const ok = await confirm({
+      title: 'Apagar este treino?',
+      body: 'O treino e todos os comentários serão removidos. Esta ação não pode ser desfeita.',
+      confirmLabel: 'Apagar', destructive: true,
+    })
+    if (!ok || deletingSession) return
+    setDeletingSession(true)
+    try {
+      const r = await deleteTrainingSession(item.session.id)
+      if (r.error) { alert('Erro ao apagar: ' + r.error); return }
+      setRemoved(true)
+      setShowMenu(false)
+      router.refresh()
+    } finally {
+      setDeletingSession(false)
+    }
   }
 
   async function handleVisibility(v: 'public' | 'followers' | 'private') {

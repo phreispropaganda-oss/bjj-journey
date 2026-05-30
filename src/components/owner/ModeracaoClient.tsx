@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { resolveReport, setShadowBan } from '@/app/moderacao/actions'
+import { useConfirm } from '@/components/ui/ConfirmDialog'
 
 interface ReportRow {
   id: string
@@ -58,6 +59,7 @@ export default function ModeracaoClient({ reports, profileMap, sessionMap, comme
   const [filter, setFilter] = useState<'pending' | 'all'>('pending')
   const [pending, startTransition] = useTransition()
   const [feedback, setFeedback] = useState('')
+  const confirm = useConfirm()
 
   const visible = filter === 'pending'
     ? reports.filter(r => r.status === 'pending')
@@ -72,11 +74,16 @@ export default function ModeracaoClient({ reports, profileMap, sessionMap, comme
     })
   }
 
-  function handleBan(userId: string, banned: boolean) {
-    if (!confirm(banned
-      ? 'Aplicar SHADOW-BAN neste usuário? Ele continua usando o app mas não aparece para outros.'
-      : 'REMOVER shadow-ban deste usuário?'
-    )) return
+  async function handleBan(userId: string, banned: boolean) {
+    const ok = await confirm({
+      title: banned ? 'Aplicar shadow-ban?' : 'Remover shadow-ban?',
+      body: banned
+        ? 'O usuário continua usando o app, mas seu conteúdo desaparece para outros.'
+        : 'O usuário volta a ser visível no feed e rankings.',
+      confirmLabel: banned ? 'Banir' : 'Remover ban',
+      destructive: banned,
+    })
+    if (!ok) return
     startTransition(async () => {
       const r = await setShadowBan(userId, banned)
       if (r.error) { setFeedback(`⚠️ ${r.error}`); return }

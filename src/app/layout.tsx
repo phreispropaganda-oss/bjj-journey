@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import StudentViewBanner from '@/components/ui/StudentViewBanner'
 import AnalyticsBoot from '@/components/AnalyticsBoot'
+import { ConfirmProvider } from '@/components/ui/ConfirmDialog'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
@@ -52,9 +53,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="max-w-[480px] mx-auto min-h-screen bg-brand-bg text-ink-primary">
-        <StudentViewBanner />
-        <AnalyticsBoot userId={userId} />
-        {children}
+        <ConfirmProvider>
+          <StudentViewBanner />
+          <AnalyticsBoot userId={userId} />
+          {children}
+        </ConfirmProvider>
       </body>
     </html>
   )
