@@ -29,6 +29,7 @@ interface SessionRow {
 interface ProfileLite {
   id: string; name: string; username: string;
   belt_id: string; degrees: number; academy_name: string | null;
+  avatar_url?: string | null;
 }
 
 export default async function FeedPage() {
@@ -73,13 +74,13 @@ export default async function FeedPage() {
 
   const [{ data: profiles }, { data: kudosData }, { data: commentsData }] = await Promise.all([
     userIds.length
-      ? supabase.from('profiles').select('id, name, username, belt_id, degrees, academy_name').in('id', userIds)
+      ? supabase.from('profiles').select('id, name, username, belt_id, degrees, academy_name, avatar_url').in('id', userIds)
       : Promise.resolve({ data: [] }),
     sessionIds.length
-      ? supabase.from('kudos').select('session_id, user_id').in('session_id', sessionIds)
+      ? supabase.from('kudos').select('session_id, user_id, kind').in('session_id', sessionIds)
       : Promise.resolve({ data: [] }),
     sessionIds.length
-      ? supabase.from('comments').select('id, session_id, user_id, text, created_at').in('session_id', sessionIds).order('created_at')
+      ? supabase.from('comments').select('id, session_id, user_id, text, created_at, reply_to').in('session_id', sessionIds).order('created_at')
       : Promise.resolve({ data: [] }),
   ])
 
@@ -91,23 +92,26 @@ export default async function FeedPage() {
     .filter(id => !profMap[id])
   if (commentUserIds.length > 0) {
     const { data: extra } = await supabase
-      .from('profiles').select('id, name, username, belt_id, degrees, academy_name').in('id', commentUserIds)
+      .from('profiles').select('id, name, username, belt_id, degrees, academy_name, avatar_url').in('id', commentUserIds)
     ;((extra ?? []) as ProfileLite[]).forEach(p => { profMap[p.id] = p })
   }
 
   // Build feed items
   const feedItems = sessions.map(s => {
     const prof = profMap[s.user_id]
-    const kudos = ((kudosData ?? []) as { session_id: string; user_id: string }[])
+    const kudos = ((kudosData ?? []) as { session_id: string; user_id: string; kind: 'oss' | 'super_oss' }[])
       .filter(k => k.session_id === s.id)
-    const sessionComments = ((commentsData ?? []) as { id: string; session_id: string; user_id: string; text: string; created_at: string }[])
+    const sessionComments = ((commentsData ?? []) as { id: string; session_id: string; user_id: string; text: string; created_at: string; reply_to: string | null }[])
       .filter(c => c.session_id === s.id)
       .map(c => ({ ...c, author: profMap[c.user_id] }))
+    const myKudos = kudos.find(k => k.user_id === user.id)
     return {
       session: s,
       author: prof,
-      kudosCount: kudos.length,
-      iOssed: kudos.some(k => k.user_id === user.id),
+      kudosCount: kudos.filter(k => k.kind === 'oss').length,
+      superOssCount: kudos.filter(k => k.kind === 'super_oss').length,
+      iOssed: myKudos?.kind === 'oss',
+      iSuperOssed: myKudos?.kind === 'super_oss',
       comments: sessionComments,
       typeMeta: TYPE_META[s.type] ?? { emoji: '🥋', label: s.type },
     }
@@ -119,20 +123,20 @@ export default async function FeedPage() {
   const myUsername = (myProfileData as { username: string } | null)?.username ?? ''
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
-      <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex items-center justify-between flex-shrink-0">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
+      <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#CC0000] rounded-lg flex items-center justify-center">
-            <span className="text-white font-black text-[10px] tracking-tighter">BR</span>
+          <div className="w-7 h-7 bg-blood rounded-lg flex items-center justify-center">
+            <span className="text-ink-primary font-display text-[12px]">M</span>
           </div>
-          <h1 className="font-black text-base tracking-tight">Feed</h1>
+          <h1 className="font-display text-base text-ink-primary">Feed</h1>
           {discoverMode && (
-            <span className="bg-[#F2F0ED] text-[#666] text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
+            <span className="bg-volt/20 text-volt text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider border border-volt/30">
               Descobrir
             </span>
           )}
         </div>
-        <span className="text-xs text-[#AAA] font-bold">{feedItems.length} treinos</span>
+        <span className="text-xs text-ink-muted font-bold">{feedItems.length} treinos</span>
       </div>
       <SocialTabs active="feed" />
 
@@ -140,8 +144,8 @@ export default async function FeedPage() {
         {feedItems.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-5xl mb-4">🥋</p>
-            <p className="font-black text-[#0D0D0D] text-lg mb-1">Sem treinos ainda</p>
-            <p className="text-[#888] text-sm">Registre seu primeiro treino e ele aparecerá aqui!</p>
+            <p className="font-display text-ink-primary text-lg mb-1">Sem treinos ainda</p>
+            <p className="text-ink-muted text-sm">Registre seu primeiro treino e ele aparecerá aqui!</p>
           </div>
         ) : (
           feedItems.map(item => (

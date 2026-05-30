@@ -10,13 +10,13 @@ const TABS = [
 
 export default function SocialTabs({ active }: { active: 'feed' | 'desafios' | 'rankings' }) {
   return (
-    <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-none bg-white border-b border-[#E5E5E5]">
+    <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-none bg-brand-surface border-b border-brand-elev">
       {TABS.map(t => {
         const isActive = `/${active}` === t.href
         return (
           <Link key={t.href} href={t.href}
-            className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-black transition-all ${
-              isActive ? 'bg-[#CC0000] text-white' : 'bg-[#F2F0ED] text-[#555]'
+            className={`flex-shrink-0 px-3.5 py-2 rounded-full text-xs font-black transition-all min-h-tap ${
+              isActive ? 'bg-blood text-ink-primary shadow-glow-blood' : 'bg-brand-elev text-ink-secondary'
             }`}>
             {t.emoji} {t.label}
           </Link>
