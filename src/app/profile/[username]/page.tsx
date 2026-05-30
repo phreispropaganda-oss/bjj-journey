@@ -41,7 +41,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   const { data: profileRaw } = await supabasePublic
     .from('profiles')
-    .select('id, name, username, belt_id, degrees, xp, streak, academy_name, is_public, avatar_url, bio, weight_kg, height_cm, years_training, active')
+    .select('id, name, username, belt_id, degrees, xp, streak, academy_name, is_public, avatar_url, bio, weight_kg, height_cm, years_training, active, belt_verified_status')
     .eq('username', username)
     .eq('is_public', true)
     .single()
@@ -52,7 +52,7 @@ export default async function PublicProfilePage({ params }: Props) {
     xp: number; streak: number; academy_name: string | null; is_public: boolean;
     avatar_url: string | null; bio: string | null;
     weight_kg: number | null; height_cm: number | null; years_training: number | null;
-    active: boolean;
+    active: boolean; belt_verified_status: string;
   }
   if (!profile.active) notFound()
 
@@ -256,6 +256,9 @@ export default async function PublicProfilePage({ params }: Props) {
               <div className="w-3 h-full bg-black/80" />
             </div>
             <span className="text-white font-black text-sm flex-shrink-0">Faixa {belt.name}</span>
+            {profile.belt_verified_status === 'verified' && (
+              <span title="Faixa verificada pelo professor" className="text-[#DEFF9A] text-sm flex-shrink-0">✓</span>
+            )}
             {profile.degrees > 0 && (
               <span className="text-white/40 text-xs">· {profile.degrees}° grau</span>
             )}
