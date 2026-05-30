@@ -1,6 +1,6 @@
 // MICHI 9:16 (1080x1920) story templates — client-side canvas
 
-export type StoryTemplate = 'classic' | 'minimal' | 'hype' | 'stats'
+export type StoryTemplate = 'classic' | 'minimal' | 'hype' | 'stats' | 'achievement' | 'graduation' | 'record'
 
 export interface StoryData {
   authorName: string
@@ -345,20 +345,188 @@ async function drawStats(d: StoryData): Promise<Blob> {
     canvas.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/jpeg', 0.92))
 }
 
+// ─────────── TEMPLATE: ACHIEVEMENT ───────────
+async function drawAchievement(d: StoryData): Promise<Blob> {
+  const { canvas, ctx } = setupCanvas()
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H)
+  const rg = ctx.createRadialGradient(W/2, H*0.4, 0, W/2, H*0.4, 1100)
+  rg.addColorStop(0, 'rgba(222,255,154,0.4)')
+  rg.addColorStop(0.5, 'rgba(158,11,19,0.2)')
+  rg.addColorStop(1, 'rgba(8,8,8,0)')
+  ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H)
+
+  drawLogo(ctx, 80, 100)
+
+  ctx.textAlign = 'center'
+  ctx.fillStyle = VOLT
+  ctx.font = '900 36px Inter, sans-serif'
+  ctx.fillText('🏆 CONQUISTA DESBLOQUEADA', W/2, 480)
+
+  // Big emoji badge
+  ctx.font = '900 360px Inter, sans-serif'
+  ctx.fillText(d.typeEmoji, W/2, 880)
+
+  ctx.fillStyle = INK
+  ctx.font = '900 80px Inter, sans-serif'
+  ctx.fillText(d.typeLabel, W/2, 1040)
+
+  ctx.fillStyle = 'rgba(245,245,245,0.7)'
+  ctx.font = '700 30px Inter, sans-serif'
+  ctx.fillText(new Date().toLocaleDateString('pt-BR'), W/2, 1100)
+
+  // Athlete strip
+  ctx.textAlign = 'left'
+  await drawAvatar(ctx, d, 80, 1500, 120)
+  ctx.fillStyle = INK; ctx.font = '900 52px Inter, sans-serif'
+  ctx.fillText(d.authorName, 230, 1560)
+  ctx.fillStyle = d.beltColor; roundRect(ctx, 230, 1580, 80, 18, 4); ctx.fill()
+  ctx.fillStyle = 'rgba(245,245,245,0.6)'; ctx.font = '700 28px Inter, sans-serif'
+  ctx.fillText(`Faixa ${d.beltName} · @${d.username}`, 330, 1598)
+
+  drawFooter(ctx, d)
+  return new Promise<Blob>((res, rej) =>
+    canvas.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/jpeg', 0.92))
+}
+
+// ─────────── TEMPLATE: GRADUATION ───────────
+async function drawGraduation(d: StoryData): Promise<Blob> {
+  const { canvas, ctx } = setupCanvas()
+  const bg = ctx.createLinearGradient(0, 0, 0, H)
+  bg.addColorStop(0, BG); bg.addColorStop(0.5, '#1A0006'); bg.addColorStop(1, d.beltColor)
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+  drawLogo(ctx, 80, 100)
+
+  ctx.textAlign = 'center'
+  ctx.fillStyle = VOLT
+  ctx.font = '900 32px Inter, sans-serif'
+  ctx.fillText('✅ GRADUAÇÃO VERIFICADA', W/2, 480)
+
+  // Belt strip
+  const beltY = 580
+  ctx.fillStyle = d.beltColor
+  roundRect(ctx, 80, beltY, W-160, 130, 12); ctx.fill()
+  ctx.fillStyle = 'rgba(0,0,0,0.7)'
+  ctx.fillRect(W - 200, beltY, 120, 130)
+  for (let i = 0; i < d.degrees; i++) {
+    ctx.fillStyle = 'white'
+    ctx.fillRect(W - 180 + i * 24, beltY + 40, 14, 50)
+  }
+
+  ctx.fillStyle = INK
+  ctx.font = '900 120px Inter, sans-serif'
+  ctx.fillText(`Faixa ${d.beltName}`, W/2, 880)
+  if (d.degrees > 0) {
+    ctx.fillStyle = VOLT
+    ctx.font = '900 70px Inter, sans-serif'
+    ctx.fillText(`${d.degrees}° grau`, W/2, 960)
+  }
+
+  if (d.typeLabel) {
+    ctx.fillStyle = 'rgba(245,245,245,0.7)'
+    ctx.font = '700 36px Inter, sans-serif'
+    ctx.fillText(d.typeLabel, W/2, 1050)
+  }
+  ctx.fillStyle = 'rgba(245,245,245,0.5)'
+  ctx.font = '700 30px Inter, sans-serif'
+  ctx.fillText(new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' }), W/2, 1110)
+
+  // Athlete
+  ctx.textAlign = 'left'
+  await drawAvatar(ctx, d, 80, 1500, 120)
+  ctx.fillStyle = INK; ctx.font = '900 56px Inter, sans-serif'
+  ctx.fillText(d.authorName, 230, 1560)
+  ctx.fillStyle = 'rgba(245,245,245,0.6)'; ctx.font = '700 28px Inter, sans-serif'
+  ctx.fillText(`@${d.username}`, 230, 1598)
+
+  drawFooter(ctx, d)
+  return new Promise<Blob>((res, rej) =>
+    canvas.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/jpeg', 0.92))
+}
+
+// ─────────── TEMPLATE: RECORD ───────────
+async function drawRecord(d: StoryData): Promise<Blob> {
+  const { canvas, ctx } = setupCanvas()
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H)
+
+  // Diagonal volt stripes
+  ctx.save()
+  ctx.translate(W/2, H/2); ctx.rotate(-Math.PI/8)
+  for (let i = -6; i <= 6; i++) {
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(222,255,154,0.05)' : 'rgba(158,11,19,0.08)'
+    ctx.fillRect(-W, i * 250, W*2, 130)
+  }
+  ctx.restore()
+
+  drawLogo(ctx, 80, 100)
+
+  ctx.textAlign = 'center'
+  ctx.fillStyle = BLOOD
+  ctx.font = '900 40px Inter, sans-serif'
+  ctx.fillText('⚡ NOVO RECORDE', W/2, 450)
+
+  // Giant number
+  ctx.fillStyle = VOLT
+  ctx.font = '900 420px Inter, sans-serif'
+  ctx.fillText(`${d.durationMin}`, W/2, 920)
+
+  ctx.fillStyle = INK
+  ctx.font = '900 70px Inter, sans-serif'
+  ctx.fillText(d.typeLabel.toUpperCase(), W/2, 1020)
+
+  // Sub-stats row
+  if (d.calories > 0 || d.subsFor > 0) {
+    const items: { v: string; l: string }[] = []
+    if (d.durationMin > 0) items.push({ v: `${d.durationMin}`, l: 'valor' })
+    if (d.calories  > 0)   items.push({ v: `${d.calories}`, l: 'kcal' })
+    if (d.subsFor   > 0)   items.push({ v: `${d.subsFor}`,  l: 'subs' })
+    items.slice(0, 3).forEach((it, i) => {
+      const x = W/2 + (i - 1) * 280
+      ctx.fillStyle = 'rgba(255,255,255,0.08)'
+      roundRect(ctx, x - 110, 1200, 220, 140, 24); ctx.fill()
+      ctx.fillStyle = VOLT
+      ctx.font = '900 80px Inter, sans-serif'
+      ctx.fillText(it.v, x, 1285)
+      ctx.fillStyle = 'rgba(245,245,245,0.5)'
+      ctx.font = '900 22px Inter, sans-serif'
+      ctx.fillText(it.l.toUpperCase(), x, 1325)
+    })
+  }
+
+  // Athlete
+  ctx.textAlign = 'left'
+  await drawAvatar(ctx, d, 80, 1500, 120)
+  ctx.fillStyle = INK; ctx.font = '900 56px Inter, sans-serif'
+  ctx.fillText(d.authorName, 230, 1560)
+  ctx.fillStyle = d.beltColor; roundRect(ctx, 230, 1580, 80, 18, 4); ctx.fill()
+  ctx.fillStyle = 'rgba(245,245,245,0.6)'; ctx.font = '700 26px Inter, sans-serif'
+  ctx.fillText(`Faixa ${d.beltName} · @${d.username}`, 330, 1596)
+
+  drawFooter(ctx, d)
+  return new Promise<Blob>((res, rej) =>
+    canvas.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/jpeg', 0.92))
+}
+
 export async function generateStoryImage(d: StoryData): Promise<Blob> {
   switch (d.template) {
-    case 'minimal': return drawMinimal(d)
-    case 'hype':    return drawHype(d)
-    case 'stats':   return drawStats(d)
-    default:        return drawClassic(d)
+    case 'minimal':     return drawMinimal(d)
+    case 'hype':        return drawHype(d)
+    case 'stats':       return drawStats(d)
+    case 'achievement': return drawAchievement(d)
+    case 'graduation':  return drawGraduation(d)
+    case 'record':      return drawRecord(d)
+    default:            return drawClassic(d)
   }
 }
 
 export const TEMPLATE_META: Record<StoryTemplate, { label: string; emoji: string; desc: string }> = {
-  classic: { label: 'Clássico',  emoji: '🩸', desc: 'Foto + stats' },
-  minimal: { label: 'Minimal',   emoji: '⚪', desc: 'Limpo, claro' },
-  hype:    { label: 'Hype',      emoji: '⚡', desc: 'Volt explosion' },
-  stats:   { label: 'Stats',     emoji: '📊', desc: 'Data poster' },
+  classic:     { label: 'Clássico',  emoji: '🩸', desc: 'Foto + stats' },
+  minimal:     { label: 'Minimal',   emoji: '⚪', desc: 'Limpo, claro' },
+  hype:        { label: 'Hype',      emoji: '⚡', desc: 'Volt explosion' },
+  stats:       { label: 'Stats',     emoji: '📊', desc: 'Data poster' },
+  achievement: { label: 'Conquista', emoji: '🏆', desc: 'Badge desbloqueado' },
+  graduation:  { label: 'Graduação', emoji: '🥋', desc: 'Faixa/grau' },
+  record:      { label: 'Recorde',   emoji: '⚡', desc: 'Novo PR' },
 }
 
 export async function shareToInstagramStories(blob: Blob, filename = 'michi-story.jpg') {

@@ -5,6 +5,7 @@ import { BELTS, getTotalTechniques, getCurriculumByBelt } from '@/lib/curriculum
 import { getXPLevel, getXPProgress } from '@/store/user'
 import BottomNav from '@/components/ui/BottomNav'
 import NotificationBell from '@/components/ui/NotificationBell'
+import TourOverlay from '@/components/onboarding/TourOverlay'
 import ActivityRings from '@/components/dashboard/charts/ActivityRings'
 import MinutesBarChart from '@/components/dashboard/charts/MinutesBarChart'
 import TypeBreakdown from '@/components/dashboard/charts/TypeBreakdown'
@@ -225,6 +226,9 @@ export function DashboardClient({
             </div>
           </div>
         </div>
+
+        {/* Sprint P2.10 — Tour onboarding (renderiza apenas na primeira sessão) */}
+        <TourOverlay />
 
         {/* Sprint P0.3 — Streak hero */}
         <Link href="/calendar"
