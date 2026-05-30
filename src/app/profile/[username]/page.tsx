@@ -9,6 +9,7 @@ import ProfileHighlights from '@/components/profile/ProfileHighlights'
 import ProfileTimeline from '@/components/profile/ProfileTimeline'
 import ProfilePosts from '@/components/profile/ProfilePosts'
 import LevelBadge from '@/components/profile/LevelBadge'
+import MonthlyCalendar from '@/components/profile/MonthlyCalendar'
 import Link from 'next/link'
 
 interface Props { params: Promise<{ username: string }> }
@@ -89,7 +90,12 @@ export default async function PublicProfilePage({ params }: Props) {
     { data: weightClassRaw },
     { count: sessionCount },
   ] = await Promise.all([
-    supabasePublic.from('training_sessions').select('duration_min').eq('user_id', profile.id),
+    supabasePublic.from('training_sessions')
+      .select('id, type, duration_min, trained_at')
+      .eq('user_id', profile.id)
+      .neq('visibility', 'private')
+      .gte('trained_at', new Date(Date.now() - 90 * 86400000).toISOString())
+      .order('trained_at', { ascending: false }),
     supabasePublic.from('follows').select('follower_id', { count: 'exact', head: true }).eq('following_id', profile.id),
     supabasePublic.from('follows').select('following_id', { count: 'exact', head: true }).eq('follower_id', profile.id),
     profile.weight_kg
@@ -327,36 +333,12 @@ export default async function PublicProfilePage({ params }: Props) {
           </div>
         </div>
 
-        {/* Attendance heatmap */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Frequência — últimas 52 semanas</p>
-          <div className="flex gap-0.5 overflow-x-auto scrollbar-none">
-            {weeks.map((week, wi) => (
-              <div key={wi} className="flex flex-col gap-0.5 flex-shrink-0">
-                {week.map(day => (
-                  <div key={day} title={day}
-                    className="w-2.5 h-2.5 rounded-sm"
-                    style={{
-                      background: attendSet.has(day)
-                        ? '#CC0000'
-                        : day > today.toISOString().split('T')[0]
-                          ? 'transparent'
-                          : '#F2F0ED',
-                    }} />
-                ))}
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center justify-between mt-2">
-            <p className="text-[10px] text-[#AAA]">52 semanas atrás</p>
-            <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-sm bg-[#F2F0ED]" />
-              <p className="text-[10px] text-[#AAA]">0</p>
-              <div className="w-2.5 h-2.5 rounded-sm bg-[#CC0000] ml-1" />
-              <p className="text-[10px] text-[#AAA]">treino</p>
-            </div>
-          </div>
-        </div>
+        {/* Bloco 7 — Calendário mensal */}
+        <MonthlyCalendar
+          sessions={(sessionsRaw ?? []) as { id: string; type: string; duration_min: number; trained_at: string }[]}
+          beltId={profile.belt_id}
+          publicMode />
+
 
         {/* Belt timeline */}
         {promotions.length > 0 && (
