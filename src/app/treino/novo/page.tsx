@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -63,6 +63,9 @@ export default function NovoTreinoPage() {
   const [note, setNote] = useState('')
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [showPhotoSheet, setShowPhotoSheet] = useState(false)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
   // (técnicas legadas — chips smart agora cuidam disso)
   const [visibility, setVisibility] = useState<'public' | 'followers' | 'private'>('followers')
 
@@ -419,15 +422,45 @@ export default function NovoTreinoPage() {
                 className="absolute top-2 right-2 bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">✕</button>
             </div>
           ) : (
-            <label className="flex items-center justify-center bg-[#F8F7F5] border-2 border-dashed border-[#D0D0D0] rounded-xl py-8 cursor-pointer hover:border-[#CC0000] transition-colors">
+            <button type="button" onClick={() => setShowPhotoSheet(true)}
+              className="w-full flex items-center justify-center bg-[#F8F7F5] border-2 border-dashed border-[#D0D0D0] rounded-xl py-8 hover:border-[#CC0000] transition-colors">
               <div className="text-center">
                 <p className="text-2xl mb-1">📷</p>
-                <p className="text-xs text-[#555] font-bold">Tirar foto ou enviar</p>
+                <p className="text-xs text-[#555] font-bold">Adicionar foto</p>
               </div>
-              <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhoto} />
-            </label>
+            </button>
           )}
+          <input ref={cameraInputRef}  type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhoto} />
+          <input ref={galleryInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
         </div>
+
+        {/* P0.4 — Photo source sheet */}
+        {showPhotoSheet && (
+          <div className="fixed inset-0 bg-black/70 z-50 flex items-end backdrop-blur-sm"
+            onClick={e => e.target === e.currentTarget && setShowPhotoSheet(false)}>
+            <div className="bg-white w-full max-w-[480px] mx-auto rounded-t-3xl p-5"
+              style={{ animation: 'fadeUp 0.25s ease' }}>
+              <p className="text-center text-[10px] font-black uppercase tracking-wider text-[#888] mb-3">Escolha uma opção</p>
+              <button type="button"
+                onClick={() => { setShowPhotoSheet(false); cameraInputRef.current?.click() }}
+                className="w-full flex items-center gap-3 bg-[#F8F7F5] hover:bg-[#FFF0F0] rounded-2xl px-4 py-3.5 mb-2 transition-colors">
+                <span className="text-2xl">📸</span>
+                <span className="font-black text-[#1A1A1A]">Tirar foto</span>
+              </button>
+              <button type="button"
+                onClick={() => { setShowPhotoSheet(false); galleryInputRef.current?.click() }}
+                className="w-full flex items-center gap-3 bg-[#F8F7F5] hover:bg-[#FFF0F0] rounded-2xl px-4 py-3.5 mb-2 transition-colors">
+                <span className="text-2xl">🖼️</span>
+                <span className="font-black text-[#1A1A1A]">Escolher da galeria</span>
+              </button>
+              <button type="button"
+                onClick={() => setShowPhotoSheet(false)}
+                className="w-full bg-[#E5E5E5] text-[#555] font-black rounded-full py-3 mt-2 text-sm">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Feeling */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">

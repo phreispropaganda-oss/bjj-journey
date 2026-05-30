@@ -5,6 +5,7 @@ import { BELTS, getCurriculumByBelt, getTotalTechniques } from '@/lib/curriculum
 import { createClient } from '@/lib/supabase/server'
 import ShareButton from '@/components/profile/ShareButton'
 import FollowButton from '@/components/profile/FollowButton'
+import ProfileHighlights from '@/components/profile/ProfileHighlights'
 import Link from 'next/link'
 
 interface Props { params: Promise<{ username: string }> }
@@ -290,6 +291,9 @@ export default async function PublicProfilePage({ params }: Props) {
           )}
         </div>
       </div>
+
+      {/* Sprint P0.1 — Destaques */}
+      <ProfileHighlights userId={profile.id} beltId={profile.belt_id} degrees={profile.degrees} />
 
       {/* Content */}
       <div className="px-4 py-4 space-y-3 pb-8">

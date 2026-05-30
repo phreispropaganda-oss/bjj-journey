@@ -226,6 +226,22 @@ export function DashboardClient({
           </div>
         </div>
 
+        {/* Sprint P0.3 — Streak hero */}
+        <Link href="/calendar"
+          className="block rounded-2xl p-4 mb-3 bg-gradient-to-br from-blood to-[#6C0710] active:scale-[0.98] transition-transform">
+          <div className="flex items-center gap-4">
+            <span className="text-5xl">🔥</span>
+            <div className="flex-1">
+              <p className="font-display text-6xl text-white leading-none tabular-nums">{streak}</p>
+              <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.25em] mt-1">Dias consecutivos</p>
+            </div>
+            <div className="text-right">
+              <p className="text-white/60 text-[9px] uppercase tracking-wider">Recorde</p>
+              <p className="text-volt font-display text-lg">{personalRecords?.longest_streak_days ?? streak}d</p>
+            </div>
+          </div>
+        </Link>
+
         {/* Stats rings */}
         <div className="grid grid-cols-3 gap-2 mb-3">
           {[
