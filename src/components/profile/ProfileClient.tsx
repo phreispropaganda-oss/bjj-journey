@@ -52,6 +52,8 @@ export default function ProfileClient({
   const [isPublic,    setIsPublic]    = useState(profile.is_public ?? false)
   const [academyName, setAcademyName] = useState(profile.academy_name ?? '')
   const [customAcad,  setCustomAcad]  = useState('')
+  const [yearsTraining, setYearsTraining] = useState((profile as { years_training?: number | null }).years_training ?? 0)
+  const [birthDate,   setBirthDate]   = useState((profile as { birth_date?: string | null }).birth_date ?? '')
   const [weight,      setWeight]      = useState(profile.weight_kg ? String(profile.weight_kg) : '')
   const [height,      setHeight]      = useState(profile.height_cm ? String(profile.height_cm) : '')
   const [bio,         setBio]         = useState(profile.bio ?? '')
@@ -125,6 +127,8 @@ export default function ProfileClient({
         academy_name: finalAcademy,
         weight_kg:    weight ? parseFloat(weight) : null,
         height_cm:    height ? parseInt(height) : null,
+        years_training: yearsTraining,
+        birth_date:   birthDate || null,
         bio:          bio.trim() || null,
       } as never)
       .eq('id', profile.id)
@@ -349,10 +353,30 @@ export default function ProfileClient({
               <div>
                 <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Altura (cm)</label>
                 <input type="number" min={100} max={250}
-                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#CC0000]"
+                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#FF6B2B]"
                   placeholder="Ex: 178"
                   value={height}
                   onChange={e => setHeight(e.target.value)} />
+              </div>
+            </div>
+
+            {/* Tempo de luta + Data nascimento */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Tempo de luta (anos)</label>
+                <input type="number" min={0} max={60}
+                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#FF6B2B]"
+                  placeholder="Ex: 5"
+                  value={yearsTraining}
+                  onChange={e => setYearsTraining(Number(e.target.value) || 0)} />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Data de nascimento</label>
+                <input type="date"
+                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#FF6B2B]"
+                  max={new Date().toISOString().slice(0,10)}
+                  value={birthDate}
+                  onChange={e => setBirthDate(e.target.value)} />
               </div>
             </div>
 

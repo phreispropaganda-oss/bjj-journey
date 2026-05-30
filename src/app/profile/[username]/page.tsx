@@ -10,6 +10,7 @@ import ProfileTimeline from '@/components/profile/ProfileTimeline'
 import ProfilePosts from '@/components/profile/ProfilePosts'
 import LevelBadge from '@/components/profile/LevelBadge'
 import MonthlyCalendar from '@/components/profile/MonthlyCalendar'
+import StatsCharts from '@/components/profile/StatsCharts'
 import Link from 'next/link'
 
 interface Props { params: Promise<{ username: string }> }
@@ -308,6 +309,9 @@ export default async function PublicProfilePage({ params }: Props) {
       <div className="px-4 mt-3">
         <LevelBadge userId={profile.id} />
       </div>
+
+      {/* Gráficos Strava-style — calorias 28d + minutos 12sem */}
+      <StatsCharts userId={profile.id} />
 
       {/* Content */}
       <div className="px-4 py-4 space-y-3 pb-8">
