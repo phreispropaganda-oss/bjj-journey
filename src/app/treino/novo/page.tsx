@@ -27,10 +27,16 @@ const FEELINGS = [
 
 const DURATION_PRESETS = [45, 60, 75, 90, 120]
 
-// MET 7.5 para BJJ
-function estimateCalories(durationMin: number, weightKg: number | null) {
+// MET por modalidade (mesmo cálculo do server-side trigger training_calc_calories)
+const MET_BY_MODALITY: Record<string, number> = {
+  bjj: 7.5, muay_thai: 9.8, boxe: 8.0, judo: 10.3, wrestling: 6.0,
+  mma: 10.0, karate: 10.0, taekwondo: 10.0, grappling: 7.5, kickboxing: 10.3,
+}
+// Estimativa para preview — DB recalcula no insert (fonte de verdade)
+function estimateCalories(durationMin: number, weightKg: number | null, modality = 'bjj') {
   const w = weightKg ?? 75
-  return Math.round(7.5 * w * (durationMin / 60))
+  const met = MET_BY_MODALITY[modality] ?? 7.5
+  return Math.round(met * w * (durationMin / 60))
 }
 
 export default function NovoTreinoPage() {
@@ -187,7 +193,15 @@ export default function NovoTreinoPage() {
       .single()
 
     if (err || !inserted) {
-      setError(err?.message ?? 'Erro ao salvar')
+      const msg = err?.message ?? 'Erro ao salvar'
+      // Mensagens humanizadas para os limites do PRD
+      if (msg.includes('Limite diário')) {
+        setError('⚠️ Você já registrou 4h de treino hoje. Volte amanhã!')
+      } else if (msg.includes('Limite semanal')) {
+        setError('⚠️ Você já registrou 30h de treino esta semana. Descanso é parte do treino!')
+      } else {
+        setError(msg)
+      }
       setSaving(false)
       return
     }

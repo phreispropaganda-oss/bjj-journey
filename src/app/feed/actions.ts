@@ -13,12 +13,19 @@ export async function toggleOss(sessionId: string) {
     .eq('session_id', sessionId).eq('user_id', user.id).maybeSingle()
 
   if (existing) {
-    await supabase.from('kudos' as never)
+    const { error } = await supabase.from('kudos' as never)
       .delete().match({ session_id: sessionId, user_id: user.id } as never)
+    if (error) return { error: error.message }
   } else {
-    await (supabase.from('kudos') as ReturnType<typeof supabase.from>).insert({
+    const { error } = await (supabase.from('kudos') as ReturnType<typeof supabase.from>).insert({
       session_id: sessionId, user_id: user.id,
     } as never)
+    if (error) {
+      if (error.message.includes('Limite diário')) {
+        return { error: 'Você atingiu o limite de 100 Oss! por dia.' }
+      }
+      return { error: error.message }
+    }
   }
 
   revalidatePath('/feed')
@@ -38,7 +45,12 @@ export async function postComment(sessionId: string, text: string) {
     session_id: sessionId, user_id: user.id, text: clean,
   } as never)
 
-  if (error) return { error: error.message }
+  if (error) {
+    if (error.message.includes('Limite diário')) {
+      return { error: 'Você atingiu o limite de 50 comentários por dia.' }
+    }
+    return { error: error.message }
+  }
   revalidatePath('/feed')
   return { ok: true }
 }

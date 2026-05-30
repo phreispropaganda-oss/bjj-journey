@@ -39,27 +39,8 @@ export default async function DashboardPage() {
   ])
   const sessions = (sessionsRaw ?? []) as { id: string; type: string; duration_min: number; trained_at: string }[]
 
-  // Recalculate streak from attendance
-  const sortedDates = (attendance ?? [])
-    .map((a: { date: string }) => a.date).sort().reverse()
-  let streak = 0
-  const today = new Date().toISOString().split('T')[0]
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
-  const dateSet = new Set(sortedDates)
-  if (dateSet.has(today) || dateSet.has(yesterday)) {
-    const start = dateSet.has(today) ? today : yesterday
-    let cur = new Date(start)
-    while (dateSet.has(cur.toISOString().split('T')[0])) {
-      streak++
-      cur.setDate(cur.getDate() - 1)
-    }
-  }
-
-  // Sync streak to profile if changed
-  if (streak !== profile.streak) {
-    await supabase.from('profiles').update({ streak } as never).eq('id', user.id)
-    profile.streak = streak
-  }
+  // Streak agora é mantido pelo trigger DB recompute_streak (PRD Etapa 2).
+  // Não recalculamos no client — fonte única é o servidor.
 
   return (
     <DashboardClient
