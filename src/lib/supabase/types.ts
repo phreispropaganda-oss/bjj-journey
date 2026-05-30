@@ -24,14 +24,34 @@ export const MODALITY_META: Record<Modality, { label: string; emoji: string }> =
   kickboxing: { label: 'Kickboxing',   emoji: '🥊' },
 }
 
+type ProfileRow = {
+  id: string; username: string; name: string;
+  belt_id: BeltId; degrees: number;
+  academy_name: string|null; academy_id: string|null;
+  created_at: string; updated_at: string;
+  is_public: boolean; xp: number; streak: number;
+}
+type TechniqueCompletionRow = {
+  id: string; user_id: string; belt_id: BeltId;
+  module_id: string; technique_name: string; completed_at: string
+}
+type AttendanceRow = { id: string; user_id: string; date: string; created_at: string }
+type AchievementRow = { id: string; user_id: string; badge_id: string; unlocked_at: string }
+type SubscriptionRow = {
+  id: string; user_id: string;
+  stripe_customer_id: string|null; stripe_subscription_id: string|null;
+  plan: PlanType; status: SubscriptionStatus;
+  current_period_end: string|null; created_at: string; updated_at: string;
+}
+
 export interface Database {
   public: {
     Tables: {
-      profiles: { Row: { id: string; username: string; name: string; belt_id: BeltId; degrees: number; academy_name: string|null; academy_id: string|null; created_at: string; updated_at: string; is_public: boolean; xp: number; streak: number }; Insert: any; Update: any }
-      technique_completions: { Row: { id: string; user_id: string; belt_id: BeltId; module_id: string; technique_name: string; completed_at: string }; Insert: any; Update: any }
-      attendance: { Row: { id: string; user_id: string; date: string; created_at: string }; Insert: any; Update: any }
-      achievements: { Row: { id: string; user_id: string; badge_id: string; unlocked_at: string }; Insert: any; Update: any }
-      subscriptions: { Row: { id: string; user_id: string; stripe_customer_id: string|null; stripe_subscription_id: string|null; plan: PlanType; status: SubscriptionStatus; current_period_end: string|null; created_at: string; updated_at: string }; Insert: any; Update: any }
+      profiles:              { Row: ProfileRow;              Insert: Partial<ProfileRow>              & Pick<ProfileRow, 'id' | 'username' | 'name'>; Update: Partial<ProfileRow> }
+      technique_completions: { Row: TechniqueCompletionRow;  Insert: Omit<TechniqueCompletionRow, 'id' | 'completed_at'> & Partial<Pick<TechniqueCompletionRow, 'id' | 'completed_at'>>; Update: Partial<TechniqueCompletionRow> }
+      attendance:            { Row: AttendanceRow;           Insert: Omit<AttendanceRow, 'id' | 'created_at'> & Partial<Pick<AttendanceRow, 'id' | 'created_at'>>; Update: Partial<AttendanceRow> }
+      achievements:          { Row: AchievementRow;          Insert: Omit<AchievementRow, 'id' | 'unlocked_at'> & Partial<Pick<AchievementRow, 'id' | 'unlocked_at'>>; Update: Partial<AchievementRow> }
+      subscriptions:         { Row: SubscriptionRow;         Insert: Partial<SubscriptionRow> & Pick<SubscriptionRow, 'user_id' | 'plan' | 'status'>; Update: Partial<SubscriptionRow> }
     }
   }
 }

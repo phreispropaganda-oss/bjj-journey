@@ -77,7 +77,9 @@ export default function PromoverPage() {
     if (!selected || !toBelt || !academyId) return
     setSaving(true)
     const supabase = createClient()
-    await (supabase as any).rpc('promote_student', {
+    await (supabase as unknown as {
+      rpc: (n: string, p: Record<string, string | number | null>) => Promise<unknown>
+    }).rpc('promote_student', {
       p_user_id: selected.id,
       p_to_belt: toBelt,
       p_to_degrees: toDegrees,

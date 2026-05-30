@@ -146,7 +146,8 @@ export default function ModulesClient({ beltId }: Props) {
       await (supabase.from('technique_completions') as ReturnType<typeof supabase.from>).insert({
         user_id: user.id, belt_id: bId, module_id: modId, technique_name: techName,
       } as never)
-      await (supabase as any).rpc('increment_xp', { user_id: user.id, amount: 10 }).catch(() => null)
+      await (supabase as unknown as { rpc: (n: string, p: Record<string, string | number>) => Promise<unknown> })
+        .rpc('increment_xp', { user_id: user.id, amount: 10 })
     } else {
       await supabase.from('technique_completions' as never)
         .delete().match({ user_id: user.id, belt_id: bId, module_id: modId, technique_name: techName } as never)
