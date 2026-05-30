@@ -6,6 +6,9 @@ import { createClient } from '@/lib/supabase/server'
 import ShareButton from '@/components/profile/ShareButton'
 import FollowButton from '@/components/profile/FollowButton'
 import ProfileHighlights from '@/components/profile/ProfileHighlights'
+import ProfileTimeline from '@/components/profile/ProfileTimeline'
+import ProfilePosts from '@/components/profile/ProfilePosts'
+import LevelBadge from '@/components/profile/LevelBadge'
 import Link from 'next/link'
 
 interface Props { params: Promise<{ username: string }> }
@@ -295,6 +298,11 @@ export default async function PublicProfilePage({ params }: Props) {
       {/* Sprint P0.1 — Destaques */}
       <ProfileHighlights userId={profile.id} beltId={profile.belt_id} degrees={profile.degrees} />
 
+      {/* Sprint P1.6 — Nível XP */}
+      <div className="px-4 mt-3">
+        <LevelBadge userId={profile.id} />
+      </div>
+
       {/* Content */}
       <div className="px-4 py-4 space-y-3 pb-8">
 
@@ -374,6 +382,15 @@ export default async function PublicProfilePage({ params }: Props) {
             </div>
           </div>
         )}
+
+        {/* Sprint P1.5 — Timeline de evolução */}
+        <div className="bg-brand-surface rounded-2xl p-4 border border-brand-elev">
+          <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">Jornada</p>
+          <ProfileTimeline userId={profile.id} />
+        </div>
+
+        {/* Sprint P1.8 — Posts (fotos) */}
+        <ProfilePosts userId={profile.id} />
 
         {/* Share */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
