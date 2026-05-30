@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import StudentViewBanner from '@/components/ui/StudentViewBanner'
+import AnalyticsBoot from '@/components/AnalyticsBoot'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
   title: 'MICHI — Domine o tatame',
@@ -25,7 +27,14 @@ export const viewport: Viewport = {
   themeColor: '#080808',  // PRD §2.1 — bg base
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  let userId: string | undefined
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    userId = user?.id
+  } catch { /* anonymous */ }
+
   return (
     <html lang="pt-BR" className="dark">
       <head>
@@ -44,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="max-w-[480px] mx-auto min-h-screen bg-brand-bg text-ink-primary">
         <StudentViewBanner />
+        <AnalyticsBoot userId={userId} />
         {children}
       </body>
     </html>
