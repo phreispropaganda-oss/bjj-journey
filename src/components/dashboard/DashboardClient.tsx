@@ -8,11 +8,29 @@ import NotificationBell from '@/components/ui/NotificationBell'
 import ActivityRings from '@/components/dashboard/charts/ActivityRings'
 import MinutesBarChart from '@/components/dashboard/charts/MinutesBarChart'
 import TypeBreakdown from '@/components/dashboard/charts/TypeBreakdown'
-import StreakHeatmap from '@/components/dashboard/charts/StreakHeatmap'
+// StreakHeatmap legado substituído por HeatmapYoY (PRD §3.3)
+import RadarChart8 from '@/components/dashboard/charts/RadarChart8'
+import LevelProgress from '@/components/dashboard/charts/LevelProgress'
+import PersonalRecords from '@/components/dashboard/charts/PersonalRecords'
+import HeatmapYoY from '@/components/dashboard/charts/HeatmapYoY'
 import type { Database } from '@/lib/supabase/types'
 import type { BeltId } from '@/lib/supabase/types'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
+
+interface XPProgress {
+  total_minutes: number; total_hours: number; current_level: number
+  level_start_min: number; next_level_min: number
+  minutes_in_level: number; minutes_to_next: number; level_progress_pct: number
+}
+interface RadarPoint { category: string; score: number; raw_count: number }
+interface PR {
+  longest_streak_days: number
+  longest_session_min: number; longest_session_date: string | null
+  most_subs_week: number; most_subs_week_start: string | null
+  first_training_date: string | null
+  most_active_month: string | null; most_active_month_count: number
+}
 
 interface Props {
   profile: Profile
@@ -20,6 +38,9 @@ interface Props {
   completions: { belt_id: string; module_id: string; technique_name: string }[]
   achievements: { badge_id: string; unlocked_at: string }[]
   sessions: { id: string; type: string; duration_min: number; trained_at: string }[]
+  xpProgress?: XPProgress
+  radar?: RadarPoint[]
+  personalRecords?: PR
 }
 
 // Badge definitions
@@ -121,7 +142,10 @@ function NextTechniqueCard({ beltId, completions }: {
   )
 }
 
-export function DashboardClient({ profile, attendance, completions, achievements, sessions }: Props) {
+export function DashboardClient({
+  profile, attendance, completions, achievements, sessions,
+  xpProgress, radar, personalRecords,
+}: Props) {
   const belt    = BELTS.find(b => b.id === profile.belt_id) ?? BELTS[0]
   const total   = getTotalTechniques(profile.belt_id as BeltId)
   const done    = completions.filter(c => c.belt_id === profile.belt_id).length
@@ -222,29 +246,51 @@ export function DashboardClient({ profile, attendance, completions, achievements
           ))}
         </div>
 
-        {/* XP bar */}
-        <div className="bg-[#FFF0F0] rounded-2xl p-4 mb-3">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-base">⚡</span>
-              <span className="text-sm font-black text-[#0D0D0D]">Nível {level}</span>
+        {/* PRD §3.1 — Level Logarítmico (server-side) */}
+        {xpProgress ? (
+          <div className="mb-3">
+            <LevelProgress
+              totalMinutes={xpProgress.total_minutes}
+              totalHours={xpProgress.total_hours}
+              currentLevel={xpProgress.current_level}
+              levelStartMin={xpProgress.level_start_min}
+              nextLevelMin={xpProgress.next_level_min}
+              minutesInLevel={xpProgress.minutes_in_level}
+              minutesToNext={xpProgress.minutes_to_next}
+              levelProgressPct={xpProgress.level_progress_pct}
+            />
+          </div>
+        ) : (
+          // Legacy fallback (XP local)
+          <div className="bg-blood/10 rounded-2xl p-4 mb-3 border border-blood/20">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-base">⚡</span>
+                <span className="text-sm font-display text-ink-primary">Nível {level}</span>
+              </div>
+              <span className="bg-blood text-ink-primary text-[11px] font-black rounded-full px-2.5 py-0.5">
+                {profile.xp} XP
+              </span>
             </div>
-            <span className="bg-[#CC0000] text-white text-[11px] font-black rounded-full px-2.5 py-0.5">
-              {profile.xp} / {level * 500} XP
-            </span>
+            <div className="h-2 bg-brand-bg rounded-full overflow-hidden">
+              <div className="h-full bg-blood rounded-full transition-all duration-500" style={{ width: `${xpPct}%` }} />
+            </div>
           </div>
-          <div className="h-2 bg-[#FFCCCC] rounded-full overflow-hidden">
-            <div className="h-full bg-[#CC0000] rounded-full transition-all duration-500" style={{ width: `${xpPct}%` }} />
-          </div>
-          {/* Badges */}
-          {achievements.length > 0 && (
-            <div className="flex gap-2 flex-wrap mt-3">
+        )}
+
+        {/* Badges */}
+        {achievements.length > 0 && (
+          <div className="card-elev mb-3">
+            <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-2">
+              🏅 Conquistas
+            </p>
+            <div className="flex gap-2 flex-wrap">
               {achievements.map(a => {
                 const badge = BADGES[a.badge_id]
                 if (!badge) return null
                 return (
                   <div key={a.badge_id}
-                    className="flex items-center gap-1.5 bg-white rounded-full px-2.5 py-1 text-[11px] font-bold text-[#555] border border-[#FFCCCC]"
+                    className="flex items-center gap-1.5 bg-volt/15 rounded-full px-2.5 py-1 text-[11px] font-bold text-volt border border-volt/30"
                     title={new Date(a.unlocked_at).toLocaleDateString('pt-BR')}>
                     <span>{badge.emoji}</span>
                     <span>{badge.name}</span>
@@ -252,8 +298,31 @@ export function DashboardClient({ profile, attendance, completions, achievements
                 )
               })}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* PRD §3.2 — Radar 8 eixos */}
+        {radar && radar.length > 0 && (
+          <div className="mb-3">
+            <RadarChart8 data={radar} />
+          </div>
+        )}
+
+        {/* PRD §3.3 — Personal Records */}
+        {personalRecords && (
+          <div className="mb-3">
+            <PersonalRecords
+              longestStreakDays={personalRecords.longest_streak_days}
+              longestSessionMin={personalRecords.longest_session_min}
+              longestSessionDate={personalRecords.longest_session_date}
+              mostSubsWeek={personalRecords.most_subs_week}
+              mostSubsWeekStart={personalRecords.most_subs_week_start}
+              firstTrainingDate={personalRecords.first_training_date}
+              mostActiveMonth={personalRecords.most_active_month}
+              mostActiveMonthCount={personalRecords.most_active_month_count}
+            />
+          </div>
+        )}
 
         {/* Next technique */}
         <NextTechniqueCard beltId={profile.belt_id} completions={completions} />
@@ -281,9 +350,9 @@ export function DashboardClient({ profile, attendance, completions, achievements
           </div>
         )}
 
-        {/* 90-day heatmap */}
+        {/* PRD §3.3 — Heatmap YoY com toggle de ano */}
         <div className="mb-3">
-          <StreakHeatmap attendance={attendance} trainingSessions={sessions} />
+          <HeatmapYoY attendance={attendance} trainingSessions={sessions} />
         </div>
 
         {/* Registrar treino — CTA principal */}
