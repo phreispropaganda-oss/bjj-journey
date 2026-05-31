@@ -310,17 +310,17 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">Compartilhar nas redes</p>
 
-          {/* Template picker */}
-          <div className="grid grid-cols-4 gap-1.5 mb-3">
-            {(Object.keys(TEMPLATE_META) as StoryTemplate[]).map(k => (
-              <button key={k} onClick={() => setTemplate(k)}
-                className={`flex flex-col items-center gap-0.5 rounded-xl py-2 border-2 transition-all ${
+          {/* Template picker — 3 layouts */}
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            {(Object.keys(TEMPLATE_META) as (keyof typeof TEMPLATE_META)[]).map(k => (
+              <button key={k} onClick={() => setTemplate(k as StoryTemplate)}
+                className={`flex flex-col items-center gap-1 rounded-xl py-3 border-2 transition-all ${
                   template === k
-                    ? 'border-[#9E0B13] bg-[#9E0B13]/10'
-                    : 'border-brand-elev bg-white hover:border-[#9E0B13]/40'
+                    ? 'border-rise bg-rise/10'
+                    : 'border-brand-elev bg-brand-surface hover:border-rise/40'
                 }`}>
-                <span className="text-lg leading-none">{TEMPLATE_META[k].emoji}</span>
-                <span className={`text-[10px] font-black ${template === k ? 'text-blood' : 'text-ink-secondary'}`}>
+                <span className="text-xl leading-none">{TEMPLATE_META[k].emoji}</span>
+                <span className={`text-[10px] font-black ${template === k ? 'text-rise' : 'text-ink-secondary'}`}>
                   {TEMPLATE_META[k].label}
                 </span>
               </button>

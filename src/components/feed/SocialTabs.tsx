@@ -3,9 +3,8 @@
 import Link from 'next/link'
 
 const TABS = [
-  { href: '/feed',      label: 'Feed',     emoji: '🔥' },
-  { href: '/desafios',  label: 'Desafios', emoji: '🎯' },
-  { href: '/rankings',  label: 'Rankings', emoji: '🏆' },
+  { href: '/feed',     label: 'Feed',     emoji: '🔥' },
+  { href: '/desafios', label: 'Desafios', emoji: '🎯' },
 ]
 
 export default function SocialTabs({ active }: { active: 'feed' | 'desafios' | 'rankings' }) {
@@ -16,7 +15,7 @@ export default function SocialTabs({ active }: { active: 'feed' | 'desafios' | '
         return (
           <Link key={t.href} href={t.href}
             className={`flex-shrink-0 px-3.5 py-2 rounded-full text-xs font-black transition-all min-h-tap ${
-              isActive ? 'bg-blood text-ink-primary shadow-glow-blood' : 'bg-brand-elev text-ink-secondary'
+              isActive ? 'bg-rise text-ink-primary shadow-glow-rise' : 'bg-brand-elev text-ink-secondary'
             }`}>
             {t.emoji} {t.label}
           </Link>

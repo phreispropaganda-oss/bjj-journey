@@ -5,9 +5,11 @@ import { BELTS, getTotalTechniques, getCurriculumByBelt } from '@/lib/curriculum
 import { getXPLevel, getXPProgress } from '@/store/user'
 import BottomNav from '@/components/ui/BottomNav'
 import NotificationBell from '@/components/ui/NotificationBell'
-import TourOverlay from '@/components/onboarding/TourOverlay'
+// TourOverlay removido — UX guideline: tooltips contextuais > full-screen overlay
 import BeltRiseLogo from '@/components/ui/BeltRiseLogo'
 import StreakShieldButton from '@/components/dashboard/StreakShieldButton'
+import StoriesBar from '@/components/dashboard/StoriesBar'
+import RecentActivity from '@/components/dashboard/RecentActivity'
 import ActivityRings from '@/components/dashboard/charts/ActivityRings'
 import MinutesBarChart from '@/components/dashboard/charts/MinutesBarChart'
 import TypeBreakdown from '@/components/dashboard/charts/TypeBreakdown'
@@ -199,10 +201,11 @@ export function DashboardClient({
 
       <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-4 pb-24">
 
-        {/* Slogan restaurado — assinatura Belt Rise */}
-        <p className="text-center text-[10px] font-black uppercase tracking-[0.35em] text-ink-muted mb-3">
+        {/* Slogan + Stories bar Strava-style */}
+        <p className="text-center text-[10px] font-black uppercase tracking-[0.35em] text-ink-muted mb-2">
           Treine. <span className="text-rise">Suba.</span> Conquiste.
         </p>
+        <StoriesBar currentUserId={profile.id} />
 
         {/* INICIAR TREINO + Check-in — par compacto */}
         <div className="grid grid-cols-3 gap-2 mb-3">
@@ -252,6 +255,9 @@ export function DashboardClient({
           )
         })()}
 
+        {/* Recent Activity — lista dominante Strava-style */}
+        <RecentActivity sessions={sessions} limit={5} />
+
         {/* Hero atual (mantido com cor laranja brand) */}
         <div className="rounded-2xl p-4 text-white mb-3 relative overflow-hidden"
           style={{ background: 'linear-gradient(135deg, #CC0000 0%, #9E0B13 100%)' }}>
@@ -287,8 +293,7 @@ export function DashboardClient({
           </div>
         </div>
 
-        {/* Sprint P2.10 — Tour onboarding (renderiza apenas na primeira sessão) */}
-        <TourOverlay />
+        {/* Tour overlay removido — UX guideline: tooltips contextuais > overlay full-screen */}
 
         {/* Streak — versão suave e compacta */}
         <div className="block rounded-2xl p-3 mb-3 bg-brand-surface border border-brand-elev">

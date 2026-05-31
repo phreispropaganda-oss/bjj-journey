@@ -1,6 +1,8 @@
 // Belt Rise 9:16 (1080x1920) story templates — client-side canvas
 
-export type StoryTemplate = 'classic' | 'minimal' | 'hype' | 'stats' | 'achievement' | 'graduation' | 'record'
+export type StoryTemplate = 'classic' | 'hype' | 'record'
+  // Legacy types ainda aceitos para compat (mapeados para classic)
+  | 'minimal' | 'stats' | 'achievement' | 'graduation'
 
 export interface StoryData {
   authorName: string
@@ -527,24 +529,26 @@ async function drawRecord(d: StoryData): Promise<Blob> {
 
 export async function generateStoryImage(d: StoryData): Promise<Blob> {
   switch (d.template) {
-    case 'minimal':     return drawMinimal(d)
-    case 'hype':        return drawHype(d)
-    case 'stats':       return drawStats(d)
-    case 'achievement': return drawAchievement(d)
-    case 'graduation':  return drawGraduation(d)
-    case 'record':      return drawRecord(d)
+    case 'hype':   return drawHype(d)
+    case 'record': return drawRecord(d)
+    // Legacy templates redirecionam para o template principal mais proximo
+    case 'minimal':     return drawClassic(d)
+    case 'stats':       return drawClassic(d)
+    case 'achievement': return drawRecord(d)
+    case 'graduation':  return drawClassic(d)
+    case 'classic':
     default:            return drawClassic(d)
   }
 }
 
-export const TEMPLATE_META: Record<StoryTemplate, { label: string; emoji: string; desc: string }> = {
-  classic:     { label: 'Clássico',  emoji: '🩸', desc: 'Foto + stats' },
-  minimal:     { label: 'Minimal',   emoji: '⚪', desc: 'Limpo, claro' },
-  hype:        { label: 'Hype',      emoji: '⚡', desc: 'Volt explosion' },
-  stats:       { label: 'Stats',     emoji: '📊', desc: 'Data poster' },
-  achievement: { label: 'Conquista', emoji: '🏆', desc: 'Badge desbloqueado' },
-  graduation:  { label: 'Graduação', emoji: '🥋', desc: 'Faixa/grau' },
-  record:      { label: 'Recorde',   emoji: '⚡', desc: 'Novo PR' },
+/**
+ * Apenas 3 templates principais (reduzido de 7 — guideline UI/UX:
+ * less is more, 3 cobrem 95% dos casos).
+ */
+export const TEMPLATE_META: Record<'classic' | 'hype' | 'record', { label: string; emoji: string; desc: string }> = {
+  classic: { label: 'Clássico', emoji: '🩸', desc: 'Foto + stats' },
+  hype:    { label: 'Hype',     emoji: '⚡', desc: 'Energia + KCAL' },
+  record:  { label: 'Recorde',  emoji: '🏆', desc: 'Novo PR' },
 }
 
 export async function shareToInstagramStories(blob: Blob, filename = 'belt-rise-story.jpg') {
