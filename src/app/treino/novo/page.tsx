@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { BELTS, getCurriculumByBelt } from '@/lib/curriculum'
@@ -51,7 +51,9 @@ export default function NovoTreinoPage() {
   const [intensity, setIntensity] = useState<number | null>(null)
   const [type, setType] = useState<TrainingType>('gi')
   const [duration, setDuration] = useState<number | ''>(60)
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const sp = useSearchParams()
+  const isRetro = sp.get('retro') === '1' || !!sp.get('date')
+  const [date, setDate] = useState(sp.get('date') ?? new Date().toISOString().split('T')[0])
   const [academyName, setAcademyName] = useState('')
   const [customAcademy, setCustomAcademy] = useState('')
   const [instructor, setInstructor] = useState('')
@@ -308,14 +310,21 @@ export default function NovoTreinoPage() {
           )}
         </div>
 
-        {/* Date — defaults today, allows past */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <label className="field-label">Data do treino</label>
+        {/* Date — defaults today, allows past (treino retroativo) */}
+        <div className={`rounded-2xl p-4 ${isRetro ? 'bg-[#FFF1EA] border-2 border-[#FF6B2B]' : 'bg-white shadow-sm'}`}>
+          <label className="field-label">
+            {isRetro ? '🕐 Data do treino retroativo' : 'Data do treino'}
+          </label>
           <input type="date"
             className="field-input"
             max={new Date().toISOString().split('T')[0]}
             value={date}
             onChange={e => setDate(e.target.value)} />
+          {isRetro && (
+            <p className="text-[10px] text-[#E55818] font-bold mt-1.5">
+              Voce esta registrando um treino do passado. Stats e badges sao recalculados.
+            </p>
+          )}
         </div>
 
         {/* Modalidade (PRD §1.3) */}

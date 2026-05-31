@@ -3,7 +3,10 @@
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { BELTS } from '@/lib/curriculum'
+import { useRouter } from 'next/navigation'
 import { generateStoryImage, shareToInstagramStories, TEMPLATE_META, type StoryTemplate } from '@/lib/storyImage'
+import { deleteTrainingSession, updateSessionVisibility, type Visibility } from '@/app/treino/actions'
+import { useConfirm } from '@/components/ui/ConfirmDialog'
 
 const TYPE_META: Record<string, { emoji: string; label: string }> = {
   gi:          { emoji:'🥋', label:'Gi' },
@@ -30,10 +33,39 @@ interface Props {
 }
 
 export default function ShareSession({ session, profile, calories, profileUrl }: Props) {
+  const router = useRouter()
+  const confirm = useConfirm()
   const [showPhoto, setShowPhoto] = useState(!!session.photo_url)
   const [generatingStory, setGeneratingStory] = useState(false)
   const [template, setTemplate] = useState<StoryTemplate>('classic')
+  const [vis, setVis] = useState<Visibility>(((session as { visibility?: Visibility }).visibility ?? 'followers'))
+  const [visBusy, setVisBusy] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
+
+  async function handleVisibility(v: Visibility) {
+    if (vis === v || visBusy) return
+    setVisBusy(true)
+    const prev = vis
+    setVis(v)
+    const r = await updateSessionVisibility(session.id, v)
+    setVisBusy(false)
+    if (r.error) { setVis(prev); alert('Erro ao atualizar visibilidade'); return }
+  }
+
+  async function handleDelete() {
+    const ok = await confirm({
+      title: 'Apagar este treino?',
+      body: 'O treino e todos os comentários/oss serão removidos. Esta ação não pode ser desfeita.',
+      confirmLabel: 'Apagar', destructive: true,
+    })
+    if (!ok || deleting) return
+    setDeleting(true)
+    const r = await deleteTrainingSession(session.id)
+    setDeleting(false)
+    if (r.error) { alert('Erro: ' + r.error); return }
+    router.push('/dashboard')
+  }
 
   const belt = BELTS.find(b => b.id === profile.belt_id) ?? BELTS[0]
 
@@ -308,14 +340,43 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
           </p>
         </div>
 
+        {/* Visibilidade + Apagar */}
+        <div className="bg-white rounded-2xl p-3 shadow-sm">
+          <p className="text-[10px] font-black uppercase tracking-wider text-[#555] mb-2">Gestão do treino</p>
+          <div className="grid grid-cols-3 gap-2 mb-2">
+            <button onClick={() => handleVisibility('public')} disabled={visBusy}
+              className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10px] font-black border-2 ${
+                vis === 'public' ? 'border-[#FF6B2B] bg-[#FFF1EA] text-[#E55818]' : 'border-[#E5E5E5] text-[#555]'
+              }`}>
+              <span className="text-base">🌐</span> Público
+            </button>
+            <button onClick={() => handleVisibility('followers')} disabled={visBusy}
+              className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10px] font-black border-2 ${
+                vis === 'followers' ? 'border-[#FF6B2B] bg-[#FFF1EA] text-[#E55818]' : 'border-[#E5E5E5] text-[#555]'
+              }`}>
+              <span className="text-base">👥</span> Seguidores
+            </button>
+            <button onClick={() => handleVisibility('private')} disabled={visBusy}
+              className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10px] font-black border-2 ${
+                vis === 'private' ? 'border-[#FF6B2B] bg-[#FFF1EA] text-[#E55818]' : 'border-[#E5E5E5] text-[#555]'
+              }`}>
+              <span className="text-base">🔒</span> Só eu
+            </button>
+          </div>
+          <button onClick={handleDelete} disabled={deleting}
+            className="w-full flex items-center justify-center gap-1.5 bg-[#FEF2F2] text-[#9E0B13] font-black rounded-xl py-2.5 text-xs border border-[#FECACA] disabled:opacity-50">
+            {deleting ? 'Apagando...' : '🗑️ Apagar este treino'}
+          </button>
+        </div>
+
         {/* Continue */}
         <div className="grid grid-cols-2 gap-2">
           <Link href="/dashboard"
-            className="text-center bg-white border-2 border-[#E5E5E5] text-[#555] font-black py-3 rounded-2xl text-sm hover:border-[#CC0000] hover:text-[#CC0000] transition-colors">
+            className="text-center bg-white border-2 border-[#E5E5E5] text-[#555] font-black py-3 rounded-2xl text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-colors">
             Voltar ao início
           </Link>
           <Link href="/treino/novo"
-            className="text-center bg-[#CC0000] text-white font-black py-3 rounded-2xl text-sm hover:bg-[#A80000] transition-colors">
+            className="text-center bg-[#FF6B2B] text-white font-black py-3 rounded-2xl text-sm hover:bg-[#E55818] transition-colors">
             + Outro treino
           </Link>
         </div>

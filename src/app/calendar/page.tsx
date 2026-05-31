@@ -81,8 +81,12 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
-      <div className="bg-brand-surface border-b border-brand-elev px-4 py-3">
+      <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex items-center justify-between">
         <h1 className="font-display text-base text-ink-primary">Calendário</h1>
+        <Link href="/treino/novo?retro=1"
+          className="bg-rise text-ink-primary text-xs font-black px-3 py-1.5 rounded-full">
+          + Treino retroativo
+        </Link>
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-4 pb-24 space-y-3">
@@ -138,8 +142,12 @@ export default function CalendarPage() {
               const isFuture = dateStr > todayStr
               return (
                 <button key={day}
-                  onClick={() => lvl > 0 && setOpenDay(dateStr)}
-                  disabled={isFuture || lvl === 0}
+                  onClick={() => {
+                    if (isFuture) return
+                    if (lvl > 0) setOpenDay(dateStr)
+                    else window.location.href = `/treino/novo?date=${dateStr}`
+                  }}
+                  disabled={isFuture}
                   className={`relative aspect-square rounded-lg flex items-center justify-center text-xs font-bold transition-all
                     ${lvl === 0 && !isToday && !isFuture ? 'text-ink-muted bg-brand-bg/40' : ''}
                     ${lvl === 1 ? 'text-ink-primary bg-volt/30' : ''}
