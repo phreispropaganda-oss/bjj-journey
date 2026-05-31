@@ -1220,12 +1220,27 @@ const purpleBelt: BeltCurriculum = {
   ],
 }
 
+import {
+  WHITE_EXTRA_MODULES,
+  BLUE_EXTRA_MODULES,
+  PURPLE_EXTRA_MODULES,
+  BROWN_EXTRA_MODULES,
+  BLACK_EXTRA_MODULES,
+} from './ibjjf-extras'
+
+// Concatena módulos IBJJF best-effort aos currículos base
+const whiteFull:  BeltCurriculum = { ...whiteBelt,  modules: [...whiteBelt.modules,  ...WHITE_EXTRA_MODULES] }
+const blueFull:   BeltCurriculum = { ...blueBelt,   modules: [...blueBelt.modules,   ...BLUE_EXTRA_MODULES] }
+const purpleFull: BeltCurriculum = { ...purpleBelt, modules: [...purpleBelt.modules, ...PURPLE_EXTRA_MODULES] }
+const brownFull:  BeltCurriculum = { ...brownBelt,  modules: [...brownBelt.modules,  ...BROWN_EXTRA_MODULES] }
+const blackFull:  BeltCurriculum = { ...blackBelt,  modules: [...blackBelt.modules,  ...BLACK_EXTRA_MODULES] }
+
 export const BELT_CURRICULUM: BeltCurriculum[] = [
-  whiteBelt,
-  blueBelt,
-  purpleBelt,
-  brownBelt,
-  blackBelt,
+  whiteFull,
+  blueFull,
+  purpleFull,
+  brownFull,
+  blackFull,
 ]
 
 export function getCurriculumByBelt(beltId: BeltCurriculum['beltId']): BeltCurriculum | undefined {
