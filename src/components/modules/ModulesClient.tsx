@@ -75,7 +75,7 @@ function TechDetail({ tech, color, onClose, onToggle, done }: {
 
         <div className="overflow-y-auto scrollbar-none flex-1 px-5 pb-6">
           {/* Entry position */}
-          <div className="bg-[#F8F7F5] rounded-xl p-3 mb-3 border-l-2" style={{ borderColor: color }}>
+          <div className="bg-brand-bg rounded-xl p-3 mb-3 border-l-2" style={{ borderColor: color }}>
             <span className="text-[10px] font-black uppercase tracking-wider text-[#AAA] block mb-1">Posição de entrada</span>
             <p className="text-sm text-[#555] leading-relaxed">{tech.entryPosition}</p>
           </div>
@@ -174,7 +174,7 @@ export default function ModulesClient({ beltId }: Props) {
   useEffect(() => { syncFromSupabase() }, [syncFromSupabase])
 
   if (!curriculum || !belt) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8F7F5]">
+    <div className="min-h-screen flex items-center justify-center bg-brand-bg">
       <p className="text-[#AAA]">Faixa não encontrada.</p>
     </div>
   )
@@ -211,7 +211,7 @@ export default function ModulesClient({ beltId }: Props) {
   const beltPct = totalTechs > 0 ? Math.round((doneTechs / totalTechs) * 100) : 0
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* XP toast */}
       {xpShow && (
         <div className="fixed top-16 right-4 z-50 bg-white border border-[#F59E0B] rounded-2xl px-3 py-2 flex items-center gap-2 shadow-lg"
@@ -285,7 +285,7 @@ export default function ModulesClient({ beltId }: Props) {
             <div key={mod.id} className="bg-white rounded-2xl mb-2.5 overflow-hidden shadow-sm">
               {/* Module header */}
               <div
-                className="flex items-center gap-3 px-4 py-3.5 cursor-pointer active:bg-[#F8F7F5]"
+                className="flex items-center gap-3 px-4 py-3.5 cursor-pointer active:bg-brand-bg"
                 onClick={() => setOpenMods(o => ({ ...o, [mod.id]: !o[mod.id] }))}>
                 <span className="text-2xl font-black min-w-[32px] leading-none"
                   style={{ color: mod.color }}>{mod.number}</span>
@@ -318,7 +318,7 @@ export default function ModulesClient({ beltId }: Props) {
                     return (
                       <div key={cat.id} className="border-t border-[#F2F0ED]">
                         <div
-                          className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer active:bg-[#F8F7F5]"
+                          className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer active:bg-brand-bg"
                           onClick={() => setOpenCats(o => ({ ...o, [cat.id]: !o[cat.id] }))}>
                           <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
                             style={{ background: cat.bgColor }}>
@@ -331,7 +331,7 @@ export default function ModulesClient({ beltId }: Props) {
                         </div>
 
                         {catOpen && (
-                          <div className="bg-[#F8F7F5]">
+                          <div className="bg-brand-bg">
                             {cat.techniques.map((tech, i) => {
                               const key = `${beltId}-${mod.id}-${tech.name.replace(/\s/g, '_')}`
                               const isDone = isCompleted(key)

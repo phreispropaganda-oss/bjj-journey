@@ -23,6 +23,28 @@ export default function CalendarPage() {
   const [today] = useState(new Date())
   const [cur, setCur] = useState({ y: new Date().getFullYear(), m: new Date().getMonth() })
   const [openDay, setOpenDay] = useState<string | null>(null)
+  const [marking, setMarking] = useState(false)
+
+  async function markToday() {
+    if (marking) return
+    setMarking(true)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setMarking(false); return }
+    const payload = {
+      user_id: user.id,
+      type: 'gi',
+      duration_min: 60,
+      trained_at: new Date().toISOString(),
+      techniques: [] as string[],
+      visibility: 'private',
+      note: 'Presença rápida',
+    }
+    const { data } = await (supabase.from('training_sessions') as ReturnType<typeof supabase.from>)
+      .insert(payload as never).select('id, type, duration_min, trained_at, calories, note').single()
+    if (data) setSessions(prev => [data as Session, ...prev])
+    setMarking(false)
+  }
 
   const fmt = (d: Date) => d.toISOString().split('T')[0]
   const todayStr = fmt(today)
@@ -100,6 +122,19 @@ export default function CalendarPage() {
             <p className="text-xs opacity-60 mt-0.5">{totalTrains} treinos no histórico</p>
           </div>
         </div>
+
+        {/* Marcar presença hoje — atalho rápido */}
+        {!byDay.has(todayStr) && (
+          <button onClick={markToday} disabled={marking}
+            className="w-full bg-rise text-white font-display text-base py-4 rounded-2xl shadow-glow-rise disabled:opacity-50">
+            {marking ? 'Marcando...' : '✓ Marcar presença de hoje'}
+          </button>
+        )}
+        {byDay.has(todayStr) && (
+          <div className="flex items-center justify-center gap-2 py-3 text-volt font-black text-sm bg-volt/10 rounded-2xl border border-volt/30">
+            <span className="text-xl">✓</span> Presença de hoje registrada
+          </div>
+        )}
 
         {/* Quick stats */}
         <div className="grid grid-cols-3 gap-2">

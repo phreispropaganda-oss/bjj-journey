@@ -458,31 +458,31 @@ export default function FeedClient({
         </div>
       )}
 
-      {/* Actions: Oss + Super Oss + Comment */}
-      <div className="border-t border-brand-elev px-4 py-2.5 flex items-center gap-2">
-        <button onClick={handleTap}
-          disabled={pendingOss}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-full font-black text-sm transition-all min-h-tap select-none ${
+      {/* Actions: Oss + Super Oss + Comment — grid centralizado */}
+      <div className="border-t border-brand-elev px-3 py-2 grid grid-cols-2 gap-2">
+        <button onClick={handleTap} disabled={pendingOss}
+          className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-full font-black text-sm transition-all min-h-tap select-none ${
             iSuperOssed
               ? 'bg-volt text-brand-bg shadow-glow-volt'
               : iOssed
-                ? 'bg-blood text-ink-primary shadow-glow-blood'
-                : 'text-ink-secondary hover:bg-brand-elev'
+                ? 'bg-rise text-white shadow-glow-rise'
+                : 'bg-brand-elev text-ink-primary'
           }`}>
-          <span className="text-base">{iSuperOssed ? '⚡' : '👊'}</span>
-          <span>{iSuperOssed ? 'Super Oss!' : iOssed ? 'Oss!' : 'Oss'}</span>
-          {(ossCount + superOssCount) > 0 && (
-            <span className="text-xs opacity-80">· {ossCount + superOssCount}</span>
-          )}
+          <span className="text-base leading-none">{iSuperOssed ? '⚡' : '👊'}</span>
+          <span className="leading-none">
+            {iSuperOssed ? 'Super Oss!' : iOssed ? 'Oss!' : 'Oss'}
+            {(ossCount + superOssCount) > 0 && (
+              <span className="ml-1 opacity-80">{ossCount + superOssCount}</span>
+            )}
+          </span>
         </button>
         <button onClick={() => setShowComments(s => !s)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-full font-black text-sm text-ink-secondary hover:bg-brand-elev min-h-tap">
-          <span className="text-base">💬</span>
-          <span>{comments.length > 0 ? comments.length : 'Comentar'}</span>
+          className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-full font-black text-sm bg-brand-elev text-ink-primary min-h-tap">
+          <span className="text-base leading-none">💬</span>
+          <span className="leading-none">
+            {comments.length > 0 ? `${comments.length} coment.` : 'Comentar'}
+          </span>
         </button>
-        <span className="ml-auto text-[10px] text-ink-muted hidden sm:inline">
-          2 toques = Super Oss!
-        </span>
       </div>
 
       {/* Comments */}

@@ -116,7 +116,7 @@ export default async function RankingsPage({ searchParams }: Props) {
   const myRank = ranking.find(r => r.id === user.id)?.rank ?? null
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
       <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-[#CC0000] rounded-lg flex items-center justify-center">

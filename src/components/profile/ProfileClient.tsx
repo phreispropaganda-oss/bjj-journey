@@ -142,7 +142,7 @@ export default function ProfileClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top bar */}
       <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex items-center justify-between flex-shrink-0">
         <h1 className="font-black text-base tracking-tight">Meu Perfil</h1>
@@ -435,7 +435,7 @@ export default function ProfileClient({
         {/* Profile public link */}
         {profile.is_public && profile.username && (
           <Link href={`/profile/${profile.username}`}
-            className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:bg-[#F8F7F5] transition-colors">
+            className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:bg-brand-bg transition-colors">
             <div className="w-9 h-9 rounded-xl bg-[#FFF0F0] flex items-center justify-center text-[#CC0000] text-lg">👤</div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-[#0D0D0D]">Ver perfil público</p>
@@ -461,7 +461,7 @@ export default function ProfileClient({
         {/* Academia link — only for academy admins/instructors */}
         {isAcademyAdmin && (
           <Link href="/academia"
-            className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:bg-[#F8F7F5] transition-colors border border-[#E5E5E5]">
+            className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:bg-brand-bg transition-colors border border-[#E5E5E5]">
             <div className="w-9 h-9 rounded-xl bg-[#FFF0F0] flex items-center justify-center text-lg">🏢</div>
             <div className="flex-1">
               <p className="text-sm font-bold text-[#0D0D0D]">Painel Academia</p>

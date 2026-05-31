@@ -45,7 +45,7 @@ function estimateCalories(durationMin: number, weightKg: number | null, modality
 
 export default function NovoTreinoPageWrapper() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F8F7F5]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-brand-bg" />}>
       <NovoTreinoPage />
     </Suspense>
   )
@@ -404,7 +404,7 @@ function NovoTreinoPage() {
               { label: 'Finalizei',      value: subsFor,      setter: setSubsFor,      color: '#16A34A' },
               { label: 'Fui finalizado', value: subsAgainst,  setter: setSubsAgainst,  color: '#F59E0B' },
             ].map(c => (
-              <div key={c.label} className="bg-[#F8F7F5] rounded-xl p-3 text-center">
+              <div key={c.label} className="bg-brand-bg rounded-xl p-3 text-center">
                 <p className="text-[10px] font-black uppercase tracking-wider text-[#888] mb-2">{c.label}</p>
                 <p className="font-black text-2xl mb-2" style={{ color: c.color }}>{c.value}</p>
                 <div className="flex gap-1.5 justify-center">
@@ -440,7 +440,7 @@ function NovoTreinoPage() {
             </div>
           ) : (
             <button type="button" onClick={() => setShowPhotoSheet(true)}
-              className="w-full flex items-center justify-center bg-[#F8F7F5] border-2 border-dashed border-[#D0D0D0] rounded-xl py-8 hover:border-[#CC0000] transition-colors">
+              className="w-full flex items-center justify-center bg-brand-bg border-2 border-dashed border-[#D0D0D0] rounded-xl py-8 hover:border-[#CC0000] transition-colors">
               <div className="text-center">
                 <p className="text-2xl mb-1">📷</p>
                 <p className="text-xs text-[#555] font-bold">Adicionar foto</p>
@@ -460,13 +460,13 @@ function NovoTreinoPage() {
               <p className="text-center text-[10px] font-black uppercase tracking-wider text-[#888] mb-3">Escolha uma opção</p>
               <button type="button"
                 onClick={() => { setShowPhotoSheet(false); cameraInputRef.current?.click() }}
-                className="w-full flex items-center gap-3 bg-[#F8F7F5] hover:bg-[#FFF0F0] rounded-2xl px-4 py-3.5 mb-2 transition-colors">
+                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-[#FFF0F0] rounded-2xl px-4 py-3.5 mb-2 transition-colors">
                 <span className="text-2xl">📸</span>
                 <span className="font-black text-[#1A1A1A]">Tirar foto</span>
               </button>
               <button type="button"
                 onClick={() => { setShowPhotoSheet(false); galleryInputRef.current?.click() }}
-                className="w-full flex items-center gap-3 bg-[#F8F7F5] hover:bg-[#FFF0F0] rounded-2xl px-4 py-3.5 mb-2 transition-colors">
+                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-[#FFF0F0] rounded-2xl px-4 py-3.5 mb-2 transition-colors">
                 <span className="text-2xl">🖼️</span>
                 <span className="font-black text-[#1A1A1A]">Escolher da galeria</span>
               </button>

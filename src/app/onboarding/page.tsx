@@ -156,7 +156,7 @@ export default function OnboardingPage() {
   const progress = ((step - 1) / TOTAL_STEPS) * 100
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top progress bar */}
       <div className="bg-white border-b border-[#E5E5E5] px-5 py-4 flex items-center gap-4">
         <button

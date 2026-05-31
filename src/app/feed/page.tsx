@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import BottomNav from '@/components/ui/BottomNav'
 import FeedClient from '@/components/feed/FeedClient'
 import SocialTabs from '@/components/feed/SocialTabs'
+import BeltRiseLogo from '@/components/ui/BeltRiseLogo'
 
 const BELT_COLOR: Record<string, string> = {
   white:'#E8E8E8', blue:'#2563EB', purple:'#7C3AED', brown:'#92400E', black:'#1A1A1A',
@@ -126,10 +128,11 @@ export default async function FeedPage() {
     <div className="min-h-screen bg-brand-bg flex flex-col">
       <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-blood rounded-lg flex items-center justify-center">
-            <span className="text-ink-primary font-display text-[12px]">M</span>
-          </div>
+          <BeltRiseLogo size={28} withText={false} />
           <h1 className="font-display text-base text-ink-primary">Feed</h1>
+          <Link href="/buscar" className="ml-2 text-ink-secondary min-h-tap min-w-tap flex items-center justify-center" title="Buscar usuários">
+            🔍
+          </Link>
           {discoverMode && (
             <span className="bg-volt/20 text-volt text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider border border-volt/30">
               Descobrir

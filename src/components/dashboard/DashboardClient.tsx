@@ -47,6 +47,16 @@ interface Props {
 
 // Badge definitions
 const BADGES: Record<string, { emoji: string; name: string }> = {
+  // Novos badges (badge_catalog SQL — gerados por triggers)
+  first_session:    { emoji: '🥋', name: 'Primeiro treino' },
+  ten_sessions:     { emoji: '🔟', name: '10 treinos' },
+  fifty_sessions:   { emoji: '💪', name: '50 treinos' },
+  hundred_sessions: { emoji: '💯', name: '100 treinos' },
+  streak_30:        { emoji: '🔥', name: '30 dias seguidos' },
+  streak_90:        { emoji: '⚡', name: '90 dias seguidos' },
+  year_active:      { emoji: '🎂', name: '1 ano ativo' },
+  first_verified:   { emoji: '✅', name: 'Faixa verificada' },
+  // Legacy (compat com achievements existentes)
   first_technique:  { emoji: '🎯', name: 'Primeira técnica' },
   ten_techniques:   { emoji: '🔟', name: '10 técnicas' },
   fifty_techniques: { emoji: '💪', name: '50 técnicas' },
@@ -359,8 +369,7 @@ export function DashboardClient({
             </p>
             <div className="flex gap-2 flex-wrap">
               {achievements.map(a => {
-                const badge = BADGES[a.badge_id]
-                if (!badge) return null
+                const badge = BADGES[a.badge_id] ?? { emoji: '🏆', name: a.badge_id.replace(/_/g, ' ') }
                 return (
                   <div key={a.badge_id}
                     className="flex items-center gap-1.5 bg-volt/15 rounded-full px-2.5 py-1 text-[11px] font-bold text-volt border border-volt/30"

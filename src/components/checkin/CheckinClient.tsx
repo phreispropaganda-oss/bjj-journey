@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { findNearby, findNearbyByModality, searchAcademies, startVisit, endVisit, convertVisit,
   type NearbyByModality, type SearchResult } from '@/app/checkin/actions'
+import { createAcademyQuick } from '@/app/checkin/manual-actions'
 
 type Nearby = { id: string; name: string; distance_m: number; radius_meters: number; inside: boolean }
 type OpenVisit = { id: string; academyId: string; academyName: string; enteredAt: string }
@@ -26,6 +27,9 @@ export default function CheckinClient({ openVisit, qrAcademy, history }: Props) 
   const [manualQ, setManualQ] = useState('')
   const [manualResults, setManualResults] = useState<SearchResult[]>([])
   const [showManual, setShowManual] = useState(false)
+  const [showCreate, setShowCreate] = useState(false)
+  const [newAcademy, setNewAcademy] = useState({ name: '', city: '', state_uf: '' })
+  const [creating, setCreating] = useState(false)
   const [busy, setBusy] = useState(false)
   const [now, setNow] = useState(Date.now())
   const [feedback, setFeedback] = useState('')
@@ -257,8 +261,55 @@ export default function CheckinClient({ openVisit, qrAcademy, history }: Props) 
               <input autoFocus type="text" value={manualQ} onChange={e => setManualQ(e.target.value)}
                 placeholder="Nome ou cidade da academia"
                 className="field-input" />
-              {manualResults.length === 0 && manualQ && (
-                <p className="text-ink-secondary text-sm">Nenhuma academia encontrada.</p>
+              {manualResults.length === 0 && manualQ && !showCreate && (
+                <div className="space-y-2">
+                  <p className="text-ink-secondary text-sm">Nenhuma academia encontrada.</p>
+                  <button onClick={() => { setShowCreate(true); setNewAcademy(a => ({ ...a, name: manualQ })) }}
+                    className="w-full bg-rise text-white font-black py-3 rounded-2xl text-sm">
+                    + Cadastrar &ldquo;{manualQ}&rdquo;
+                  </button>
+                </div>
+              )}
+
+              {showCreate && (
+                <div className="space-y-2 bg-brand-bg rounded-xl p-3 border border-rise/30">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-rise">Nova academia</p>
+                  <input type="text" value={newAcademy.name} onChange={e => setNewAcademy(a => ({ ...a, name: e.target.value }))}
+                    placeholder="Nome da academia *" className="field-input" />
+                  <div className="grid grid-cols-3 gap-2">
+                    <input type="text" value={newAcademy.city} onChange={e => setNewAcademy(a => ({ ...a, city: e.target.value }))}
+                      placeholder="Cidade" className="field-input col-span-2" />
+                    <input type="text" value={newAcademy.state_uf} onChange={e => setNewAcademy(a => ({ ...a, state_uf: e.target.value.toUpperCase() }))}
+                      placeholder="UF" maxLength={2} className="field-input" />
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setShowCreate(false); setNewAcademy({ name: '', city: '', state_uf: '' }) }}
+                      className="flex-1 bg-brand-elev text-ink-secondary font-black py-2.5 rounded-full text-xs">
+                      Cancelar
+                    </button>
+                    <button onClick={async () => {
+                        if (!newAcademy.name.trim()) return
+                        setCreating(true)
+                        const r = await createAcademyQuick({
+                          name: newAcademy.name,
+                          city: newAcademy.city || undefined,
+                          state_uf: newAcademy.state_uf || undefined,
+                          modality,
+                          latitude:  coords?.lat,
+                          longitude: coords?.lng,
+                        })
+                        setCreating(false)
+                        if (r.error) { setFeedback(`⚠️ ${r.error}`); return }
+                        if (r.id) doCheckin(r.id, 'manual')
+                      }} disabled={creating || !newAcademy.name.trim()}
+                      className="flex-1 bg-rise text-white font-black py-2.5 rounded-full text-xs disabled:opacity-40">
+                      {creating ? 'Salvando...' : 'Salvar e entrar'}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-ink-muted">
+                    Você vira owner. Pode editar depois em /academia.
+                  </p>
+                </div>
               )}
               {manualResults.map(a => (
                 <div key={a.id} className="flex items-center gap-3 bg-brand-bg rounded-xl p-3 border border-brand-elev">

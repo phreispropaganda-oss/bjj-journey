@@ -46,7 +46,7 @@ export default async function ModulesPage({ params }: Props) {
 
   if (!canAccessBelt(effectivePlan, beltId)) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#F8F7F5]">
+      <div className="min-h-screen flex flex-col bg-brand-bg">
         <PaywallGate beltId={beltId} />
       </div>
     )

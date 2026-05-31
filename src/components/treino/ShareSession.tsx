@@ -134,7 +134,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top bar */}
       <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex items-center justify-between sticky top-0 z-10">
         <Link href="/dashboard" className="text-[#555] text-sm">← Início</Link>
