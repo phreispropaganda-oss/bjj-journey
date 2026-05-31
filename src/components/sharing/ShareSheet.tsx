@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function ShareSheet({
-  open, onClose, imageBlob, caption, profileUrl, filename = 'michi.jpg', connections,
+  open, onClose, imageBlob, caption, profileUrl, filename = 'belt-rise.jpg', connections,
 }: Props) {
   const [busy, setBusy] = useState<string | null>(null)
   useBodyScrollLock(open)
@@ -35,7 +35,7 @@ export default function ShareSheet({
     const file = new File([imageBlob], filename, { type: imageBlob.type })
     if (!navigator.canShare({ files: [file] })) return false
     try {
-      await navigator.share({ files: [file], text: caption, title: 'MICHI' })
+      await navigator.share({ files: [file], text: caption, title: 'Belt Rise' })
       return true
     } catch (err) {
       if ((err as Error).name === 'AbortError') return true

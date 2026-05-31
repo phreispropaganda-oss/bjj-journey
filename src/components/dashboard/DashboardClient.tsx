@@ -188,21 +188,19 @@ export function DashboardClient({
 
       <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-4 pb-24">
 
-        {/* INICIAR TREINO — botao central Belt Rise */}
-        <Link href="/treino/novo"
-          className="block bg-rise rounded-3xl py-5 px-6 text-center mb-2 shadow-glow-rise active:scale-[0.98] transition-transform">
-          <div className="text-4xl mb-1">🥊</div>
-          <p className="text-white font-display text-2xl tracking-wide">INICIAR TREINO</p>
-          <p className="text-white/80 text-xs mt-0.5">Registre sua sessao em segundos</p>
-        </Link>
-
-        {/* Check-in por GPS / QR */}
-        <Link href="/checkin"
-          className="block bg-brand-surface rounded-2xl border border-brand-elev py-2.5 px-4 text-center mb-4 active:bg-brand-elev">
-          <p className="text-sm text-ink-primary font-bold">
-            📍 <span className="text-rise">Check-in por GPS</span> ou QR da academia
-          </p>
-        </Link>
+        {/* INICIAR TREINO + Check-in — par compacto */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <Link href="/treino/novo"
+            className="col-span-2 bg-rise rounded-2xl py-4 px-4 text-center shadow-glow-rise active:scale-[0.98] transition-transform">
+            <div className="text-2xl mb-0.5">🥊</div>
+            <p className="text-white font-display text-base tracking-wide">INICIAR TREINO</p>
+          </Link>
+          <Link href="/checkin"
+            className="bg-brand-surface border border-brand-elev rounded-2xl py-4 px-2 text-center active:bg-brand-hover">
+            <div className="text-2xl mb-0.5">📍</div>
+            <p className="text-ink-primary font-display text-xs">Check-in</p>
+          </Link>
+        </div>
 
         {/* Progresso da Graduacao — Belt Rise hero card */}
         {(() => {
@@ -276,18 +274,22 @@ export function DashboardClient({
         {/* Sprint P2.10 — Tour onboarding (renderiza apenas na primeira sessão) */}
         <TourOverlay />
 
-        {/* Sprint P0.3 — Streak hero */}
+        {/* Streak — versão suave e compacta */}
         <Link href="/calendar"
-          className="block rounded-2xl p-4 mb-3 bg-gradient-to-br from-blood to-[#6C0710] active:scale-[0.98] transition-transform">
-          <div className="flex items-center gap-4">
-            <span className="text-5xl">🔥</span>
+          className="block rounded-2xl p-3 mb-3 bg-brand-surface border border-brand-elev active:bg-brand-hover">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-rise/15 flex items-center justify-center">
+              <span className="text-xl">🔥</span>
+            </div>
             <div className="flex-1">
-              <p className="font-display text-6xl text-white leading-none tabular-nums">{streak}</p>
-              <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.25em] mt-1">Dias consecutivos</p>
+              <p className="text-ink-secondary text-[10px] font-black uppercase tracking-wider">Streak atual</p>
+              <p className="text-ink-primary font-display text-2xl leading-none tabular-nums">
+                {streak}<span className="text-ink-muted text-sm font-bold ml-1">dias</span>
+              </p>
             </div>
             <div className="text-right">
-              <p className="text-white/60 text-[9px] uppercase tracking-wider">Recorde</p>
-              <p className="text-volt font-display text-lg">{personalRecords?.longest_streak_days ?? streak}d</p>
+              <p className="text-ink-muted text-[9px] uppercase tracking-wider">Recorde</p>
+              <p className="text-rise font-display text-base">{personalRecords?.longest_streak_days ?? streak}d</p>
             </div>
           </div>
         </Link>

@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: ['class', '[data-theme="dark"]'],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,34 +10,37 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // PRD v2 — tokens semânticos
         brand: {
-          bg:      '#080808',
-          surface: '#121212',
-          elev:    '#1C1C1E',
-          hover:   '#242426',
+          bg:      'var(--bg-base)',
+          surface: 'var(--surface-1)',
+          elev:    'var(--surface-2)',
+          hover:   'var(--surface-3)',
         },
         ink: {
-          primary:   '#F5F5F5',
-          secondary: '#A0A0A0',
-          muted:     '#6B6B6B',
+          primary:   'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted:     'var(--text-muted)',
         },
         rise: {
-          DEFAULT: '#CC0000',
-          deep:    '#9E0B13',
-          soft:    'rgba(204,0,0,0.12)',
-          glow:    'rgba(204,0,0,0.35)',
+          DEFAULT: 'var(--rise)',
+          deep:    'var(--rise-deep)',
+          soft:    'var(--rise-soft)',
+          glow:    'var(--rise-glow)',
         },
         blood: {
-          DEFAULT: '#9E0B13',
-          deep:    '#6B0008',
-          soft:    'rgba(158,11,19,0.12)',
-          glow:    'rgba(158,11,19,0.35)',
+          DEFAULT: 'var(--blood)',
+          deep:    'var(--blood-deep)',
+          soft:    'var(--blood-soft)',
+          glow:    'var(--blood-glow)',
         },
         volt: {
-          DEFAULT: '#DEFF9A',
-          deep:    '#B8E07A',
-          soft:    'rgba(222,255,154,0.15)',
+          DEFAULT: 'var(--volt)',
+          deep:    'var(--volt-deep)',
+          soft:    'var(--volt-soft)',
+        },
+        border: {
+          DEFAULT: 'var(--border)',
+          soft:    'var(--border-soft)',
         },
       },
       fontFamily: {
@@ -52,9 +56,9 @@ const config: Config = {
         'tap-lg': '64px',
       },
       boxShadow: {
-        'glow-rise':  '0 8px 24px rgba(204,0,0,0.35)',
-        'glow-blood': '0 8px 24px rgba(158,11,19,0.35)',
-        'glow-volt':  '0 8px 24px rgba(222,255,154,0.25)',
+        'glow-rise':  '0 8px 24px var(--rise-glow)',
+        'glow-blood': '0 8px 24px var(--blood-glow)',
+        'glow-volt':  '0 8px 24px var(--volt-soft)',
       },
     },
   },

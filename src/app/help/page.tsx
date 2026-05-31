@@ -88,7 +88,7 @@ export default function HelpPage() {
         <div className="card-elev text-center mt-4">
           <p className="text-2xl mb-1">💬</p>
           <p className="text-sm text-ink-secondary">Não achou sua resposta?</p>
-          <a href="mailto:suporte@michi.app" className="text-blood font-bold text-sm">suporte@michi.app</a>
+          <a href="mailto:suporte@belt-rise.app" className="text-rise font-bold text-sm">suporte@belt-rise.app</a>
         </div>
       </div>
     </div>

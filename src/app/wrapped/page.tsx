@@ -59,7 +59,7 @@ export default async function WrappedPage({
       <div className="min-h-screen bg-brand-bg flex items-center justify-center px-6">
         <div className="text-center">
           <p className="text-6xl mb-4">🥋</p>
-          <h1 className="font-display text-2xl text-ink-primary mb-2">MICHI Wrapped {year}</h1>
+          <h1 className="font-display text-2xl text-ink-primary mb-2">Belt Rise Wrapped {year}</h1>
           <p className="text-ink-secondary text-sm mb-6">Sem treinos registrados em {year}. Treine para gerar sua retrospectiva.</p>
           <a href="/treino/novo" className="btn-primary inline-block">Registrar treino</a>
         </div>

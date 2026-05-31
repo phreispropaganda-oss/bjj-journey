@@ -54,7 +54,7 @@ export default function WrappedClient({ year, stats, profile }: Props) {
       render: () => (
         <div className="text-center px-6">
           <p className="text-7xl mb-4 animate-bounce-slow">道</p>
-          <p className="font-display text-volt text-xs tracking-[0.4em] mb-2">MICHI WRAPPED</p>
+          <p className="font-display text-rise text-xs tracking-[0.4em] mb-2">BELT RISE WRAPPED</p>
           <p className="font-display text-ink-primary text-6xl mb-2">{year}</p>
           <p className="text-ink-secondary text-base mb-6">{profile.name}, sua jornada em <strong className="text-volt">{year}</strong>.</p>
           <p className="text-[10px] text-ink-muted">Toque para começar →</p>
@@ -202,7 +202,7 @@ export default function WrappedClient({ year, stats, profile }: Props) {
         username:      profile.username,
         template:      'stats',
       })
-      const r = await shareToInstagramStories(blob, `michi-wrapped-${year}.jpg`)
+      const r = await shareToInstagramStories(blob, `belt-rise-wrapped-${year}.jpg`)
       if (r.downloaded) alert('Imagem baixada! Abra Instagram > Stories para postar.')
     } catch (e) {
       alert('Erro ao gerar: ' + (e as Error).message)
@@ -255,7 +255,7 @@ export default function WrappedClient({ year, stats, profile }: Props) {
       </div>
 
       <div className="absolute bottom-3 left-0 right-0 text-center text-[10px] text-white/30 z-20">
-        michi.app · {year} Wrapped
+        belt-rise.app · {year} Wrapped
       </div>
     </div>
   )

@@ -7,17 +7,18 @@
    Paleta "Sangue, Suor e Carbono"
    ════════════════════════════════════════════════════════════════ */
 
-:root {
-  /* ── BG (OLED-friendly absolute black) ── */
-  --bg-base:     #080808;
-  --surface-1:   #121212;   /* cards primários */
-  --surface-2:   #1C1C1E;   /* cards secundários */
-  --surface-3:   #242426;   /* hover/elevation */
+/* ──────────── DARK (default) ──────────── */
+:root, html[data-theme='dark'] {
+  /* ── BG (suavizado — antes 080808, agora 0F0F12 menos agressivo) ── */
+  --bg-base:     #0F0F12;
+  --surface-1:   #16161A;   /* cards primários */
+  --surface-2:   #1F1F24;   /* cards secundários */
+  --surface-3:   #2A2A30;   /* hover/elevation */
 
   /* ── Texto ── */
-  --text-primary:   #F5F5F5;   /* 18.7:1 sobre bg-base — WCAG AAA */
-  --text-secondary: #A0A0A0;   /* 8.2:1 — WCAG AAA */
-  --text-muted:     #6B6B6B;   /* labels, hints */
+  --text-primary:   #F5F5F7;   /* 16.8:1 sobre bg — WCAG AAA */
+  --text-secondary: #A8A8AE;   /* 8:1 — WCAG AAA */
+  --text-muted:     #6E6E78;
 
   /* ── Brand: Belt Rise Vermelho (identidade da marca) ── */
   --rise:        #CC0000;   /* CTA principal — vermelho Belt Rise */
@@ -42,8 +43,8 @@
   --error:       #FF4D4F;
 
   /* ── Bordas ── */
-  --border:      #2A2A2A;
-  --border-soft: #1A1A1A;
+  --border:      #2E2E36;
+  --border-soft: #1A1A20;
 
   /* ── COMPAT: tokens v1 (legacy `#CC0000` ainda existem em código) ── */
   --red:         var(--blood);
@@ -63,6 +64,39 @@
   --gold:  #F59E0B;
   --green: var(--volt);
   --blue:  #2563EB;
+}
+
+/* ──────────── LIGHT ──────────── */
+html[data-theme='light'] {
+  --bg-base:     #FAFAFA;
+  --surface-1:   #FFFFFF;
+  --surface-2:   #F5F5F7;
+  --surface-3:   #ECECF0;
+
+  --text-primary:   #0A0A0F;
+  --text-secondary: #4A4A52;
+  --text-muted:     #8A8A92;
+
+  --rise:        #CC0000;
+  --rise-deep:   #9E0B13;
+  --rise-glow:   rgba(204,0,0,0.22);
+  --rise-soft:   rgba(204,0,0,0.08);
+
+  --blood:       #9E0B13;
+  --blood-deep:  #6B0008;
+  --blood-glow:  rgba(158,11,19,0.22);
+  --blood-soft:  rgba(158,11,19,0.08);
+
+  --volt:        #5B8C00;          /* volt escurece no light para legibilidade */
+  --volt-deep:   #426600;
+  --volt-soft:   rgba(91,140,0,0.10);
+
+  --border:      #E2E2E8;
+  --border-soft: #EFEFF3;
+
+  --gold:  #B45309;
+  --green: var(--volt);
+  --blue:  #1D4ED8;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }

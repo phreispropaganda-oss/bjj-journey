@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { signOut } from '@/app/(auth)/login/actions'
 import BottomNav from '@/components/ui/BottomNav'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 interface AcademyLite { id: string; name: string }
 
@@ -88,6 +89,9 @@ export default async function ProfileMenuPage() {
             <MenuItem href="/owner/desafios"    label="Desafios oficiais" hint="Criar e gerenciar" />
           </Section>
         )}
+
+        {/* Tema */}
+        <ThemeToggle />
 
         {/* Ajuda */}
         <Section title="❓ Ajuda">

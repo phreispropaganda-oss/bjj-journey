@@ -94,7 +94,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
         username:      profile.username,
         template,
       })
-      const r = await shareToInstagramStories(blob, `michi-${template}-${session.id}.jpg`)
+      const r = await shareToInstagramStories(blob, `belt-rise-${template}-${session.id}.jpg`)
       if (r.downloaded) alert('Imagem 9:16 baixada! Abra o Instagram > Stories e use a foto da galeria.')
     } catch (err) {
       alert('Erro ao gerar imagem: ' + (err as Error).message)
