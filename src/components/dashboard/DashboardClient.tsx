@@ -49,26 +49,7 @@ interface Props {
 }
 
 // Badge definitions
-const BADGES: Record<string, { emoji: string; name: string }> = {
-  // Novos badges (badge_catalog SQL — gerados por triggers)
-  first_session:    { emoji: '🥋', name: 'Primeiro treino' },
-  ten_sessions:     { emoji: '🔟', name: '10 treinos' },
-  fifty_sessions:   { emoji: '💪', name: '50 treinos' },
-  hundred_sessions: { emoji: '💯', name: '100 treinos' },
-  streak_30:        { emoji: '🔥', name: '30 dias seguidos' },
-  streak_90:        { emoji: '⚡', name: '90 dias seguidos' },
-  year_active:      { emoji: '🎂', name: '1 ano ativo' },
-  first_verified:   { emoji: '✅', name: 'Faixa verificada' },
-  // Legacy (compat com achievements existentes)
-  first_technique:  { emoji: '🎯', name: 'Primeira técnica' },
-  ten_techniques:   { emoji: '🔟', name: '10 técnicas' },
-  fifty_techniques: { emoji: '💪', name: '50 técnicas' },
-  first_train:      { emoji: '🥋', name: 'Primeiro treino' },
-  week_streak:      { emoji: '🔥', name: '7 dias seguidos' },
-  month_streak:     { emoji: '⚡', name: '30 dias seguidos' },
-  belt_complete:    { emoji: '🏆', name: 'Faixa completa' },
-  hundred_xp:       { emoji: '⭐', name: '100 XP' },
-}
+import { BADGES } from '@/lib/badges'
 
 function Ring({ pct, color, size = 52 }: { pct: number; color: string; size?: number }) {
   const r = (size - 6) / 2

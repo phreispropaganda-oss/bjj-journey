@@ -47,7 +47,7 @@ function InlineTimer({ minutes, color, onClose }: { minutes: number; color: stri
           ↺ Reset
         </button>
         <button onClick={onClose}
-          className="px-5 py-3 rounded-full bg-[#CC0000] text-white text-sm font-black min-h-tap">
+          className="px-5 py-3 rounded-full bg-rise text-white text-sm font-black min-h-tap">
           Fechar
         </button>
       </div>
@@ -64,24 +64,24 @@ function TechDetail({ tech, color, onClose, onToggle, done }: {
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-end justify-center"
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white w-full max-w-[480px] rounded-t-3xl max-h-[85vh] flex flex-col"
+      <div className="bg-brand-surface w-full max-w-[480px] rounded-t-3xl max-h-[85vh] flex flex-col"
         style={{ animation: 'slideUp .25s ease' }}>
         {/* Handle */}
         <div className="flex items-center justify-between px-5 pt-4 pb-3 flex-shrink-0">
-          <div className="w-8 h-1 bg-[#E5E5E5] rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-3" />
-          <h3 className="font-black text-base text-[#0D0D0D] mt-1 flex-1">{tech.name}</h3>
-          <button onClick={onClose} className="text-[#AAA] text-xl ml-2">✕</button>
+          <div className="w-8 h-1 bg-brand-elev rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-3" />
+          <h3 className="font-black text-base text-ink-primary mt-1 flex-1">{tech.name}</h3>
+          <button onClick={onClose} className="text-ink-muted text-xl ml-2">✕</button>
         </div>
 
         <div className="overflow-y-auto scrollbar-none flex-1 px-5 pb-6">
           {/* Entry position */}
           <div className="bg-brand-bg rounded-xl p-3 mb-3 border-l-2" style={{ borderColor: color }}>
-            <span className="text-[10px] font-black uppercase tracking-wider text-[#AAA] block mb-1">Posição de entrada</span>
-            <p className="text-sm text-[#555] leading-relaxed">{tech.entryPosition}</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-ink-muted block mb-1">Posição de entrada</span>
+            <p className="text-sm text-ink-secondary leading-relaxed">{tech.entryPosition}</p>
           </div>
 
           {/* Description */}
-          <p className="text-sm text-[#555] leading-relaxed mb-3">{tech.description}</p>
+          <p className="text-sm text-ink-secondary leading-relaxed mb-3">{tech.description}</p>
 
           {/* Steps */}
           <div className="space-y-2 mb-3">
@@ -91,20 +91,20 @@ function TechDetail({ tech, color, onClose, onToggle, done }: {
                   style={{ background: color }}>
                   {i + 1}
                 </div>
-                <span className="text-[#333] leading-relaxed">{s}</span>
+                <span className="text-ink-primary leading-relaxed">{s}</span>
               </div>
             ))}
           </div>
 
           {/* Mistake */}
-          <div className="flex gap-2 bg-red-50 border border-red-200 rounded-xl p-2.5 mb-2 text-xs text-[#555] leading-relaxed">
-            <span className="text-red-400 flex-shrink-0 mt-0.5">⚠️</span>
+          <div className="flex gap-2 bg-blood/10 border border-blood/30 rounded-xl p-2.5 mb-2 text-xs text-ink-secondary leading-relaxed">
+            <span className="text-blood flex-shrink-0 mt-0.5">⚠️</span>
             <span>{tech.commonMistake}</span>
           </div>
 
           {/* Tip */}
-          <div className="flex gap-2 bg-amber-50 border border-amber-200 rounded-xl p-2.5 mb-4 text-xs text-[#555] leading-relaxed">
-            <span className="text-amber-500 flex-shrink-0 mt-0.5">💡</span>
+          <div className="flex gap-2 bg-volt/10 border border-volt/30 rounded-xl p-2.5 mb-4 text-xs text-ink-secondary leading-relaxed">
+            <span className="text-volt-deep flex-shrink-0 mt-0.5">💡</span>
             <span>{tech.tip}</span>
           </div>
 
@@ -113,13 +113,13 @@ function TechDetail({ tech, color, onClose, onToggle, done }: {
             {[3, 5, 10].map(m => (
               <button key={m} type="button"
                 onClick={() => setTimerMin(m)}
-                className="flex items-center gap-1 text-xs px-3 py-2 rounded-lg border border-[#E5E5E5] bg-white text-[#0D0D0D] font-bold hover:border-[#CC0000] hover:text-[#CC0000] transition-colors min-h-tap">
+                className="flex items-center gap-1 text-xs px-3 py-2 rounded-lg border border-brand-elev bg-brand-elev/40 text-ink-primary font-bold hover:border-rise hover:text-rise transition-colors min-h-tap">
                 ⏱ {m}min
               </button>
             ))}
             <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(tech.youtubeQuery)}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs px-3 py-2 rounded-lg border border-[#E5E5E5] bg-white text-[#0D0D0D] font-bold min-h-tap">
+              className="flex items-center gap-1 text-xs px-3 py-2 rounded-lg border border-brand-elev bg-brand-elev/40 text-ink-primary font-bold hover:border-rise hover:text-rise transition-colors min-h-tap">
               ▶ YouTube
             </a>
           </div>
@@ -130,13 +130,13 @@ function TechDetail({ tech, color, onClose, onToggle, done }: {
         )}
 
         {/* Mark done — STICKY no rodape, safe-area-aware */}
-        <div className="px-5 pt-3 border-t border-[#F2F0ED] flex-shrink-0 bg-white"
+        <div className="px-5 pt-3 border-t border-brand-elev flex-shrink-0 bg-brand-surface"
           style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 16px)' }}>
           <button onClick={onToggle}
             className={`w-full py-4 rounded-full font-black text-base transition-all min-h-[56px] ${
               done
-                ? 'bg-[#F0FDF4] border-2 border-[#86EFAC] text-[#16A34A]'
-                : 'bg-[#CC0000] text-white shadow-lg shadow-red-900/20 active:bg-[#9E0B13]'
+                ? 'bg-volt/15 border-2 border-volt/40 text-volt-deep'
+                : 'bg-rise text-white shadow-lg shadow-red-900/20 active:bg-rise-deep'
             }`}>
             {done ? '✓ Técnica concluída — desfazer' : 'Marcar como feita →'}
           </button>
@@ -175,7 +175,7 @@ export default function ModulesClient({ beltId }: Props) {
 
   if (!curriculum || !belt) return (
     <div className="min-h-screen flex items-center justify-center bg-brand-bg">
-      <p className="text-[#AAA]">Faixa não encontrada.</p>
+      <p className="text-ink-muted">Faixa não encontrada.</p>
     </div>
   )
 
@@ -214,46 +214,46 @@ export default function ModulesClient({ beltId }: Props) {
     <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* XP toast */}
       {xpShow && (
-        <div className="fixed top-16 right-4 z-50 bg-white border border-[#F59E0B] rounded-2xl px-3 py-2 flex items-center gap-2 shadow-lg"
+        <div className="fixed top-16 right-4 z-50 bg-brand-surface border border-volt rounded-2xl px-3 py-2 flex items-center gap-2 shadow-lg"
           style={{ animation: 'fadeUp .25s ease' }}>
           <span className="text-yellow-500 text-lg">⚡</span>
-          <span className="text-sm font-black text-[#0D0D0D]">+10 XP</span>
+          <span className="text-sm font-black text-ink-primary">+10 XP</span>
         </div>
       )}
 
       {/* Top bar */}
-      <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex-shrink-0">
+      <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex-shrink-0">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <p className="text-[11px] text-[#AAA] font-bold uppercase tracking-wider">Módulos</p>
+            <p className="text-[11px] text-ink-muted font-bold uppercase tracking-wider">Módulos</p>
             <h1 className="text-lg font-black tracking-tight">Faixa {belt.name}</h1>
           </div>
           <button onClick={() => setTdah(t => !t)}
             title={tdah ? 'Sair do modo Foco' : 'Modo Foco: mostra so o proximo modulo pendente'}
             className={`px-3 py-2 rounded-full text-xs font-black border-2 transition-all min-h-tap ${
               tdah
-                ? 'bg-[#0D0D0D] border-[#0D0D0D] text-white shadow-lg'
-                : 'border-[#E5E5E5] text-[#555] bg-white'
+                ? 'bg-rise border-rise text-white shadow-lg'
+                : 'border-brand-elev text-ink-secondary bg-brand-surface'
             }`}>
             🧠 {tdah ? 'Foco ON' : 'Foco'}
           </button>
         </div>
         {/* Belt progress bar */}
-        <div className="h-1.5 bg-[#F2F0ED] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-brand-elev rounded-full overflow-hidden">
           <div className="h-full rounded-full transition-all duration-700"
             style={{ width: `${beltPct}%`, background: belt.color }} />
         </div>
-        <p className="text-[11px] text-[#AAA] mt-1">{doneTechs}/{totalTechs} técnicas · {beltPct}%</p>
+        <p className="text-[11px] text-ink-muted mt-1">{doneTechs}/{totalTechs} técnicas · {beltPct}%</p>
       </div>
 
       {/* Belt selector */}
-      <div className="bg-white border-b border-[#E5E5E5] px-3 py-2 flex gap-2 overflow-x-auto scrollbar-none flex-shrink-0">
+      <div className="bg-brand-surface border-b border-brand-elev px-3 py-2 flex gap-2 overflow-x-auto scrollbar-none flex-shrink-0">
         {BELTS.map(b => (
           <Link key={b.id} href={`/modules/${b.id}`}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border-2 flex-shrink-0 text-xs font-black transition-all ${
               b.id === beltId
                 ? 'text-white border-transparent shadow-sm'
-                : 'bg-white border-[#E5E5E5] text-[#555]'
+                : 'bg-brand-surface border-brand-elev text-ink-secondary'
             }`}
             style={b.id === beltId ? { background: belt.color, borderColor: belt.color } : {}}>
             <div className="w-3 h-2 rounded-sm border border-black/10" style={{ background: b.color }} />
@@ -282,7 +282,7 @@ export default function ModulesClient({ beltId }: Props) {
           const isOpen   = tdah ? true : openMods[mod.id]
 
           return (
-            <div key={mod.id} className="bg-white rounded-2xl mb-2.5 overflow-hidden shadow-sm">
+            <div key={mod.id} className="bg-brand-surface rounded-2xl mb-2.5 overflow-hidden border border-brand-elev">
               {/* Module header */}
               <div
                 className="flex items-center gap-3 px-4 py-3.5 cursor-pointer active:bg-brand-bg"
@@ -290,23 +290,23 @@ export default function ModulesClient({ beltId }: Props) {
                 <span className="text-2xl font-black min-w-[32px] leading-none"
                   style={{ color: mod.color }}>{mod.number}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="font-black text-sm text-[#0D0D0D]">{mod.label}</p>
-                  <p className="text-[11px] text-[#AAA] truncate">{mod.description}</p>
+                  <p className="font-black text-sm text-ink-primary">{mod.label}</p>
+                  <p className="text-[11px] text-ink-muted truncate">{mod.description}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className="text-xs font-black" style={{ color: mod.color }}>{modPct}%</span>
-                  <span className={`text-[#AAA] text-sm transition-transform ${isOpen ? 'rotate-180' : ''}`}>▾</span>
+                  <span className={`text-ink-muted text-sm transition-transform ${isOpen ? 'rotate-180' : ''}`}>▾</span>
                 </div>
               </div>
 
               {/* Progress bar */}
-              <div className="h-0.5 bg-[#F2F0ED]">
+              <div className="h-0.5 bg-brand-elev">
                 <div className="h-full transition-all" style={{ width: `${modPct}%`, background: mod.color }} />
               </div>
 
               {/* Categories */}
               {isOpen && (
-                <div className="border-t border-[#F2F0ED]">
+                <div className="border-t border-brand-elev">
                   {mod.categories.map(cat => {
                     const catOpen = openCats[cat.id]
                     const catDone = cat.techniques.filter(t =>
@@ -316,7 +316,7 @@ export default function ModulesClient({ beltId }: Props) {
                       ? Math.round((catDone / cat.techniques.length) * 100) : 0
 
                     return (
-                      <div key={cat.id} className="border-t border-[#F2F0ED]">
+                      <div key={cat.id} className="border-t border-brand-elev">
                         <div
                           className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer active:bg-brand-bg"
                           onClick={() => setOpenCats(o => ({ ...o, [cat.id]: !o[cat.id] }))}>
@@ -324,10 +324,10 @@ export default function ModulesClient({ beltId }: Props) {
                             style={{ background: cat.bgColor }}>
                             <div className="w-2.5 h-2.5 rounded-full" style={{ background: cat.color }} />
                           </div>
-                          <span className="flex-1 text-sm font-bold text-[#0D0D0D]">{cat.name}</span>
-                          <span className="text-xs text-[#AAA]">{catDone}/{cat.techniques.length}</span>
+                          <span className="flex-1 text-sm font-bold text-ink-primary">{cat.name}</span>
+                          <span className="text-xs text-ink-muted">{catDone}/{cat.techniques.length}</span>
                           <span className="text-xs font-black" style={{ color: cat.color }}>{catPct}%</span>
-                          <span className={`text-[#AAA] text-sm transition-transform ${catOpen ? 'rotate-180' : ''}`}>▾</span>
+                          <span className={`text-ink-muted text-sm transition-transform ${catOpen ? 'rotate-180' : ''}`}>▾</span>
                         </div>
 
                         {catOpen && (
@@ -337,19 +337,19 @@ export default function ModulesClient({ beltId }: Props) {
                               const isDone = isCompleted(key)
                               return (
                                 <div key={tech.name}
-                                  className={`border-t border-[#EEEBE6] ${isDone ? 'opacity-60' : ''}`}>
+                                  className={`border-t border-brand-elev ${isDone ? 'opacity-60' : ''}`}>
                                   <div
-                                    className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer active:bg-white"
+                                    className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer active:bg-brand-surface"
                                     onClick={() => setSelected({ tech, color: mod.color, key, moduleId: mod.id })}>
-                                    <span className="text-[11px] text-[#AAA] min-w-[18px] tabular-nums">{i + 1}</span>
+                                    <span className="text-[11px] text-ink-muted min-w-[18px] tabular-nums">{i + 1}</span>
                                     <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: mod.color }} />
-                                    <span className="flex-1 text-sm font-medium text-[#0D0D0D]">{tech.name}</span>
+                                    <span className="flex-1 text-sm font-medium text-ink-primary">{tech.name}</span>
                                     <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
-                                      isDone ? 'bg-[#DCFCE7] text-[#16A34A]' : 'bg-[#F2F0ED] text-[#AAA]'
+                                      isDone ? 'bg-volt/20 text-volt-deep' : 'bg-brand-elev text-ink-muted'
                                     }`}>
                                       {isDone ? '✓ feito' : 'pendente'}
                                     </span>
-                                    <span className="text-[#AAA] text-xs">›</span>
+                                    <span className="text-ink-muted text-xs">›</span>
                                   </div>
                                 </div>
                               )

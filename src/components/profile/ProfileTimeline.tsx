@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { labelForBadge } from '@/lib/badges'
 
 interface Event {
   kind: 'belt' | 'achievement' | 'milestone'
@@ -36,22 +37,30 @@ export default async function ProfileTimeline({ userId }: { userId: string }) {
   return (
     <div className="relative pl-8 pr-2">
       <div className="absolute left-3 top-2 bottom-2 w-px bg-brand-elev" />
-      {events.map((e, i) => (
-        <div key={i} className="relative pb-4 last:pb-0">
-          <div className={`absolute -left-[26px] top-2 w-6 h-6 rounded-full flex items-center justify-center text-sm border-2 ${ACCENT[e.kind]}`}>
-            {e.icon}
-          </div>
-          <div className="bg-brand-surface rounded-xl border border-brand-elev px-3 py-2.5">
-            <div className="flex items-start justify-between gap-2">
-              <p className="text-ink-primary font-bold text-sm capitalize flex-1">{e.title}</p>
-              <p className="text-[10px] text-ink-muted whitespace-nowrap mt-0.5">
-                {new Date(e.occurred_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
-              </p>
+      {events.map((e, i) => {
+        // Para achievements, e.title vem como badge_id (ex: ten_sessions) — mapear para nome legivel
+        const isBadge = e.kind === 'achievement'
+        const mapped = isBadge ? labelForBadge(e.title) : null
+        const displayIcon = mapped?.emoji ?? e.icon
+        const displayTitle = mapped?.name ?? e.title
+
+        return (
+          <div key={i} className="relative pb-4 last:pb-0">
+            <div className={`absolute -left-[26px] top-2 w-6 h-6 rounded-full flex items-center justify-center text-sm border-2 ${ACCENT[e.kind]}`}>
+              {displayIcon}
             </div>
-            <p className="text-xs text-ink-secondary mt-0.5">{e.subtitle}</p>
+            <div className="bg-brand-surface rounded-xl border border-brand-elev px-3 py-2.5">
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-ink-primary font-bold text-sm flex-1">{displayTitle}</p>
+                <p className="text-[10px] text-ink-muted whitespace-nowrap mt-0.5">
+                  {new Date(e.occurred_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </p>
+              </div>
+              <p className="text-xs text-ink-secondary mt-0.5">{e.subtitle}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

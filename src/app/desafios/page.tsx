@@ -48,14 +48,14 @@ export default async function DesafiosPage() {
 
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
-      <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#CC0000] rounded-lg flex items-center justify-center">
+          <div className="w-7 h-7 bg-rise rounded-lg flex items-center justify-center">
             <span className="text-white font-black text-[10px] tracking-tighter">BR</span>
           </div>
-          <h1 className="font-black text-base tracking-tight">Desafios</h1>
+          <h1 className="font-display text-base text-ink-primary">Desafios</h1>
         </div>
-        <span className="text-xs text-[#AAA] font-bold">{challenges.length} ativos</span>
+        <span className="text-xs text-ink-muted font-bold">{challenges.length} ativos</span>
       </div>
       <SocialTabs active="desafios" />
 
@@ -63,8 +63,8 @@ export default async function DesafiosPage() {
         {challenges.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-5xl mb-4">🎯</p>
-            <p className="font-black text-[#0D0D0D] text-lg mb-1">Sem desafios ativos</p>
-            <p className="text-[#888] text-sm">Volte em breve para novos desafios mensais!</p>
+            <p className="font-black text-ink-primary text-lg mb-1">Sem desafios ativos</p>
+            <p className="text-ink-muted text-sm">Volte em breve para novos desafios mensais!</p>
           </div>
         ) : (
           challenges.map(c => {
@@ -77,7 +77,7 @@ export default async function DesafiosPage() {
                 className={`rounded-2xl p-4 shadow-sm border-2 transition-all ${
                   completed
                     ? 'bg-[#F0FDF4] border-[#86EFAC]'
-                    : 'bg-white border-transparent'
+                    : 'bg-brand-elev border-transparent text-ink-primary'
                 }`}>
                 <div className="flex items-start gap-3">
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl ${
@@ -86,7 +86,7 @@ export default async function DesafiosPage() {
                     {c.emoji}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-black text-[#0D0D0D] text-base leading-tight tracking-tight">
+                    <p className="font-black text-ink-primary text-base leading-tight tracking-tight">
                       {c.title}
                       {completed && <span className="ml-2 text-[#16A34A]">✓</span>}
                     </p>
@@ -97,19 +97,19 @@ export default async function DesafiosPage() {
                 {/* Progress bar */}
                 <div className="mt-3">
                   <div className="flex items-center justify-between mb-1.5">
-                    <p className={`text-xs font-black ${completed ? 'text-[#16A34A]' : 'text-[#CC0000]'}`}>
+                    <p className={`text-xs font-black ${completed ? 'text-[#16A34A]' : 'text-rise'}`}>
                       {progress.toLocaleString()} / {c.target.toLocaleString()} {METRIC_LABEL[c.metric] ?? ''}
                     </p>
-                    <p className="text-[10px] font-bold text-[#888]">{pct}%</p>
+                    <p className="text-[10px] font-bold text-ink-muted">{pct}%</p>
                   </div>
                   <div className="h-2 bg-[#F2F0ED] rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full transition-all ${completed ? 'bg-[#16A34A]' : 'bg-[#CC0000]'}`}
+                    <div className={`h-full rounded-full transition-all ${completed ? 'bg-[#16A34A]' : 'bg-rise'}`}
                       style={{ width: `${pct}%` }} />
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between mt-3">
-                  <p className="text-[11px] text-[#AAA] font-medium">
+                  <p className="text-[11px] text-ink-muted font-medium">
                     {left > 0 ? `⏱ ${left} dia${left > 1 ? 's' : ''} restante${left > 1 ? 's' : ''}` : 'Encerrado'}
                   </p>
                   {completed && (

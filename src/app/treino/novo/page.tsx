@@ -463,24 +463,24 @@ function NovoTreinoPage() {
         {showPhotoSheet && (
           <div className="fixed inset-0 bg-black/70 z-50 flex items-end backdrop-blur-sm"
             onClick={e => e.target === e.currentTarget && setShowPhotoSheet(false)}>
-            <div className="bg-white w-full max-w-[480px] mx-auto rounded-t-3xl p-5"
+            <div className="bg-brand-surface w-full max-w-[480px] mx-auto rounded-t-3xl p-5 border-t border-brand-elev"
               style={{ animation: 'fadeUp 0.25s ease' }}>
               <p className="text-center text-[10px] font-black uppercase tracking-wider text-ink-muted mb-3">Escolha uma opção</p>
               <button type="button"
                 onClick={() => { setShowPhotoSheet(false); cameraInputRef.current?.click() }}
-                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-rise/10 rounded-2xl px-4 py-3.5 mb-2 transition-colors">
+                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-rise/10 rounded-2xl px-4 py-3.5 mb-2 transition-colors border border-brand-elev">
                 <span className="text-2xl">📸</span>
-                <span className="font-black text-[#1A1A1A]">Tirar foto</span>
+                <span className="font-black text-ink-primary">Tirar foto</span>
               </button>
               <button type="button"
                 onClick={() => { setShowPhotoSheet(false); galleryInputRef.current?.click() }}
-                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-rise/10 rounded-2xl px-4 py-3.5 mb-2 transition-colors">
+                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-rise/10 rounded-2xl px-4 py-3.5 mb-2 transition-colors border border-brand-elev">
                 <span className="text-2xl">🖼️</span>
-                <span className="font-black text-[#1A1A1A]">Escolher da galeria</span>
+                <span className="font-black text-ink-primary">Escolher da galeria</span>
               </button>
               <button type="button"
                 onClick={() => setShowPhotoSheet(false)}
-                className="w-full bg-[#E5E5E5] text-ink-secondary font-black rounded-full py-3 mt-2 text-sm">
+                className="w-full bg-brand-elev text-ink-primary font-black rounded-full py-3 mt-2 text-sm">
                 Cancelar
               </button>
             </div>
@@ -537,8 +537,8 @@ function NovoTreinoPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 text-red-600 font-bold text-sm">
-            ⚠️ {error}
+          <div className="bg-blood/15 border border-blood/40 rounded-2xl px-4 py-3 text-blood font-bold text-sm">
+            {error}
           </div>
         )}
       </div>

@@ -9,12 +9,12 @@ interface Session {
   trained_at: string
 }
 
-const TYPE_META: Record<string, { emoji: string; label: string }> = {
-  gi:          { emoji: '🥋', label: 'Gi' },
-  no_gi:       { emoji: '👕', label: 'No-Gi' },
-  drilling:    { emoji: '🔁', label: 'Drilling' },
-  competition: { emoji: '🏆', label: 'Competição' },
-  open_mat:    { emoji: '🤝', label: 'Open Mat' },
+const TYPE_META: Record<string, { emoji: string; label: string; tint: string }> = {
+  gi:          { emoji: '🥋', label: 'Gi',         tint: 'bg-volt/15 ring-volt/30' },
+  no_gi:       { emoji: '👕', label: 'No-Gi',      tint: 'bg-blue-500/15 ring-blue-500/30' },
+  drilling:    { emoji: '🔁', label: 'Drilling',   tint: 'bg-purple-500/15 ring-purple-500/30' },
+  competition: { emoji: '🏆', label: 'Competição', tint: 'bg-amber-500/15 ring-amber-500/30' },
+  open_mat:    { emoji: '🤝', label: 'Open Mat',   tint: 'bg-rise/15 ring-rise/30' },
 }
 
 function formatDate(iso: string) {
@@ -45,13 +45,13 @@ export default function RecentActivity({ sessions, limit = 5 }: Props) {
       ) : (
         <div className="space-y-2">
           {recent.map(s => {
-            const meta = TYPE_META[s.type] ?? { emoji: '🥋', label: s.type }
+            const meta = TYPE_META[s.type] ?? { emoji: '🥋', label: s.type, tint: 'bg-brand-elev ring-brand-elev' }
             return (
               <Link key={s.id} href={`/treino/${s.id}/share`}
                 className="block bg-brand-surface rounded-2xl border border-brand-elev px-3 py-3 active:bg-brand-elev transition-colors">
                 <div className="flex items-center gap-3">
-                  {/* Avatar circular laranja Strava-style */}
-                  <div className="w-12 h-12 rounded-full bg-rise/15 flex items-center justify-center flex-shrink-0">
+                  {/* Avatar circular tintado por tipo */}
+                  <div className={`w-12 h-12 rounded-full ring-1 flex items-center justify-center flex-shrink-0 ${meta.tint}`}>
                     <span className="text-2xl">{meta.emoji}</span>
                   </div>
                   {/* Titulo + data */}

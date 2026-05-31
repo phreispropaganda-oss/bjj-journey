@@ -183,13 +183,14 @@ export default function CalendarPage() {
                     else window.location.href = `/treino/novo?date=${dateStr}`
                   }}
                   disabled={isFuture}
-                  className={`relative aspect-square rounded-lg flex items-center justify-center text-xs font-bold transition-all
-                    ${lvl === 0 && !isToday && !isFuture ? 'text-ink-muted bg-brand-bg/40' : ''}
-                    ${lvl === 1 ? 'text-ink-primary bg-volt/30' : ''}
-                    ${lvl === 2 ? 'text-ink-primary bg-blood/50' : ''}
-                    ${lvl === 3 ? 'text-ink-primary bg-blood ring-2 ring-volt/60' : ''}
-                    ${isFuture ? 'text-ink-muted/40 cursor-default' : ''}
-                    ${isToday ? 'ring-1 ring-volt' : ''}
+                  className={`relative aspect-square rounded-lg flex items-center justify-center text-sm font-black transition-all
+                    ${lvl === 0 && !isToday && !isFuture ? 'text-ink-secondary bg-brand-elev/40 hover:bg-brand-elev' : ''}
+                    ${lvl === 1 ? 'text-brand-bg bg-rise/70' : ''}
+                    ${lvl === 2 ? 'text-white bg-rise' : ''}
+                    ${lvl === 3 ? 'text-white bg-rise-deep ring-2 ring-volt' : ''}
+                    ${isFuture ? 'text-ink-muted/50 cursor-default' : ''}
+                    ${isToday && lvl === 0 ? 'ring-2 ring-rise text-rise font-black' : ''}
+                    ${isToday && lvl > 0 ? 'ring-2 ring-volt' : ''}
                   `}>
                   <span className="relative z-10">{day}</span>
                   {lvl === 3 && <span className="absolute top-0.5 right-0.5 text-[8px] text-volt">★</span>}
