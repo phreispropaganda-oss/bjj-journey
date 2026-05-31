@@ -11,6 +11,7 @@ import ProfilePosts from '@/components/profile/ProfilePosts'
 import LevelBadge from '@/components/profile/LevelBadge'
 import MonthlyCalendar from '@/components/profile/MonthlyCalendar'
 import StatsCharts from '@/components/profile/StatsCharts'
+import BottomNav from '@/components/ui/BottomNav'
 import Link from 'next/link'
 
 interface Props { params: Promise<{ username: string }> }
@@ -200,11 +201,16 @@ export default async function PublicProfilePage({ params }: Props) {
             )}
 
             {/* Follow / Edit action */}
-            <div className="mt-4">
+            <div className="mt-4 flex gap-2 flex-wrap justify-center">
               {isOwner ? (
-                <Link href="/profile" className="text-[#CC0000] text-xs font-bold border border-[#CC0000]/30 px-4 py-1.5 rounded-full inline-block">
-                  ✏️ Editar perfil
-                </Link>
+                <>
+                  <Link href="/profile/editar" className="text-white text-xs font-black bg-[#CC0000] px-4 py-2 rounded-full">
+                    ✏️ Editar
+                  </Link>
+                  <Link href="/profile/menu" className="text-white text-xs font-bold bg-white/10 border border-white/20 px-4 py-2 rounded-full">
+                    ⚙️ Menu
+                  </Link>
+                </>
               ) : viewerId ? (
                 <FollowButton
                   targetUserId={profile.id}
@@ -396,6 +402,7 @@ export default async function PublicProfilePage({ params }: Props) {
           </div>
         )}
       </div>
+      <BottomNav active="profile" username={username} />
     </div>
   )
 }

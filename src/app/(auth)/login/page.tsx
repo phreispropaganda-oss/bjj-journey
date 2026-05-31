@@ -65,11 +65,11 @@ function LoginContent() {
           <p className="text-ink-muted text-sm leading-relaxed">
             {mode === 'signup'
               ? 'Clique no link de confirmação para ativar sua conta.'
-              : 'Clique para entrar no MICHI.'}
+              : 'Clique para entrar no Belt Rise.'}
           </p>
           <button
             onClick={() => { setSent(false); setEmail(''); setPassword(''); setMode('signin') }}
-            className="mt-8 text-blood text-sm font-bold min-h-tap px-4"
+            className="mt-8 text-rise text-sm font-bold min-h-tap px-4"
           >
             ← Voltar para login
           </button>
@@ -82,21 +82,28 @@ function LoginContent() {
     <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Hero top */}
       <div className="flex-1 flex flex-col justify-end px-6 pb-8 pt-12 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blood rounded-full opacity-20 -translate-y-1/2 translate-x-1/2 blur-3xl" />
-        <div className="absolute bottom-1/3 left-0 w-40 h-40 bg-blood rounded-full opacity-10 -translate-x-1/2 blur-2xl" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-rise rounded-full opacity-20 -translate-y-1/2 translate-x-1/2 blur-3xl" />
+        <div className="absolute bottom-1/3 left-0 w-40 h-40 bg-rise rounded-full opacity-10 -translate-x-1/2 blur-2xl" />
         <div className="relative z-10 mb-6">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-12 h-12 bg-blood rounded-2xl flex items-center justify-center shadow-glow-blood">
-              <span className="text-ink-primary font-display text-lg">M</span>
+            <div className="w-12 h-12 bg-rise rounded-2xl flex items-center justify-center shadow-glow-rise relative">
+              <span className="text-ink-primary font-display text-2xl">B</span>
+              {/* Setinha ascendente Belt Rise */}
+              <svg className="absolute top-0.5 right-0.5" width="14" height="14" viewBox="0 0 16 16" fill="white">
+                <path d="M8 1l-3 5h2v4h2v-4h2l-3-5z" />
+              </svg>
             </div>
-            <span className="text-ink-primary font-display text-2xl">MICHI</span>
+            <span className="text-ink-primary font-display text-2xl">
+              <span className="text-rise">Belt</span> Rise
+            </span>
           </div>
           <h1 className="font-display text-4xl text-ink-primary leading-[0.9] mb-3">
-            DOMINE<br />
-            <span className="text-blood">O TATAME.</span>
+            TREINE.<br />
+            <span className="text-rise">SUBA.</span><br />
+            CONQUISTE.
           </h1>
           <p className="text-ink-secondary text-sm leading-relaxed max-w-xs">
-            Treinar é mais do que vencer. É voltar. Faixa por faixa. Treino por treino.
+            Sua jornada de faixa branca a preta. Treinos, técnicas, comunidade e legado marcial.
           </p>
         </div>
       </div>
@@ -109,7 +116,7 @@ function LoginContent() {
             <button key={m}
               onClick={() => { setMode(m); setError('') }}
               className={`flex-1 py-2.5 rounded-full text-sm font-black transition-all min-h-[44px] ${
-                mode === m ? 'bg-blood text-ink-primary shadow-glow-blood' : 'text-ink-secondary'
+                mode === m ? 'bg-rise text-ink-primary shadow-glow-rise' : 'text-ink-secondary'
               }`}>
               {m === 'signin' ? 'Entrar' : 'Cadastrar'}
             </button>
@@ -161,7 +168,7 @@ function LoginContent() {
               {mode === 'signin' && (
                 <button type="button"
                   onClick={() => { setMode('magic'); setError('') }}
-                  className="text-xs text-blood font-bold mb-3">
+                  className="text-xs text-rise font-bold mb-3">
                   Esqueci a senha — usar link mágico
                 </button>
               )}
@@ -169,7 +176,7 @@ function LoginContent() {
           )}
 
           {mode === 'magic' && (
-            <div className="bg-blood/10 border border-blood/30 rounded-xl px-3 py-2 mb-3 text-xs text-blood">
+            <div className="bg-rise/10 border border-rise/30 rounded-xl px-3 py-2 mb-3 text-xs text-rise">
               ✨ Enviaremos um link de acesso para seu email. Sem senha necessária.
             </div>
           )}
@@ -201,7 +208,7 @@ function LoginContent() {
 
         <p className="text-[11px] text-center text-ink-muted mt-5 leading-relaxed">
           Ao {mode === 'signup' ? 'criar conta' : 'entrar'} você concorda com os{' '}
-          <span className="text-blood font-semibold">Termos de Uso</span> do MICHI.
+          <span className="text-rise font-semibold">Termos de Uso</span> do Belt Rise.
         </p>
       </div>
     </div>
