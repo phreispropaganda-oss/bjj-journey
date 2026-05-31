@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { openTikTokAppForShare } from '@/lib/social/tiktok'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 
 interface Props {
   open: boolean
@@ -21,6 +22,7 @@ export default function ShareSheet({
   open, onClose, imageBlob, caption, profileUrl, filename = 'michi.jpg', connections,
 }: Props) {
   const [busy, setBusy] = useState<string | null>(null)
+  useBodyScrollLock(open)
   const [feedback, setFeedback] = useState('')
 
   if (!open) return null

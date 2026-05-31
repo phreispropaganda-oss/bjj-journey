@@ -74,7 +74,18 @@ body {
   color: var(--text-primary);
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
+  /* iOS HIG: previne over-scroll/bounce do body */
+  overscroll-behavior-y: contain;
 }
+
+/* iOS Safari: inputs com font-size < 16px causam zoom automatico ao focar */
+input, textarea, select {
+  font-size: 16px;
+}
+
+/* Safe-area helpers (iPhone notch + home indicator) */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0); }
+.pt-safe { padding-top:    env(safe-area-inset-top, 0); }
 
 /* ── Headings de impacto (PRD §2.2) ── */
 .font-display {

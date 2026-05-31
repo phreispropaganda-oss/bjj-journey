@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 
 interface ConfirmOptions {
   title: string
@@ -23,6 +24,7 @@ export function useConfirm(): ConfirmFn {
 export function ConfirmProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<(ConfirmOptions & { open: boolean }) | null>(null)
   const resolverRef = useRef<((b: boolean) => void) | null>(null)
+  useBodyScrollLock(!!state?.open)
 
   const confirm = useCallback<ConfirmFn>((opts) => {
     return new Promise<boolean>(resolve => {

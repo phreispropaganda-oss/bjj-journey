@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import Link from 'next/link'
 import { getCurriculumByBelt, BELTS } from '@/lib/curriculum'
 import { useProgressStore } from '@/store/progress'
@@ -59,6 +60,7 @@ function TechDetail({ tech, color, onClose, onToggle, done }: {
   tech: Technique; color: string; onClose: () => void; onToggle: () => void; done: boolean
 }) {
   const [timerMin, setTimerMin] = useState<number | null>(null)
+  useBodyScrollLock(true)
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-end justify-center"
       onClick={e => e.target === e.currentTarget && onClose()}>
@@ -127,15 +129,16 @@ function TechDetail({ tech, color, onClose, onToggle, done }: {
           <InlineTimer minutes={timerMin} color={color} onClose={() => setTimerMin(null)} />
         )}
 
-        {/* Mark done */}
-        <div className="px-5 pb-6 pt-3 border-t border-[#F2F0ED] flex-shrink-0">
+        {/* Mark done — STICKY no rodape, safe-area-aware */}
+        <div className="px-5 pt-3 border-t border-[#F2F0ED] flex-shrink-0 bg-white"
+          style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 16px)' }}>
           <button onClick={onToggle}
-            className={`w-full py-3 rounded-full font-black text-sm transition-all ${
+            className={`w-full py-4 rounded-full font-black text-base transition-all min-h-[56px] ${
               done
                 ? 'bg-[#F0FDF4] border-2 border-[#86EFAC] text-[#16A34A]'
-                : 'bg-[#CC0000] text-white shadow-lg shadow-red-900/20'
+                : 'bg-[#CC0000] text-white shadow-lg shadow-red-900/20 active:bg-[#9E0B13]'
             }`}>
-            {done ? '✓ Técnica concluída' : 'Marcar como feita →'}
+            {done ? '✓ Técnica concluída — desfazer' : 'Marcar como feita →'}
           </button>
         </div>
       </div>
@@ -225,13 +228,14 @@ export default function ModulesClient({ beltId }: Props) {
             <p className="text-[11px] text-[#AAA] font-bold uppercase tracking-wider">Módulos</p>
             <h1 className="text-lg font-black tracking-tight">Faixa {belt.name}</h1>
           </div>
-          <button onClick={() => setTdah(!tdah)}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${
+          <button onClick={() => setTdah(t => !t)}
+            title={tdah ? 'Sair do modo Foco' : 'Modo Foco: mostra so o proximo modulo pendente'}
+            className={`px-3 py-2 rounded-full text-xs font-black border-2 transition-all min-h-tap ${
               tdah
-                ? 'bg-[#0D0D0D] border-[#0D0D0D] text-white'
-                : 'border-[#E5E5E5] text-[#555]'
+                ? 'bg-[#0D0D0D] border-[#0D0D0D] text-white shadow-lg'
+                : 'border-[#E5E5E5] text-[#555] bg-white'
             }`}>
-            🧠 Foco
+            🧠 {tdah ? 'Foco ON' : 'Foco'}
           </button>
         </div>
         {/* Belt progress bar */}
@@ -260,11 +264,22 @@ export default function ModulesClient({ beltId }: Props) {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-3 pb-24">
-        {curriculum.modules.map(mod => {
+        {(() => {
+          // Modo Foco: apenas o primeiro modulo com pendentes, ja expandido
+          if (tdah) {
+            const firstPending = curriculum.modules.find(m =>
+              m.categories.some(c => c.techniques.some(t =>
+                !isCompleted(`${beltId}-${m.id}-${t.name.replace(/\s/g, '_')}`)
+              ))
+            )
+            return firstPending ? [firstPending] : []
+          }
+          return curriculum.modules
+        })().map(mod => {
           const modTotal = mod.categories.reduce((a, c) => a + c.techniques.length, 0)
           const modDone  = getCount(beltId, mod.id)
           const modPct   = modTotal > 0 ? Math.round((modDone / modTotal) * 100) : 0
-          const isOpen   = openMods[mod.id]
+          const isOpen   = tdah ? true : openMods[mod.id]
 
           return (
             <div key={mod.id} className="bg-white rounded-2xl mb-2.5 overflow-hidden shadow-sm">

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 
 const STEPS = [
   {
@@ -36,11 +37,13 @@ const STEPS = [
   },
 ]
 
-const STORAGE_KEY = 'michi_tour_v1'
+// Mudei a chave (era michi_tour_v1) para o tour reaparecer apos o rebrand Belt Rise
+const STORAGE_KEY = 'belt_rise_tour_v2'
 
 export default function TourOverlay() {
   const [step, setStep] = useState(0)
   const [show, setShow] = useState(false)
+  useBodyScrollLock(show)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
