@@ -321,7 +321,7 @@ export default function ProfileClient({
                 </div>
               )}
               <input
-                className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#CC0000] placeholder:text-[#BBB]"
+                className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000] placeholder:text-[#BBB]"
                 placeholder="Ou digite o nome da sua academia..."
                 value={customAcad}
                 onChange={e => { setCustomAcad(e.target.value); setAcademyName('') }}
@@ -332,7 +332,7 @@ export default function ProfileClient({
             <div className="pt-2 border-t border-[#F2F0ED]">
               <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Bio (curta)</label>
               <textarea rows={2} maxLength={140}
-                className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#CC0000] resize-none"
+                className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000] resize-none"
                 placeholder="Conte algo sobre sua jornada..."
                 value={bio}
                 onChange={e => setBio(e.target.value)} />
@@ -344,7 +344,7 @@ export default function ProfileClient({
               <div>
                 <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Peso (kg)</label>
                 <input type="number" min={20} max={250} step={0.1}
-                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#CC0000]"
+                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000]"
                   placeholder="Ex: 78"
                   value={weight}
                   onChange={e => setWeight(e.target.value)} />
@@ -353,7 +353,7 @@ export default function ProfileClient({
               <div>
                 <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Altura (cm)</label>
                 <input type="number" min={100} max={250}
-                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#FF6B2B]"
+                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000]"
                   placeholder="Ex: 178"
                   value={height}
                   onChange={e => setHeight(e.target.value)} />
@@ -365,7 +365,7 @@ export default function ProfileClient({
               <div>
                 <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Tempo de luta (anos)</label>
                 <input type="number" min={0} max={60}
-                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#FF6B2B]"
+                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000]"
                   placeholder="Ex: 5"
                   value={yearsTraining}
                   onChange={e => setYearsTraining(Number(e.target.value) || 0)} />
@@ -373,7 +373,7 @@ export default function ProfileClient({
               <div>
                 <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Data de nascimento</label>
                 <input type="date"
-                  className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#FF6B2B]"
+                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000]"
                   max={new Date().toISOString().slice(0,10)}
                   value={birthDate}
                   onChange={e => setBirthDate(e.target.value)} />

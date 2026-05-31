@@ -1,4 +1,4 @@
-// MICHI 9:16 (1080x1920) story templates — client-side canvas
+// Belt Rise 9:16 (1080x1920) story templates — client-side canvas
 
 export type StoryTemplate = 'classic' | 'minimal' | 'hype' | 'stats' | 'achievement' | 'graduation' | 'record'
 
@@ -27,8 +27,8 @@ export interface StoryData {
 const FEELING_EMOJI: Record<number, string> = { 1:'😫',2:'😐',3:'🙂',4:'💪',5:'🔥' }
 const W = 1080
 const H = 1920
-const RISE  = '#FF6B2B'
-const RISE_DEEP = '#E55818'
+const RISE  = '#CC0000'
+const RISE_DEEP = '#9E0B13'
 const BLOOD = '#9E0B13'
 const VOLT  = '#DEFF9A'
 const BG    = '#080808'
@@ -91,7 +91,7 @@ async function drawAvatar(ctx: CanvasRenderingContext2D, d: StoryData, x: number
 }
 
 function drawLogo(ctx: CanvasRenderingContext2D, x: number, y: number, dark = false) {
-  // Quadrado laranja Belt Rise
+  // Quadrado vermelho Belt Rise (identidade)
   ctx.fillStyle = RISE
   roundRect(ctx, x, y, 100, 100, 26)
   ctx.fill()
@@ -137,7 +137,7 @@ async function drawClassic(d: StoryData): Promise<Blob> {
   const bg = ctx.createLinearGradient(0, 0, 0, H)
   bg.addColorStop(0, BG); bg.addColorStop(0.6, '#1A0A03'); bg.addColorStop(1, BG)
   ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
-  ctx.fillStyle = 'rgba(255,107,43,0.22)'
+  ctx.fillStyle = 'rgba(204,0,0,0.22)'
   ctx.beginPath(); ctx.arc(W*1.1, H*0.1, 380, 0, Math.PI*2); ctx.fill()
 
   drawLogo(ctx, 80, 100)
@@ -179,12 +179,12 @@ async function drawClassic(d: StoryData): Promise<Blob> {
   ctx.fillStyle = 'rgba(245,245,245,0.5)'; ctx.font = '900 40px Inter, sans-serif'
   ctx.fillText('min', 110 + ctx.measureText(`${d.durationMin}`).width + 10, sY + 165)
 
-  ctx.fillStyle = 'rgba(255,107,43,0.28)'; roundRect(ctx, 550, sY, 450, 200, 28); ctx.fill()
-  ctx.fillStyle = 'rgba(255,200,160,0.85)'; ctx.font = '900 22px Inter, sans-serif'
+  ctx.fillStyle = 'rgba(204,0,0,0.28)'; roundRect(ctx, 550, sY, 450, 200, 28); ctx.fill()
+  ctx.fillStyle = 'rgba(255,180,180,0.85)'; ctx.font = '900 22px Inter, sans-serif'
   ctx.fillText('QUEIMADAS', 580, sY + 50)
   ctx.fillStyle = INK; ctx.font = '900 100px Inter, sans-serif'
   ctx.fillText(`${d.calories}`, 580, sY + 165)
-  ctx.fillStyle = 'rgba(255,200,160,0.85)'; ctx.font = '900 36px Inter, sans-serif'
+  ctx.fillStyle = 'rgba(255,180,180,0.85)'; ctx.font = '900 36px Inter, sans-serif'
   ctx.fillText('kcal', 580 + ctx.measureText(`${d.calories}`).width + 10, sY + 165)
 
   const tY = sY + 240
@@ -257,7 +257,7 @@ async function drawHype(d: StoryData): Promise<Blob> {
 
   // Radial volt burst
   const rg = ctx.createRadialGradient(W/2, H*0.45, 50, W/2, H*0.45, 900)
-  rg.addColorStop(0, 'rgba(255,107,43,0.65)')
+  rg.addColorStop(0, 'rgba(204,0,0,0.65)')
   rg.addColorStop(0.45, 'rgba(222,255,154,0.4)')
   rg.addColorStop(1, 'rgba(8,8,8,0)')
   ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H)
@@ -368,7 +368,7 @@ async function drawAchievement(d: StoryData): Promise<Blob> {
   const { canvas, ctx } = setupCanvas()
   ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H)
   const rg = ctx.createRadialGradient(W/2, H*0.4, 0, W/2, H*0.4, 1100)
-  rg.addColorStop(0, 'rgba(255,107,43,0.45)')
+  rg.addColorStop(0, 'rgba(204,0,0,0.45)')
   rg.addColorStop(0.5, 'rgba(222,255,154,0.18)')
   rg.addColorStop(1, 'rgba(8,8,8,0)')
   ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H)
@@ -471,7 +471,7 @@ async function drawRecord(d: StoryData): Promise<Blob> {
   ctx.save()
   ctx.translate(W/2, H/2); ctx.rotate(-Math.PI/8)
   for (let i = -6; i <= 6; i++) {
-    ctx.fillStyle = i % 2 === 0 ? 'rgba(255,107,43,0.08)' : 'rgba(222,255,154,0.05)'
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(204,0,0,0.08)' : 'rgba(222,255,154,0.05)'
     ctx.fillRect(-W, i * 250, W*2, 130)
   }
   ctx.restore()

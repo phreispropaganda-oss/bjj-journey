@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -43,7 +43,15 @@ function estimateCalories(durationMin: number, weightKg: number | null, modality
   return Math.round(met * w * (durationMin / 60))
 }
 
-export default function NovoTreinoPage() {
+export default function NovoTreinoPageWrapper() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F8F7F5]" />}>
+      <NovoTreinoPage />
+    </Suspense>
+  )
+}
+
+function NovoTreinoPage() {
   const router = useRouter()
 
   // Form state
@@ -311,7 +319,7 @@ export default function NovoTreinoPage() {
         </div>
 
         {/* Date — defaults today, allows past (treino retroativo) */}
-        <div className={`rounded-2xl p-4 ${isRetro ? 'bg-[#FFF1EA] border-2 border-[#FF6B2B]' : 'bg-white shadow-sm'}`}>
+        <div className={`rounded-2xl p-4 ${isRetro ? 'bg-[#FFF0F0] border-2 border-[#CC0000]' : 'bg-white shadow-sm'}`}>
           <label className="field-label">
             {isRetro ? '🕐 Data do treino retroativo' : 'Data do treino'}
           </label>
@@ -321,7 +329,7 @@ export default function NovoTreinoPage() {
             value={date}
             onChange={e => setDate(e.target.value)} />
           {isRetro && (
-            <p className="text-[10px] text-[#E55818] font-bold mt-1.5">
+            <p className="text-[10px] text-[#9E0B13] font-bold mt-1.5">
               Voce esta registrando um treino do passado. Stats e badges sao recalculados.
             </p>
           )}

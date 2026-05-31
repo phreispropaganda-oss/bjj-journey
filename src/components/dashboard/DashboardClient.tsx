@@ -240,7 +240,7 @@ export function DashboardClient({
 
         {/* Hero atual (mantido com cor laranja brand) */}
         <div className="rounded-2xl p-4 text-white mb-3 relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #FF6B2B 0%, #E55818 100%)' }}>
+          style={{ background: 'linear-gradient(135deg, #CC0000 0%, #9E0B13 100%)' }}>
           <div className="absolute -right-6 -top-6 w-28 h-28 bg-white/10 rounded-full" />
           <div className="absolute -left-4 bottom-0 w-20 h-20 bg-black/10 rounded-full" />
           <div className="relative z-10">

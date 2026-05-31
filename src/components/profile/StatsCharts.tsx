@@ -77,12 +77,12 @@ export default async function StatsCharts({ userId }: { userId: string }) {
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-20" preserveAspectRatio="none">
           <defs>
             <linearGradient id="risegrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#FF6B2B" stopOpacity="0.65" />
-              <stop offset="100%" stopColor="#FF6B2B" stopOpacity="0" />
+              <stop offset="0%"   stopColor="#CC0000" stopOpacity="0.65" />
+              <stop offset="100%" stopColor="#CC0000" stopOpacity="0" />
             </linearGradient>
           </defs>
           <path d={areaPath} fill="url(#risegrad)" />
-          <path d={linePath} fill="none" stroke="#FF6B2B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={linePath} fill="none" stroke="#CC0000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
         <div className="flex justify-between text-[9px] text-ink-muted mt-1">
           <span>{daily[0].date.slice(5).replace('-','/')}</span>
@@ -107,7 +107,7 @@ export default async function StatsCharts({ userId }: { userId: string }) {
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
                 <div className="w-full bg-brand-bg rounded-t-md relative flex-1 flex items-end">
                   <div className="w-full rounded-t-md transition-all"
-                    style={{ height: `${h}%`, background: 'linear-gradient(180deg, #FF6B2B 0%, #E55818 100%)', minHeight: w.minutes > 0 ? 2 : 0 }} />
+                    style={{ height: `${h}%`, background: 'linear-gradient(180deg, #CC0000 0%, #9E0B13 100%)', minHeight: w.minutes > 0 ? 2 : 0 }} />
                 </div>
                 <span className="text-[8px] text-ink-muted leading-none">{w.label}</span>
               </div>

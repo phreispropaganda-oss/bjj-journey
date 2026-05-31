@@ -12,10 +12,53 @@ import type { Technique } from '@/lib/curriculum'
 
 interface Props { beltId: string }
 
+// Inline timer component (3/5/10 min)
+function InlineTimer({ minutes, color, onClose }: { minutes: number; color: string; onClose: () => void }) {
+  const [secs, setSecs] = useState(minutes * 60)
+  const [running, setRunning] = useState(true)
+  useEffect(() => {
+    if (!running) return
+    const id = setInterval(() => setSecs(s => s <= 1 ? (clearInterval(id), 0) : s - 1), 1000)
+    return () => clearInterval(id)
+  }, [running])
+  useEffect(() => {
+    if (secs === 0 && 'vibrate' in navigator) navigator.vibrate?.([200, 100, 200])
+  }, [secs])
+  const m = Math.floor(secs / 60), s = secs % 60
+  return (
+    <div className="fixed inset-0 bg-black/85 z-[60] flex flex-col items-center justify-center gap-5 px-6"
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <p className="text-white text-sm font-black uppercase tracking-wider">Cronômetro {minutes}min</p>
+      <div className="w-56 h-56 rounded-full border-4 flex flex-col items-center justify-center"
+        style={{ borderColor: color }}>
+        <span className="text-6xl font-black tabular-nums" style={{ color: secs === 0 ? '#FFCCCC' : color }}>
+          {String(m).padStart(2,'0')}:{String(s).padStart(2,'0')}
+        </span>
+        <span className="text-xs text-white/60 mt-1">{secs === 0 ? 'TEMPO!' : 'restante'}</span>
+      </div>
+      <div className="flex gap-3">
+        <button onClick={() => setRunning(r => !r)}
+          className="px-5 py-3 rounded-full bg-white/10 text-white text-sm font-black min-h-tap">
+          {running ? '⏸ Pausar' : '▶ Retomar'}
+        </button>
+        <button onClick={() => { setRunning(false); setSecs(minutes * 60) }}
+          className="px-5 py-3 rounded-full bg-white/10 text-white text-sm font-black min-h-tap">
+          ↺ Reset
+        </button>
+        <button onClick={onClose}
+          className="px-5 py-3 rounded-full bg-[#CC0000] text-white text-sm font-black min-h-tap">
+          Fechar
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ── Technique Detail Sheet ──
 function TechDetail({ tech, color, onClose, onToggle, done }: {
   tech: Technique; color: string; onClose: () => void; onToggle: () => void; done: boolean
 }) {
+  const [timerMin, setTimerMin] = useState<number | null>(null)
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-end justify-center"
       onClick={e => e.target === e.currentTarget && onClose()}>
@@ -66,18 +109,23 @@ function TechDetail({ tech, color, onClose, onToggle, done }: {
           {/* Action buttons */}
           <div className="flex gap-2 flex-wrap">
             {[3, 5, 10].map(m => (
-              <button key={m}
-                className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-[#E5E5E5] bg-white text-[#555]">
+              <button key={m} type="button"
+                onClick={() => setTimerMin(m)}
+                className="flex items-center gap-1 text-xs px-3 py-2 rounded-lg border border-[#E5E5E5] bg-white text-[#0D0D0D] font-bold hover:border-[#CC0000] hover:text-[#CC0000] transition-colors min-h-tap">
                 ⏱ {m}min
               </button>
             ))}
             <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(tech.youtubeQuery)}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-[#E5E5E5] bg-white text-[#555]">
+              className="flex items-center gap-1 text-xs px-3 py-2 rounded-lg border border-[#E5E5E5] bg-white text-[#0D0D0D] font-bold min-h-tap">
               ▶ YouTube
             </a>
           </div>
         </div>
+
+        {timerMin !== null && (
+          <InlineTimer minutes={timerMin} color={color} onClose={() => setTimerMin(null)} />
+        )}
 
         {/* Mark done */}
         <div className="px-5 pb-6 pt-3 border-t border-[#F2F0ED] flex-shrink-0">
@@ -101,7 +149,7 @@ export default function ModulesClient({ beltId }: Props) {
   const { addXP } = useUserStore()
   const [openMods, setOpenMods] = useState<Record<string, boolean>>({})
   const [openCats, setOpenCats] = useState<Record<string, boolean>>({})
-  const [selected, setSelected] = useState<{ tech: Technique; color: string; key: string } | null>(null)
+  const [selected, setSelected] = useState<{ tech: Technique; color: string; key: string; moduleId: string } | null>(null)
   const [tdah, setTdah] = useState(false)
   const [xpShow, setXpShow] = useState(false)
   const belt = BELTS.find(b => b.id === beltId) ?? BELTS[0]
@@ -277,7 +325,7 @@ export default function ModulesClient({ beltId }: Props) {
                                   className={`border-t border-[#EEEBE6] ${isDone ? 'opacity-60' : ''}`}>
                                   <div
                                     className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer active:bg-white"
-                                    onClick={() => setSelected({ tech, color: mod.color, key })}>
+                                    onClick={() => setSelected({ tech, color: mod.color, key, moduleId: mod.id })}>
                                     <span className="text-[11px] text-[#AAA] min-w-[18px] tabular-nums">{i + 1}</span>
                                     <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: mod.color }} />
                                     <span className="flex-1 text-sm font-medium text-[#0D0D0D]">{tech.name}</span>
@@ -311,8 +359,7 @@ export default function ModulesClient({ beltId }: Props) {
           done={isCompleted(selected.key)}
           onClose={() => setSelected(null)}
           onToggle={() => {
-            const [bId, modId] = selected.key.split('-')
-            handleComplete(bId, modId, selected.tech.name)
+            handleComplete(beltId, selected.moduleId, selected.tech.name)
           }}
         />
       )}

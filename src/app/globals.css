@@ -19,11 +19,11 @@
   --text-secondary: #A0A0A0;   /* 8.2:1 — WCAG AAA */
   --text-muted:     #6B6B6B;   /* labels, hints */
 
-  /* ── Brand: Belt Rise Laranja (logo + primary CTA) ── */
-  --rise:        #FF6B2B;   /* CTA principal — laranja Belt Rise */
-  --rise-deep:   #E55818;   /* hover/active */
-  --rise-glow:   rgba(255,107,43,0.35);
-  --rise-soft:   rgba(255,107,43,0.12);
+  /* ── Brand: Belt Rise Vermelho (identidade da marca) ── */
+  --rise:        #CC0000;   /* CTA principal — vermelho Belt Rise */
+  --rise-deep:   #9E0B13;   /* hover/active */
+  --rise-glow:   rgba(204,0,0,0.35);
+  --rise-soft:   rgba(204,0,0,0.12);
 
   /* ── Accent: Vermelho Sangue (alertas/destructive) ── */
   --blood:       #9E0B13;   /* destructive CTA */

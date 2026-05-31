@@ -346,19 +346,19 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
           <div className="grid grid-cols-3 gap-2 mb-2">
             <button onClick={() => handleVisibility('public')} disabled={visBusy}
               className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10px] font-black border-2 ${
-                vis === 'public' ? 'border-[#FF6B2B] bg-[#FFF1EA] text-[#E55818]' : 'border-[#E5E5E5] text-[#555]'
+                vis === 'public' ? 'border-[#CC0000] bg-[#FFF0F0] text-[#9E0B13]' : 'border-[#E5E5E5] text-[#555]'
               }`}>
               <span className="text-base">🌐</span> Público
             </button>
             <button onClick={() => handleVisibility('followers')} disabled={visBusy}
               className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10px] font-black border-2 ${
-                vis === 'followers' ? 'border-[#FF6B2B] bg-[#FFF1EA] text-[#E55818]' : 'border-[#E5E5E5] text-[#555]'
+                vis === 'followers' ? 'border-[#CC0000] bg-[#FFF0F0] text-[#9E0B13]' : 'border-[#E5E5E5] text-[#555]'
               }`}>
               <span className="text-base">👥</span> Seguidores
             </button>
             <button onClick={() => handleVisibility('private')} disabled={visBusy}
               className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10px] font-black border-2 ${
-                vis === 'private' ? 'border-[#FF6B2B] bg-[#FFF1EA] text-[#E55818]' : 'border-[#E5E5E5] text-[#555]'
+                vis === 'private' ? 'border-[#CC0000] bg-[#FFF0F0] text-[#9E0B13]' : 'border-[#E5E5E5] text-[#555]'
               }`}>
               <span className="text-base">🔒</span> Só eu
             </button>
@@ -372,11 +372,11 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
         {/* Continue */}
         <div className="grid grid-cols-2 gap-2">
           <Link href="/dashboard"
-            className="text-center bg-white border-2 border-[#E5E5E5] text-[#555] font-black py-3 rounded-2xl text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-colors">
+            className="text-center bg-white border-2 border-[#E5E5E5] text-[#555] font-black py-3 rounded-2xl text-sm hover:border-[#CC0000] hover:text-[#CC0000] transition-colors">
             Voltar ao início
           </Link>
           <Link href="/treino/novo"
-            className="text-center bg-[#FF6B2B] text-white font-black py-3 rounded-2xl text-sm hover:bg-[#E55818] transition-colors">
+            className="text-center bg-[#CC0000] text-white font-black py-3 rounded-2xl text-sm hover:bg-[#9E0B13] transition-colors">
             + Outro treino
           </Link>
         </div>
