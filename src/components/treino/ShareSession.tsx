@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 import { generateStoryImage, shareToInstagramStories, TEMPLATE_META, type StoryTemplate } from '@/lib/storyImage'
 import { deleteTrainingSession, updateSessionVisibility, type Visibility } from '@/app/treino/actions'
 import { useConfirm } from '@/components/ui/ConfirmDialog'
+import ShareSheet from '@/components/sharing/ShareSheet'
+import { createClient } from '@/lib/supabase/client'
 
 const TYPE_META: Record<string, { emoji: string; label: string }> = {
   gi:          { emoji:'🥋', label:'Gi' },
@@ -38,6 +40,9 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
   const [showPhoto, setShowPhoto] = useState(!!session.photo_url)
   const [generatingStory, setGeneratingStory] = useState(false)
   const [template, setTemplate] = useState<StoryTemplate>('classic')
+  const [shareOpen, setShareOpen] = useState(false)
+  const [shareBlob, setShareBlob] = useState<Blob | null>(null)
+  const [shareConnections, setShareConnections] = useState<{ instagram?: 'connected' | 'disconnected'; tiktok?: 'connected' | 'disconnected' }>({})
   const [vis, setVis] = useState<Visibility>(((session as { visibility?: Visibility }).visibility ?? 'followers'))
   const [visBusy, setVisBusy] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -69,11 +74,10 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
 
   const belt = BELTS.find(b => b.id === profile.belt_id) ?? BELTS[0]
 
-  async function shareInstagramStory() {
+  async function buildBlob(): Promise<Blob | null> {
     const tm = TYPE_META[session.type] ?? { emoji: '🥋', label: session.type }
-    setGeneratingStory(true)
     try {
-      const blob = await generateStoryImage({
+      return await generateStoryImage({
         authorName:    profile.name,
         authorInitial: (profile.name?.charAt(0) ?? '?').toUpperCase(),
         avatarUrl:     profile.avatar_url,
@@ -94,60 +98,72 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
         username:      profile.username,
         template,
       })
-      const r = await shareToInstagramStories(blob, `belt-rise-${template}-${session.id}.jpg`)
-      if (r.downloaded) alert('Imagem 9:16 baixada! Abra o Instagram > Stories e use a foto da galeria.')
     } catch (err) {
       alert('Erro ao gerar imagem: ' + (err as Error).message)
-    } finally {
-      setGeneratingStory(false)
+      return null
     }
+  }
+
+  /** Flow legacy: gera + chama navigator.share / download direto */
+  async function shareInstagramStory() {
+    setGeneratingStory(true)
+    const blob = await buildBlob()
+    setGeneratingStory(false)
+    if (!blob) return
+    const r = await shareToInstagramStories(blob, `belt-rise-${template}-${session.id}.jpg`)
+    if (r.downloaded) alert('Imagem 9:16 baixada! Abra o Instagram > Stories e use a foto da galeria.')
+  }
+
+  /** Flow universal: abre ShareSheet com todas as opcoes */
+  async function openShareSheet() {
+    setGeneratingStory(true)
+    const blob = await buildBlob()
+    setGeneratingStory(false)
+    if (!blob) return
+    setShareBlob(blob)
+
+    // Buscar status de conexao das redes (best-effort)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase.from('social_connections')
+          .select('provider, status').eq('user_id', user.id)
+        const conns: { instagram?: 'connected' | 'disconnected'; tiktok?: 'connected' | 'disconnected' } = {
+          instagram: 'disconnected', tiktok: 'disconnected',
+        }
+        ;((data ?? []) as { provider: 'instagram' | 'tiktok'; status: string }[]).forEach(c => {
+          if (c.status === 'connected') conns[c.provider] = 'connected'
+        })
+        setShareConnections(conns)
+      }
+    } catch { /* ignore */ }
+
+    setShareOpen(true)
   }
   const typeMeta = TYPE_META[session.type] ?? { emoji: '🥋', label: session.type }
   const initial = (profile.name?.charAt(0) ?? '?').toUpperCase()
   const trainedDate = new Date(session.trained_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })
 
-  function shareWhatsApp() {
-    const text =
-      `🥋 Acabei de treinar Jiu-Jitsu no Belt Rise!\n\n` +
-      `${typeMeta.emoji} ${typeMeta.label} · ⏱ ${session.duration_min}min · 🔥 ${calories}kcal\n` +
-      (session.subs_for > 0  ? `🏆 ${session.subs_for} finalização${session.subs_for > 1 ? 'ões' : ''}\n` : '') +
-      (session.techniques.length > 0 ? `🥋 ${session.techniques.slice(0, 3).join(', ')}\n` : '') +
-      `\nMinha jornada: ${profileUrl}`
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
-  }
-
-  async function copyLink() {
-    await navigator.clipboard.writeText(`${profileUrl}?t=${session.id}`)
-    alert('Link copiado!')
-  }
-
-  async function nativeShare() {
-    if (navigator.share) {
-      await navigator.share({
-        title: `Treino no Belt Rise`,
-        text: `${session.duration_min}min · ${calories}kcal · ${typeMeta.label}`,
-        url: profileUrl,
-      })
-    } else {
-      copyLink()
-    }
-  }
+  // Legacy: shareInstagramStory mantido para compat (botao destacado nao existe mais
+  // — toda interacao passa pelo ShareSheet universal via openShareSheet)
+  void shareInstagramStory
 
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top bar */}
-      <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex items-center justify-between sticky top-0 z-10">
-        <Link href="/dashboard" className="text-[#555] text-sm">← Início</Link>
+      <div className="bg-white border-b border-brand-elev px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+        <Link href="/dashboard" className="text-ink-secondary text-sm">← Início</Link>
         <h1 className="font-black text-base tracking-tight">Treino salvo!</h1>
-        <Link href="/feed" className="text-[#CC0000] text-sm font-bold">Feed</Link>
+        <Link href="/feed" className="text-rise text-sm font-bold">Feed</Link>
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-4 pb-32 space-y-3">
 
         {/* Success banner */}
-        <div className="bg-[#F0FDF4] border border-[#86EFAC] rounded-2xl px-4 py-3 text-center">
+        <div className="bg-volt/10 border border-volt/40 rounded-2xl px-4 py-3 text-center">
           <p className="text-2xl mb-1">🎉</p>
-          <p className="font-black text-[#16A34A] text-sm">+{Math.max(10, session.duration_min / 5)} XP ganhos!</p>
+          <p className="font-black text-volt-deep text-sm">+{Math.max(10, session.duration_min / 5)} XP ganhos!</p>
         </div>
 
         {/* ── SHARE CARD — visual atrativo para redes sociais ── */}
@@ -202,7 +218,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
                 {session.duration_min}<span className="text-base text-white/40">min</span>
               </p>
             </div>
-            <div className="bg-[#CC0000]/20 backdrop-blur rounded-2xl p-3 border border-[#CC0000]/30">
+            <div className="bg-[#CC0000]/20 backdrop-blur rounded-2xl p-3 border border-rise/30">
               <p className="text-[#FFCCCC] text-[9px] uppercase tracking-wider font-bold mb-1">Queimadas</p>
               <p className="text-white font-black text-3xl tabular-nums tracking-tight leading-none">
                 {calories}<span className="text-base text-[#FFCCCC]">kcal</span>
@@ -292,7 +308,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
 
         {/* Share buttons */}
         <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Compartilhar nas redes</p>
+          <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">Compartilhar nas redes</p>
 
           {/* Template picker */}
           <div className="grid grid-cols-4 gap-1.5 mb-3">
@@ -301,70 +317,65 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
                 className={`flex flex-col items-center gap-0.5 rounded-xl py-2 border-2 transition-all ${
                   template === k
                     ? 'border-[#9E0B13] bg-[#9E0B13]/10'
-                    : 'border-[#E5E5E5] bg-white hover:border-[#9E0B13]/40'
+                    : 'border-brand-elev bg-white hover:border-[#9E0B13]/40'
                 }`}>
                 <span className="text-lg leading-none">{TEMPLATE_META[k].emoji}</span>
-                <span className={`text-[10px] font-black ${template === k ? 'text-[#9E0B13]' : 'text-[#555]'}`}>
+                <span className={`text-[10px] font-black ${template === k ? 'text-blood' : 'text-ink-secondary'}`}>
                   {TEMPLATE_META[k].label}
                 </span>
               </button>
             ))}
           </div>
 
-          {/* Instagram Stories — destaque */}
-          <button onClick={shareInstagramStory} disabled={generatingStory}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white font-black rounded-2xl py-3.5 mb-2 disabled:opacity-60 transition-opacity">
-            <span className="text-xl">📸</span>
-            <span className="text-sm">{generatingStory ? 'Gerando imagem 9:16...' : 'Instagram Stories'}</span>
+          {/* Botão único universal — abre ShareSheet com todas opções */}
+          <button onClick={openShareSheet} disabled={generatingStory}
+            className="w-full flex items-center justify-center gap-2 bg-rise text-white font-display rounded-2xl py-4 shadow-glow-rise active:scale-[0.98] transition-transform disabled:opacity-60">
+            <span className="text-xl">📤</span>
+            <span className="text-base tracking-wide">
+              {generatingStory ? 'Gerando imagem 9:16...' : 'COMPARTILHAR'}
+            </span>
           </button>
 
-          <div className="grid grid-cols-3 gap-2 mb-2">
-            <button onClick={shareWhatsApp}
-              className="flex flex-col items-center gap-1.5 bg-green-500 text-white font-black rounded-2xl py-3 hover:bg-green-600 transition-colors">
-              <span className="text-xl">📱</span>
-              <span className="text-xs">WhatsApp</span>
-            </button>
-            <button onClick={copyLink}
-              className="flex flex-col items-center gap-1.5 bg-[#0D0D0D] text-white font-black rounded-2xl py-3 hover:bg-[#1A1A1A] transition-colors">
-              <span className="text-xl">🔗</span>
-              <span className="text-xs">Copiar link</span>
-            </button>
-            <button onClick={nativeShare}
-              className="flex flex-col items-center gap-1.5 bg-[#CC0000] text-white font-black rounded-2xl py-3 hover:bg-[#A80000] transition-colors">
-              <span className="text-xl">↗</span>
-              <span className="text-xs">Mais</span>
-            </button>
-          </div>
-          <p className="text-[10px] text-[#AAA] text-center pt-2">
-            O botão Instagram gera uma imagem 9:16 perfeita para Stories
+          <p className="text-[10px] text-ink-muted text-center pt-3">
+            Story IG • Feed IG • TikTok • WhatsApp • Copiar link • Baixar PNG
           </p>
         </div>
 
+        {/* ShareSheet universal — abre ao clicar Compartilhar */}
+        <ShareSheet
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          imageBlob={shareBlob}
+          caption={`${(TYPE_META[session.type] ?? { emoji: '🥋', label: session.type }).emoji} ${(TYPE_META[session.type] ?? { label: session.type }).label} · ⏱ ${session.duration_min}min · 🔥 ${calories}kcal\n${session.subs_for > 0 ? `🏆 ${session.subs_for} finalização${session.subs_for > 1 ? 'ões' : ''}\n` : ''}Belt Rise — minha jornada no tatame.`}
+          profileUrl={`${profileUrl}?t=${session.id}`}
+          filename={`belt-rise-${template}-${session.id}.jpg`}
+          connections={shareConnections} />
+
         {/* Visibilidade + Apagar */}
         <div className="bg-white rounded-2xl p-3 shadow-sm">
-          <p className="text-[10px] font-black uppercase tracking-wider text-[#555] mb-2">Gestão do treino</p>
+          <p className="text-[10px] font-black uppercase tracking-wider text-ink-secondary mb-2">Gestão do treino</p>
           <div className="grid grid-cols-3 gap-2 mb-2">
             <button onClick={() => handleVisibility('public')} disabled={visBusy}
               className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10px] font-black border-2 ${
-                vis === 'public' ? 'border-[#CC0000] bg-[#FFF0F0] text-[#9E0B13]' : 'border-[#E5E5E5] text-[#555]'
+                vis === 'public' ? 'border-rise bg-rise/10 text-blood' : 'border-brand-elev text-ink-secondary'
               }`}>
               <span className="text-base">🌐</span> Público
             </button>
             <button onClick={() => handleVisibility('followers')} disabled={visBusy}
               className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10px] font-black border-2 ${
-                vis === 'followers' ? 'border-[#CC0000] bg-[#FFF0F0] text-[#9E0B13]' : 'border-[#E5E5E5] text-[#555]'
+                vis === 'followers' ? 'border-rise bg-rise/10 text-blood' : 'border-brand-elev text-ink-secondary'
               }`}>
               <span className="text-base">👥</span> Seguidores
             </button>
             <button onClick={() => handleVisibility('private')} disabled={visBusy}
               className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10px] font-black border-2 ${
-                vis === 'private' ? 'border-[#CC0000] bg-[#FFF0F0] text-[#9E0B13]' : 'border-[#E5E5E5] text-[#555]'
+                vis === 'private' ? 'border-rise bg-rise/10 text-blood' : 'border-brand-elev text-ink-secondary'
               }`}>
               <span className="text-base">🔒</span> Só eu
             </button>
           </div>
           <button onClick={handleDelete} disabled={deleting}
-            className="w-full flex items-center justify-center gap-1.5 bg-[#FEF2F2] text-[#9E0B13] font-black rounded-xl py-2.5 text-xs border border-[#FECACA] disabled:opacity-50">
+            className="w-full flex items-center justify-center gap-1.5 bg-blood/10 text-blood font-black rounded-xl py-2.5 text-xs border border-blood/40 disabled:opacity-50">
             {deleting ? 'Apagando...' : '🗑️ Apagar este treino'}
           </button>
         </div>
@@ -372,7 +383,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
         {/* Continue */}
         <div className="grid grid-cols-2 gap-2">
           <Link href="/dashboard"
-            className="text-center bg-white border-2 border-[#E5E5E5] text-[#555] font-black py-3 rounded-2xl text-sm hover:border-[#CC0000] hover:text-[#CC0000] transition-colors">
+            className="text-center bg-white border-2 border-brand-elev text-ink-secondary font-black py-3 rounded-2xl text-sm hover:border-rise hover:text-rise transition-colors">
             Voltar ao início
           </Link>
           <Link href="/treino/novo"

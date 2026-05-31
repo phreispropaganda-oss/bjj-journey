@@ -144,11 +144,11 @@ export default function ProfileClient({
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top bar */}
-      <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="bg-white border-b border-brand-elev px-4 py-3 flex items-center justify-between flex-shrink-0">
         <h1 className="font-black text-base tracking-tight">Meu Perfil</h1>
         <button onClick={() => { setEditing(e => !e); setError('') }}
           className={`text-xs font-bold px-3 py-1.5 rounded-full transition-colors ${
-            editing ? 'bg-[#CC0000] text-white' : 'bg-[#F2F0ED] text-[#555]'
+            editing ? 'bg-[#CC0000] text-white' : 'bg-[#F2F0ED] text-ink-secondary'
           }`}>
           {editing ? 'Cancelar' : '✏️ Editar'}
         </button>
@@ -158,7 +158,7 @@ export default function ProfileClient({
 
         {/* Saved toast */}
         {saved && (
-          <div className="bg-[#F0FDF4] border border-[#86EFAC] rounded-2xl px-4 py-2.5 text-[#16A34A] font-bold text-sm flex items-center gap-2">
+          <div className="bg-volt/10 border border-volt/40 rounded-2xl px-4 py-2.5 text-volt-deep font-bold text-sm flex items-center gap-2">
             ✅ Perfil atualizado com sucesso!
           </div>
         )}
@@ -194,7 +194,7 @@ export default function ProfileClient({
               <div className="flex-1">
                 {editing ? (
                   <input
-                    className="bg-white/10 border border-white/20 rounded-xl px-3 py-1.5 text-white text-base font-black outline-none focus:border-[#CC0000] w-full"
+                    className="bg-white/10 border border-white/20 rounded-xl px-3 py-1.5 text-white text-base font-black outline-none focus:border-rise w-full"
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Seu nome"
@@ -257,20 +257,20 @@ export default function ProfileClient({
         {/* ── EDIT FORM ── */}
         {editing && (
           <div className="bg-white rounded-2xl p-4 shadow-sm space-y-4">
-            <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">Editar perfil</p>
+            <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">Editar perfil</p>
 
             {/* Belt selector */}
             <div>
-              <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-2">Faixa atual</label>
+              <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-2">Faixa atual</label>
               <div className="space-y-1.5">
                 {BELTS.map(b => (
                   <div key={b.id} onClick={() => { setBeltId(b.id); setDegrees(0) }}
                     className={`flex items-center gap-3 p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
-                      beltId === b.id ? 'border-[#CC0000] bg-[#FFF0F0]' : 'border-[#E5E5E5]'
+                      beltId === b.id ? 'border-rise bg-rise/10' : 'border-brand-elev'
                     }`}>
                     <div className="w-8 h-5 rounded flex-shrink-0 border border-black/10" style={{ background: b.color }} />
                     <span className="text-sm font-bold flex-1">Faixa {b.name}</span>
-                    {beltId === b.id && <span className="text-[#CC0000] font-black text-sm">✓</span>}
+                    {beltId === b.id && <span className="text-rise font-black text-sm">✓</span>}
                   </div>
                 ))}
               </div>
@@ -278,7 +278,7 @@ export default function ProfileClient({
 
             {/* Degrees */}
             <div>
-              <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-2">
+              <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-2">
                 Grau na faixa {currentBelt.name}
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -286,8 +286,8 @@ export default function ProfileClient({
                   <button key={i} onClick={() => setDegrees(i)}
                     className={`w-10 h-10 rounded-full border-2 font-black text-sm transition-all ${
                       degrees === i
-                        ? 'bg-[#CC0000] border-[#CC0000] text-white shadow-md shadow-red-900/20'
-                        : 'bg-white border-[#E5E5E5] text-[#555]'
+                        ? 'bg-[#CC0000] border-rise text-white shadow-md shadow-red-900/20'
+                        : 'bg-white border-brand-elev text-ink-secondary'
                     }`}>
                     {i}
                   </button>
@@ -297,15 +297,15 @@ export default function ProfileClient({
 
             {/* Academy */}
             <div>
-              <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-2">Academia</label>
+              <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-2">Academia</label>
               {academies.length > 0 && (
                 <div className="grid grid-cols-2 gap-1.5 mb-2">
                   {academies.map(a => (
                     <button key={a.id} onClick={() => { setAcademyName(a.name); setCustomAcad('') }}
                       className={`py-2 px-3 rounded-xl border-2 text-xs font-bold text-left transition-all truncate ${
                         academyName === a.name && !customAcad
-                          ? 'border-[#CC0000] bg-[#FFF0F0] text-[#CC0000]'
-                          : 'border-[#E5E5E5] text-[#555]'
+                          ? 'border-rise bg-rise/10 text-rise'
+                          : 'border-brand-elev text-ink-secondary'
                       }`}>
                       {a.name}
                     </button>
@@ -313,15 +313,15 @@ export default function ProfileClient({
                   <button onClick={() => { setAcademyName(''); }}
                     className={`py-2 px-3 rounded-xl border-2 text-xs font-bold transition-all ${
                       !academyName && !customAcad
-                        ? 'border-[#CC0000] bg-[#FFF0F0] text-[#CC0000]'
-                        : 'border-[#E5E5E5] text-[#555]'
+                        ? 'border-rise bg-rise/10 text-rise'
+                        : 'border-brand-elev text-ink-secondary'
                     }`}>
                     Nenhuma
                   </button>
                 </div>
               )}
               <input
-                className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000] placeholder:text-[#BBB]"
+                className="w-full bg-white border border-brand-elev rounded-xl px-3 py-3 text-base text-ink-primary placeholder:text-ink-muted outline-none focus:border-rise focus:ring-1 focus:ring-[#CC0000] placeholder:text-[#BBB]"
                 placeholder="Ou digite o nome da sua academia..."
                 value={customAcad}
                 onChange={e => { setCustomAcad(e.target.value); setAcademyName('') }}
@@ -329,31 +329,31 @@ export default function ProfileClient({
             </div>
 
             {/* Bio */}
-            <div className="pt-2 border-t border-[#F2F0ED]">
-              <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Bio (curta)</label>
+            <div className="pt-2 border-t border-brand-elev">
+              <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-1.5">Bio (curta)</label>
               <textarea rows={2} maxLength={140}
-                className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000] resize-none"
+                className="w-full bg-white border border-brand-elev rounded-xl px-3 py-3 text-base text-ink-primary placeholder:text-ink-muted outline-none focus:border-rise focus:ring-1 focus:ring-[#CC0000] resize-none"
                 placeholder="Conte algo sobre sua jornada..."
                 value={bio}
                 onChange={e => setBio(e.target.value)} />
-              <p className="text-[10px] text-[#AAA] text-right">{bio.length}/140</p>
+              <p className="text-[10px] text-ink-muted text-right">{bio.length}/140</p>
             </div>
 
             {/* Peso / altura */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Peso (kg)</label>
+                <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-1.5">Peso (kg)</label>
                 <input type="number" min={20} max={250} step={0.1}
-                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000]"
+                  className="w-full bg-white border border-brand-elev rounded-xl px-3 py-3 text-base text-ink-primary placeholder:text-ink-muted outline-none focus:border-rise focus:ring-1 focus:ring-[#CC0000]"
                   placeholder="Ex: 78"
                   value={weight}
                   onChange={e => setWeight(e.target.value)} />
-                <p className="text-[10px] text-[#AAA] mt-1">Para cálculo de calorias</p>
+                <p className="text-[10px] text-ink-muted mt-1">Para cálculo de calorias</p>
               </div>
               <div>
-                <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Altura (cm)</label>
+                <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-1.5">Altura (cm)</label>
                 <input type="number" min={100} max={250}
-                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000]"
+                  className="w-full bg-white border border-brand-elev rounded-xl px-3 py-3 text-base text-ink-primary placeholder:text-ink-muted outline-none focus:border-rise focus:ring-1 focus:ring-[#CC0000]"
                   placeholder="Ex: 178"
                   value={height}
                   onChange={e => setHeight(e.target.value)} />
@@ -363,17 +363,17 @@ export default function ProfileClient({
             {/* Tempo de luta + Data nascimento */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Tempo de luta (anos)</label>
+                <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-1.5">Tempo de luta (anos)</label>
                 <input type="number" min={0} max={60}
-                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000]"
+                  className="w-full bg-white border border-brand-elev rounded-xl px-3 py-3 text-base text-ink-primary placeholder:text-ink-muted outline-none focus:border-rise focus:ring-1 focus:ring-[#CC0000]"
                   placeholder="Ex: 5"
                   value={yearsTraining}
                   onChange={e => setYearsTraining(Number(e.target.value) || 0)} />
               </div>
               <div>
-                <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Data de nascimento</label>
+                <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-1.5">Data de nascimento</label>
                 <input type="date"
-                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-3 text-base text-[#0D0D0D] placeholder:text-[#AAA] outline-none focus:border-[#CC0000] focus:ring-1 focus:ring-[#CC0000]"
+                  className="w-full bg-white border border-brand-elev rounded-xl px-3 py-3 text-base text-ink-primary placeholder:text-ink-muted outline-none focus:border-rise focus:ring-1 focus:ring-[#CC0000]"
                   max={new Date().toISOString().slice(0,10)}
                   value={birthDate}
                   onChange={e => setBirthDate(e.target.value)} />
@@ -381,10 +381,10 @@ export default function ProfileClient({
             </div>
 
             {/* Public toggle */}
-            <div className="flex items-center justify-between py-2 border-t border-[#F2F0ED]">
+            <div className="flex items-center justify-between py-2 border-t border-brand-elev">
               <div>
                 <p className="text-sm font-bold">Perfil público</p>
-                <p className="text-xs text-[#AAA] mt-0.5">Aparece em rankings, feed e link de compartilhamento</p>
+                <p className="text-xs text-ink-muted mt-0.5">Aparece em rankings, feed e link de compartilhamento</p>
               </div>
               <button onClick={() => setIsPublic(p => !p)}
                 className={`w-12 h-6 rounded-full transition-colors relative flex-shrink-0 ${isPublic ? 'bg-[#CC0000]' : 'bg-[#E5E5E5]'}`}>
@@ -412,7 +412,7 @@ export default function ProfileClient({
         {/* Achievements */}
         {achievements.length > 0 && (
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">
+            <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">
               Conquistas ({achievements.length})
             </p>
             <div className="flex flex-wrap gap-2">
@@ -421,7 +421,7 @@ export default function ProfileClient({
                 if (!badge) return null
                 return (
                   <div key={a.badge_id}
-                    className="flex items-center gap-1.5 bg-[#FFF0F0] border border-[#FFCCCC] rounded-full px-3 py-1.5 text-[11px] font-bold text-[#CC0000]"
+                    className="flex items-center gap-1.5 bg-rise/10 border border-[#FFCCCC] rounded-full px-3 py-1.5 text-[11px] font-bold text-rise"
                     title={new Date(a.unlocked_at).toLocaleDateString('pt-BR')}>
                     <span>{badge.emoji}</span>
                     <span>{badge.name}</span>
@@ -436,12 +436,12 @@ export default function ProfileClient({
         {profile.is_public && profile.username && (
           <Link href={`/profile/${profile.username}`}
             className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:bg-brand-bg transition-colors">
-            <div className="w-9 h-9 rounded-xl bg-[#FFF0F0] flex items-center justify-center text-[#CC0000] text-lg">👤</div>
+            <div className="w-9 h-9 rounded-xl bg-rise/10 flex items-center justify-center text-rise text-lg">👤</div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-[#0D0D0D]">Ver perfil público</p>
-              <p className="text-xs text-[#AAA] truncate">{appUrl}/profile/{profile.username}</p>
+              <p className="text-sm font-bold text-ink-primary">Ver perfil público</p>
+              <p className="text-xs text-ink-muted truncate">{appUrl}/profile/{profile.username}</p>
             </div>
-            <span className="text-[#AAA]">›</span>
+            <span className="text-ink-muted">›</span>
           </Link>
         )}
 
@@ -449,7 +449,7 @@ export default function ProfileClient({
         {isOwner && (
           <Link href="/owner"
             className="flex items-center gap-3 bg-[#0D0D0D] rounded-2xl p-4 hover:bg-[#1A1A1A] transition-colors">
-            <div className="w-9 h-9 rounded-xl bg-[#CC0000]/20 flex items-center justify-center text-[#CC0000] text-lg">⚙️</div>
+            <div className="w-9 h-9 rounded-xl bg-[#CC0000]/20 flex items-center justify-center text-rise text-lg">⚙️</div>
             <div className="flex-1">
               <p className="text-sm font-bold text-white">Painel Owner</p>
               <p className="text-xs text-white/40">Gestão completa da plataforma</p>
@@ -461,13 +461,13 @@ export default function ProfileClient({
         {/* Academia link — only for academy admins/instructors */}
         {isAcademyAdmin && (
           <Link href="/academia"
-            className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:bg-brand-bg transition-colors border border-[#E5E5E5]">
-            <div className="w-9 h-9 rounded-xl bg-[#FFF0F0] flex items-center justify-center text-lg">🏢</div>
+            className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:bg-brand-bg transition-colors border border-brand-elev">
+            <div className="w-9 h-9 rounded-xl bg-rise/10 flex items-center justify-center text-lg">🏢</div>
             <div className="flex-1">
-              <p className="text-sm font-bold text-[#0D0D0D]">Painel Academia</p>
-              <p className="text-xs text-[#AAA]">Gerenciar alunos e promoções</p>
+              <p className="text-sm font-bold text-ink-primary">Painel Academia</p>
+              <p className="text-xs text-ink-muted">Gerenciar alunos e promoções</p>
             </div>
-            <span className="text-[#AAA]">›</span>
+            <span className="text-ink-muted">›</span>
           </Link>
         )}
 

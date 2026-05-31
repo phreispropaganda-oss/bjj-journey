@@ -158,16 +158,16 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top progress bar */}
-      <div className="bg-white border-b border-[#E5E5E5] px-5 py-4 flex items-center gap-4">
+      <div className="bg-white border-b border-brand-elev px-5 py-4 flex items-center gap-4">
         <button
           onClick={() => step > 1 ? setStep(s => s - 1) : router.push('/login')}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-[#F2F0ED] text-[#555] text-lg"
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-[#F2F0ED] text-ink-secondary text-lg"
         >
           ←
         </button>
         <div className="flex-1">
           <div className="flex justify-between items-center mb-1.5">
-            <span className="text-xs font-bold text-[#555] uppercase tracking-wider">Etapa {step} de {TOTAL_STEPS}</span>
+            <span className="text-xs font-bold text-ink-secondary uppercase tracking-wider">Etapa {step} de {TOTAL_STEPS}</span>
           </div>
           <div className="h-1.5 bg-[#F2F0ED] rounded-full overflow-hidden">
             <div
@@ -182,8 +182,8 @@ export default function OnboardingPage() {
         {/* ── STEP 1: Nome + Idade ── */}
         {step === 1 && (
           <div style={{ animation: 'fadeUp .25s ease' }}>
-            <div className="w-12 h-12 bg-[#FFF0F0] rounded-2xl flex items-center justify-center mb-4 text-2xl">👤</div>
-            <h1 className="text-2xl font-black text-[#0D0D0D] mb-1 tracking-tight">Olá! Vamos começar</h1>
+            <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">👤</div>
+            <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Olá! Vamos começar</h1>
             <p className="text-sm text-[#666] mb-6 leading-relaxed">Conta um pouco sobre você para personalizar sua jornada.</p>
             <div className="mb-4">
               <label className="field-label">Seu nome</label>
@@ -212,8 +212,8 @@ export default function OnboardingPage() {
         {/* ── STEP 2: Faixa ── */}
         {step === 2 && (
           <div style={{ animation: 'fadeUp .25s ease' }}>
-            <div className="w-12 h-12 bg-[#FFF0F0] rounded-2xl flex items-center justify-center mb-4 text-2xl">🥋</div>
-            <h1 className="text-2xl font-black text-[#0D0D0D] mb-1 tracking-tight">Sua faixa atual</h1>
+            <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">🥋</div>
+            <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Sua faixa atual</h1>
             <p className="text-sm text-[#666] mb-6 leading-relaxed">Selecione a faixa que você possui hoje.</p>
             <div className="space-y-2 mb-6">
               {BELTS.map(b => (
@@ -222,16 +222,16 @@ export default function OnboardingPage() {
                   onClick={() => setBeltId(b.id)}
                   className={`flex items-center gap-3 p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
                     beltId === b.id
-                      ? 'border-[#CC0000] bg-[#FFF0F0]'
-                      : 'border-[#E5E5E5] bg-white'
+                      ? 'border-rise bg-rise/10'
+                      : 'border-brand-elev bg-white'
                   }`}
                 >
                   <div className="w-10 h-6 rounded-md flex-shrink-0 border border-black/10" style={{ background: b.color }} />
                   <div className="flex-1">
                     <p className="font-bold text-sm">Faixa {b.name}</p>
-                    <p className="text-xs text-[#888]">{b.desc}</p>
+                    <p className="text-xs text-ink-muted">{b.desc}</p>
                   </div>
-                  {beltId === b.id && <span className="text-[#CC0000] font-black">✓</span>}
+                  {beltId === b.id && <span className="text-rise font-black">✓</span>}
                 </div>
               ))}
             </div>
@@ -241,11 +241,11 @@ export default function OnboardingPage() {
         {/* ── STEP 3: Graus ── */}
         {step === 3 && (
           <div style={{ animation: 'fadeUp .25s ease' }}>
-            <div className="w-12 h-12 bg-[#FFF0F0] rounded-2xl flex items-center justify-center mb-4 text-2xl">🏅</div>
-            <h1 className="text-2xl font-black text-[#0D0D0D] mb-1 tracking-tight">Quantos graus?</h1>
+            <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">🏅</div>
+            <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Quantos graus?</h1>
             <p className="text-sm text-[#666] mb-2 leading-relaxed">Graus na faixa <strong>{belt.name}</strong> (0 = sem grau).</p>
             {/* Belt preview */}
-            <div className="flex items-center gap-2 bg-white rounded-2xl p-3 mb-6 border border-[#E5E5E5]">
+            <div className="flex items-center gap-2 bg-white rounded-2xl p-3 mb-6 border border-brand-elev">
               <div className="flex-1 h-5 rounded flex items-center overflow-hidden" style={{ background: belt.color }}>
                 <div className="flex-1" />
                 {Array.from({ length: degrees }).map((_, i) => (
@@ -253,7 +253,7 @@ export default function OnboardingPage() {
                 ))}
                 <div className="w-4 h-full bg-black/80" />
               </div>
-              <span className="text-sm font-bold text-[#555]">Faixa {belt.name}, {degrees}° grau</span>
+              <span className="text-sm font-bold text-ink-secondary">Faixa {belt.name}, {degrees}° grau</span>
             </div>
             <div className="flex gap-2.5 flex-wrap mb-6">
               {Array.from({ length: belt.maxDeg + 1 }).map((_, i) => (
@@ -262,8 +262,8 @@ export default function OnboardingPage() {
                   onClick={() => setDegrees(i)}
                   className={`w-12 h-12 rounded-full border-2 font-black text-base transition-all ${
                     degrees === i
-                      ? 'bg-[#CC0000] border-[#CC0000] text-white shadow-lg shadow-red-900/30'
-                      : 'bg-white border-[#E5E5E5] text-[#0D0D0D]'
+                      ? 'bg-[#CC0000] border-rise text-white shadow-lg shadow-red-900/30'
+                      : 'bg-white border-brand-elev text-ink-primary'
                   }`}
                 >
                   {i}
@@ -276,8 +276,8 @@ export default function OnboardingPage() {
         {/* ── STEP 4: Histórico ── */}
         {step === 4 && (
           <div style={{ animation: 'fadeUp .25s ease' }}>
-            <div className="w-12 h-12 bg-[#FFF0F0] rounded-2xl flex items-center justify-center mb-4 text-2xl">📊</div>
-            <h1 className="text-2xl font-black text-[#0D0D0D] mb-1 tracking-tight">Seu histórico</h1>
+            <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">📊</div>
+            <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Seu histórico</h1>
             <p className="text-sm text-[#666] mb-6 leading-relaxed">Há quanto tempo você pratica e com que frequência treina?</p>
             <div className="mb-4">
               <label className="field-label">Tempo de prática</label>
@@ -288,12 +288,12 @@ export default function OnboardingPage() {
                     onClick={() => setPracticeTime(p.value)}
                     className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 cursor-pointer transition-all ${
                       practiceTime === p.value
-                        ? 'border-[#CC0000] bg-[#FFF0F0]'
-                        : 'border-[#E5E5E5] bg-white'
+                        ? 'border-rise bg-rise/10'
+                        : 'border-brand-elev bg-white'
                     }`}
                   >
                     <span className="text-sm font-medium">{p.label}</span>
-                    {practiceTime === p.value && <span className="text-[#CC0000] font-black">✓</span>}
+                    {practiceTime === p.value && <span className="text-rise font-black">✓</span>}
                   </div>
                 ))}
               </div>
@@ -307,8 +307,8 @@ export default function OnboardingPage() {
                     onClick={() => setFrequency(f.value)}
                     className={`flex items-center justify-center px-3 py-3 rounded-xl border-2 cursor-pointer transition-all text-sm font-bold ${
                       frequency === f.value
-                        ? 'border-[#CC0000] bg-[#CC0000] text-white'
-                        : 'border-[#E5E5E5] bg-white text-[#555]'
+                        ? 'border-rise bg-[#CC0000] text-white'
+                        : 'border-brand-elev bg-white text-ink-secondary'
                     }`}
                   >
                     {f.label}
@@ -322,8 +322,8 @@ export default function OnboardingPage() {
         {/* ── STEP 5: Academia ── */}
         {step === 5 && (
           <div style={{ animation: 'fadeUp .25s ease' }}>
-            <div className="w-12 h-12 bg-[#FFF0F0] rounded-2xl flex items-center justify-center mb-4 text-2xl">🏢</div>
-            <h1 className="text-2xl font-black text-[#0D0D0D] mb-1 tracking-tight">Sua academia</h1>
+            <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">🏢</div>
+            <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Sua academia</h1>
             <p className="text-sm text-[#666] mb-6 leading-relaxed">Selecione ou escreva o nome da sua academia.</p>
             <div className="grid grid-cols-2 gap-2 mb-4">
               {ACADEMIES.map(a => (
@@ -332,8 +332,8 @@ export default function OnboardingPage() {
                   onClick={() => { setAcademy(a.name); setAcademyCustom('') }}
                   className={`py-3 px-3 rounded-xl border-2 cursor-pointer transition-all text-center text-sm font-bold ${
                     academy === a.name && !academyCustom
-                      ? 'border-[#CC0000] bg-[#FFF0F0] text-[#CC0000]'
-                      : 'border-[#E5E5E5] bg-white text-[#555]'
+                      ? 'border-rise bg-rise/10 text-rise'
+                      : 'border-brand-elev bg-white text-ink-secondary'
                   }`}
                 >
                   {a.name}
@@ -355,8 +355,8 @@ export default function OnboardingPage() {
         {/* ── STEP 6: Objetivos ── */}
         {step === 6 && (
           <div style={{ animation: 'fadeUp .25s ease' }}>
-            <div className="w-12 h-12 bg-[#FFF0F0] rounded-2xl flex items-center justify-center mb-4 text-2xl">🎯</div>
-            <h1 className="text-2xl font-black text-[#0D0D0D] mb-1 tracking-tight">O que quer melhorar?</h1>
+            <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">🎯</div>
+            <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">O que quer melhorar?</h1>
             <p className="text-sm text-[#666] mb-6 leading-relaxed">Selecione as áreas que quer priorizar (múltipla escolha).</p>
             <div className="flex flex-wrap gap-2 mb-6">
               {GOALS.map(g => (
@@ -365,8 +365,8 @@ export default function OnboardingPage() {
                   onClick={() => toggleGoal(g)}
                   className={`px-3.5 py-2 rounded-full border-2 text-sm font-bold transition-all ${
                     goals.includes(g)
-                      ? 'border-[#CC0000] bg-[#CC0000] text-white'
-                      : 'border-[#E5E5E5] bg-white text-[#555]'
+                      ? 'border-rise bg-[#CC0000] text-white'
+                      : 'border-brand-elev bg-white text-ink-secondary'
                   }`}
                 >
                   {g}
@@ -383,7 +383,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Bottom CTA */}
-      <div className="bg-white border-t border-[#E5E5E5] px-5 py-4">
+      <div className="bg-white border-t border-brand-elev px-5 py-4">
         <button
           onClick={next}
           disabled={!canAdvance() || saving}
@@ -399,7 +399,7 @@ export default function OnboardingPage() {
           <button
             onClick={finish}
             disabled={saving}
-            className="w-full text-center text-sm text-[#AAA] mt-3 font-medium"
+            className="w-full text-center text-sm text-ink-muted mt-3 font-medium"
           >
             Pular e completar depois
           </button>

@@ -307,8 +307,8 @@ function NovoTreinoPage() {
             {DURATION_PRESETS.map(m => (
               <button key={m} onClick={() => setDuration(m)}
                 className={`flex-1 min-w-[60px] py-2 rounded-xl border-2 font-black text-sm transition-all ${
-                  duration === m ? 'border-[#CC0000] bg-[#FFF0F0] text-[#CC0000]'
-                  : 'border-[#E5E5E5] text-[#555]'
+                  duration === m ? 'border-rise bg-rise/10 text-rise'
+                  : 'border-brand-elev text-ink-secondary'
                 }`}>
                 {m}min
               </button>
@@ -320,14 +320,14 @@ function NovoTreinoPage() {
             value={duration}
             onChange={e => setDuration(e.target.value ? parseInt(e.target.value) : '')} />
           {!profile?.weight_kg && (
-            <p className="text-[10px] text-[#AAA] mt-2">
+            <p className="text-[10px] text-ink-muted mt-2">
               💡 Defina seu peso no perfil para cálculo mais preciso de calorias
             </p>
           )}
         </div>
 
         {/* Date — defaults today, allows past (treino retroativo) */}
-        <div className={`rounded-2xl p-4 ${isRetro ? 'bg-[#FFF0F0] border-2 border-[#CC0000]' : 'bg-white shadow-sm'}`}>
+        <div className={`rounded-2xl p-4 ${isRetro ? 'bg-rise/10 border-2 border-rise' : 'bg-white shadow-sm'}`}>
           <label className="field-label">
             {isRetro ? '🕐 Data do treino retroativo' : 'Data do treino'}
           </label>
@@ -337,7 +337,7 @@ function NovoTreinoPage() {
             value={date}
             onChange={e => setDate(e.target.value)} />
           {isRetro && (
-            <p className="text-[10px] text-[#9E0B13] font-bold mt-1.5">
+            <p className="text-[10px] text-blood font-bold mt-1.5">
               Voce esta registrando um treino do passado. Stats e badges sao recalculados.
             </p>
           )}
@@ -381,8 +381,8 @@ function NovoTreinoPage() {
                   <button key={a.id} onClick={() => { setAcademyName(a.name); setCustomAcademy('') }}
                     className={`py-2 px-3 rounded-xl border-2 text-xs font-bold text-left truncate transition-all ${
                       academyName === a.name && !customAcademy
-                        ? 'border-[#CC0000] bg-[#FFF0F0] text-[#CC0000]'
-                        : 'border-[#E5E5E5] text-[#555]'
+                        ? 'border-rise bg-rise/10 text-rise'
+                        : 'border-brand-elev text-ink-secondary'
                     }`}>
                     {a.name}
                   </button>
@@ -413,11 +413,11 @@ function NovoTreinoPage() {
               { label: 'Fui finalizado', value: subsAgainst,  setter: setSubsAgainst,  color: '#F59E0B' },
             ].map(c => (
               <div key={c.label} className="bg-brand-bg rounded-xl p-3 text-center">
-                <p className="text-[10px] font-black uppercase tracking-wider text-[#888] mb-2">{c.label}</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-ink-muted mb-2">{c.label}</p>
                 <p className="font-black text-2xl mb-2" style={{ color: c.color }}>{c.value}</p>
                 <div className="flex gap-1.5 justify-center">
                   <button onClick={() => c.setter(Math.max(0, c.value - 1))}
-                    className="w-7 h-7 rounded-full bg-white border border-[#E5E5E5] text-[#555] font-black">−</button>
+                    className="w-7 h-7 rounded-full bg-white border border-brand-elev text-ink-secondary font-black">−</button>
                   <button onClick={() => c.setter(c.value + 1)}
                     className="w-7 h-7 rounded-full text-white font-black"
                     style={{ background: c.color }}>+</button>
@@ -448,10 +448,10 @@ function NovoTreinoPage() {
             </div>
           ) : (
             <button type="button" onClick={() => setShowPhotoSheet(true)}
-              className="w-full flex items-center justify-center bg-brand-bg border-2 border-dashed border-[#D0D0D0] rounded-xl py-8 hover:border-[#CC0000] transition-colors">
+              className="w-full flex items-center justify-center bg-brand-bg border-2 border-dashed border-brand-elev rounded-xl py-8 hover:border-rise transition-colors">
               <div className="text-center">
                 <p className="text-2xl mb-1">📷</p>
-                <p className="text-xs text-[#555] font-bold">Adicionar foto</p>
+                <p className="text-xs text-ink-secondary font-bold">Adicionar foto</p>
               </div>
             </button>
           )}
@@ -465,22 +465,22 @@ function NovoTreinoPage() {
             onClick={e => e.target === e.currentTarget && setShowPhotoSheet(false)}>
             <div className="bg-white w-full max-w-[480px] mx-auto rounded-t-3xl p-5"
               style={{ animation: 'fadeUp 0.25s ease' }}>
-              <p className="text-center text-[10px] font-black uppercase tracking-wider text-[#888] mb-3">Escolha uma opção</p>
+              <p className="text-center text-[10px] font-black uppercase tracking-wider text-ink-muted mb-3">Escolha uma opção</p>
               <button type="button"
                 onClick={() => { setShowPhotoSheet(false); cameraInputRef.current?.click() }}
-                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-[#FFF0F0] rounded-2xl px-4 py-3.5 mb-2 transition-colors">
+                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-rise/10 rounded-2xl px-4 py-3.5 mb-2 transition-colors">
                 <span className="text-2xl">📸</span>
                 <span className="font-black text-[#1A1A1A]">Tirar foto</span>
               </button>
               <button type="button"
                 onClick={() => { setShowPhotoSheet(false); galleryInputRef.current?.click() }}
-                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-[#FFF0F0] rounded-2xl px-4 py-3.5 mb-2 transition-colors">
+                className="w-full flex items-center gap-3 bg-brand-bg hover:bg-rise/10 rounded-2xl px-4 py-3.5 mb-2 transition-colors">
                 <span className="text-2xl">🖼️</span>
                 <span className="font-black text-[#1A1A1A]">Escolher da galeria</span>
               </button>
               <button type="button"
                 onClick={() => setShowPhotoSheet(false)}
-                className="w-full bg-[#E5E5E5] text-[#555] font-black rounded-full py-3 mt-2 text-sm">
+                className="w-full bg-[#E5E5E5] text-ink-secondary font-black rounded-full py-3 mt-2 text-sm">
                 Cancelar
               </button>
             </div>
@@ -495,11 +495,11 @@ function NovoTreinoPage() {
               <button key={f.value} onClick={() => setFeeling(f.value)}
                 className={`py-3 rounded-xl border-2 transition-all ${
                   feeling === f.value
-                    ? 'border-[#CC0000] bg-[#FFF0F0] scale-105'
-                    : 'border-[#E5E5E5] bg-white'
+                    ? 'border-rise bg-rise/10 scale-105'
+                    : 'border-brand-elev bg-white'
                 }`}>
                 <div className="text-xl">{f.emoji}</div>
-                <p className={`text-[9px] font-black mt-0.5 ${feeling === f.value ? 'text-[#CC0000]' : 'text-[#888]'}`}>
+                <p className={`text-[9px] font-black mt-0.5 ${feeling === f.value ? 'text-rise' : 'text-ink-muted'}`}>
                   {f.label}
                 </p>
               </button>
@@ -525,12 +525,12 @@ function NovoTreinoPage() {
               <button key={opt.v} onClick={() => setVisibility(opt.v)}
                 className={`py-3 px-2 rounded-xl border-2 text-center transition-all ${
                   visibility === opt.v
-                    ? 'border-[#CC0000] bg-[#FFF0F0]'
-                    : 'border-[#E5E5E5] bg-white'
+                    ? 'border-rise bg-rise/10'
+                    : 'border-brand-elev bg-white'
                 }`}>
                 <div className="text-lg mb-1">{opt.icon}</div>
-                <p className={`text-xs font-black ${visibility === opt.v ? 'text-[#CC0000]' : 'text-[#555]'}`}>{opt.label}</p>
-                <p className="text-[10px] text-[#AAA] mt-0.5">{opt.desc}</p>
+                <p className={`text-xs font-black ${visibility === opt.v ? 'text-rise' : 'text-ink-secondary'}`}>{opt.label}</p>
+                <p className="text-[10px] text-ink-muted mt-0.5">{opt.desc}</p>
               </button>
             ))}
           </div>
