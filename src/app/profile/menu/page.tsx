@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { signOut } from '@/app/(auth)/login/actions'
 import BottomNav from '@/components/ui/BottomNav'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import PushOptIn from '@/components/profile/PushOptIn'
+import StripePortalLink from '@/components/profile/StripePortalLink'
 
 interface AcademyLite { id: string; name: string }
 
@@ -89,6 +91,12 @@ export default async function ProfileMenuPage() {
             <MenuItem href="/owner/desafios"    label="Desafios oficiais" hint="Criar e gerenciar" />
           </Section>
         )}
+
+        {/* Notificacoes push */}
+        <PushOptIn />
+
+        {/* Assinatura (Stripe Portal) */}
+        <StripePortalLink />
 
         {/* Tema */}
         <ThemeToggle />

@@ -7,6 +7,7 @@ import BottomNav from '@/components/ui/BottomNav'
 import NotificationBell from '@/components/ui/NotificationBell'
 import TourOverlay from '@/components/onboarding/TourOverlay'
 import BeltRiseLogo from '@/components/ui/BeltRiseLogo'
+import StreakShieldButton from '@/components/dashboard/StreakShieldButton'
 import ActivityRings from '@/components/dashboard/charts/ActivityRings'
 import MinutesBarChart from '@/components/dashboard/charts/MinutesBarChart'
 import TypeBreakdown from '@/components/dashboard/charts/TypeBreakdown'
@@ -290,9 +291,8 @@ export function DashboardClient({
         <TourOverlay />
 
         {/* Streak — versão suave e compacta */}
-        <Link href="/calendar"
-          className="block rounded-2xl p-3 mb-3 bg-brand-surface border border-brand-elev active:bg-brand-hover">
-          <div className="flex items-center gap-3">
+        <div className="block rounded-2xl p-3 mb-3 bg-brand-surface border border-brand-elev">
+          <Link href="/calendar" className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-rise/15 flex items-center justify-center">
               <span className="text-xl">🔥</span>
             </div>
@@ -306,8 +306,11 @@ export function DashboardClient({
               <p className="text-ink-muted text-[9px] uppercase tracking-wider">Recorde</p>
               <p className="text-rise font-display text-base">{personalRecords?.longest_streak_days ?? streak}d</p>
             </div>
-          </div>
-        </Link>
+          </Link>
+          {streak > 0 && (
+            <StreakShieldButton streak={streak} />
+          )}
+        </div>
 
         {/* Stats rings */}
         <div className="grid grid-cols-3 gap-2 mb-3">

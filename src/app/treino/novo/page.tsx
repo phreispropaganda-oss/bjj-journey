@@ -243,6 +243,14 @@ function NovoTreinoPage() {
         .update({ academy_name: finalAcademy } as never).eq('id', user.id)
     }
 
+    // P0: Confetti em marcos (1, 10, 50, 100, 250, 500, 1000)
+    try {
+      const { count } = await supabase.from('training_sessions')
+        .select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      const { maybeCelebrate } = await import('@/lib/celebrate')
+      maybeCelebrate(count ?? 0)
+    } catch { /* nao bloquear save */ }
+
     setSaving(false)
     router.push(`/treino/${sessionId}/share`)
   }
