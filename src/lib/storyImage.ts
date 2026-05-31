@@ -27,6 +27,8 @@ export interface StoryData {
 const FEELING_EMOJI: Record<number, string> = { 1:'😫',2:'😐',3:'🙂',4:'💪',5:'🔥' }
 const W = 1080
 const H = 1920
+const RISE  = '#FF6B2B'
+const RISE_DEEP = '#E55818'
 const BLOOD = '#9E0B13'
 const VOLT  = '#DEFF9A'
 const BG    = '#080808'
@@ -89,27 +91,43 @@ async function drawAvatar(ctx: CanvasRenderingContext2D, d: StoryData, x: number
 }
 
 function drawLogo(ctx: CanvasRenderingContext2D, x: number, y: number, dark = false) {
-  ctx.fillStyle = BLOOD
+  // Quadrado laranja Belt Rise
+  ctx.fillStyle = RISE
   roundRect(ctx, x, y, 100, 100, 26)
   ctx.fill()
+  // Letra B branca centrada
   ctx.fillStyle = 'white'
-  ctx.font = '900 56px Inter, -apple-system, sans-serif'
+  ctx.font = '900 70px Inter, -apple-system, sans-serif'
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-  ctx.fillText('道', x + 50, y + 55)
+  ctx.fillText('B', x + 50, y + 55)
+  // Setinha ascendente acima do B (canto superior direito do quadrado)
+  ctx.beginPath()
+  ctx.moveTo(x + 78, y + 22)   // ponta
+  ctx.lineTo(x + 70, y + 32)
+  ctx.lineTo(x + 75, y + 32)
+  ctx.lineTo(x + 75, y + 40)
+  ctx.lineTo(x + 81, y + 40)
+  ctx.lineTo(x + 81, y + 32)
+  ctx.lineTo(x + 86, y + 32)
+  ctx.closePath()
+  ctx.fill()
+  // Texto Belt Rise
   ctx.textAlign = 'left'
   ctx.fillStyle = dark ? '#0A0A0A' : INK
-  ctx.font = '900 60px Inter, -apple-system, sans-serif'
-  ctx.fillText('MICHI', x + 120, y + 70)
+  ctx.font = '900 58px Inter, -apple-system, sans-serif'
+  ctx.fillText('Belt', x + 120, y + 55)
+  ctx.fillStyle = RISE
+  ctx.fillText('Rise', x + 120 + ctx.measureText('Belt ').width + 8, y + 55)
 }
 
 function drawFooter(ctx: CanvasRenderingContext2D, d: StoryData, light = false) {
   ctx.textAlign = 'center'
-  ctx.fillStyle = light ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.3)'
+  ctx.fillStyle = light ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)'
   ctx.font = '700 30px Inter, -apple-system, sans-serif'
-  ctx.fillText(`michi.app/u/${d.username}`, W / 2, H - 80)
-  ctx.fillStyle = BLOOD
-  ctx.font = '900 24px Inter, -apple-system, sans-serif'
-  ctx.fillText('DOMINE O TATAME.', W / 2, H - 130)
+  ctx.fillText(`belt-rise.app/u/${d.username}`, W / 2, H - 80)
+  ctx.fillStyle = RISE
+  ctx.font = '900 26px Inter, -apple-system, sans-serif'
+  ctx.fillText('TREINE. SUBA. CONQUISTE.', W / 2, H - 130)
 }
 
 // ─────────── TEMPLATE: CLASSIC ───────────
@@ -117,9 +135,9 @@ async function drawClassic(d: StoryData): Promise<Blob> {
   const { canvas, ctx } = setupCanvas()
 
   const bg = ctx.createLinearGradient(0, 0, 0, H)
-  bg.addColorStop(0, BG); bg.addColorStop(0.6, '#1A0006'); bg.addColorStop(1, BG)
+  bg.addColorStop(0, BG); bg.addColorStop(0.6, '#1A0A03'); bg.addColorStop(1, BG)
   ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
-  ctx.fillStyle = 'rgba(158,11,19,0.18)'
+  ctx.fillStyle = 'rgba(255,107,43,0.22)'
   ctx.beginPath(); ctx.arc(W*1.1, H*0.1, 380, 0, Math.PI*2); ctx.fill()
 
   drawLogo(ctx, 80, 100)
@@ -161,12 +179,12 @@ async function drawClassic(d: StoryData): Promise<Blob> {
   ctx.fillStyle = 'rgba(245,245,245,0.5)'; ctx.font = '900 40px Inter, sans-serif'
   ctx.fillText('min', 110 + ctx.measureText(`${d.durationMin}`).width + 10, sY + 165)
 
-  ctx.fillStyle = 'rgba(158,11,19,0.28)'; roundRect(ctx, 550, sY, 450, 200, 28); ctx.fill()
-  ctx.fillStyle = 'rgba(255,180,180,0.7)'; ctx.font = '900 22px Inter, sans-serif'
+  ctx.fillStyle = 'rgba(255,107,43,0.28)'; roundRect(ctx, 550, sY, 450, 200, 28); ctx.fill()
+  ctx.fillStyle = 'rgba(255,200,160,0.85)'; ctx.font = '900 22px Inter, sans-serif'
   ctx.fillText('QUEIMADAS', 580, sY + 50)
   ctx.fillStyle = INK; ctx.font = '900 100px Inter, sans-serif'
   ctx.fillText(`${d.calories}`, 580, sY + 165)
-  ctx.fillStyle = 'rgba(255,180,180,0.7)'; ctx.font = '900 36px Inter, sans-serif'
+  ctx.fillStyle = 'rgba(255,200,160,0.85)'; ctx.font = '900 36px Inter, sans-serif'
   ctx.fillText('kcal', 580 + ctx.measureText(`${d.calories}`).width + 10, sY + 165)
 
   const tY = sY + 240
@@ -188,7 +206,7 @@ async function drawClassic(d: StoryData): Promise<Blob> {
 async function drawMinimal(d: StoryData): Promise<Blob> {
   const { canvas, ctx } = setupCanvas()
   ctx.fillStyle = '#FAFAFA'; ctx.fillRect(0, 0, W, H)
-  ctx.fillStyle = BLOOD; ctx.fillRect(0, 0, 18, H)
+  ctx.fillStyle = RISE; ctx.fillRect(0, 0, 18, H)
   drawLogo(ctx, 100, 120, true)
 
   await drawAvatar(ctx, d, 100, 320, 140)
@@ -204,7 +222,7 @@ async function drawMinimal(d: StoryData): Promise<Blob> {
   ctx.font = '900 300px Inter, sans-serif'
   ctx.textAlign = 'center'
   ctx.fillText(`${d.durationMin}`, W/2, 800)
-  ctx.fillStyle = BLOOD; ctx.font = '900 64px Inter, sans-serif'
+  ctx.fillStyle = RISE; ctx.font = '900 64px Inter, sans-serif'
   ctx.fillText('MINUTOS NO TATAME', W/2, 880)
 
   // Divider
@@ -239,8 +257,8 @@ async function drawHype(d: StoryData): Promise<Blob> {
 
   // Radial volt burst
   const rg = ctx.createRadialGradient(W/2, H*0.45, 50, W/2, H*0.45, 900)
-  rg.addColorStop(0, 'rgba(222,255,154,0.55)')
-  rg.addColorStop(0.4, 'rgba(158,11,19,0.35)')
+  rg.addColorStop(0, 'rgba(255,107,43,0.65)')
+  rg.addColorStop(0.45, 'rgba(222,255,154,0.4)')
   rg.addColorStop(1, 'rgba(8,8,8,0)')
   ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H)
 
@@ -271,7 +289,7 @@ async function drawHype(d: StoryData): Promise<Blob> {
   if (d.subsFor > 0) {
     ctx.fillStyle = INK; ctx.font = '900 220px Inter, sans-serif'
     ctx.fillText(`${d.subsFor}`, W/2, 1380)
-    ctx.fillStyle = BLOOD; ctx.font = '900 50px Inter, sans-serif'
+    ctx.fillStyle = RISE; ctx.font = '900 50px Inter, sans-serif'
     ctx.fillText(d.subsFor === 1 ? 'FINALIZAÇÃO 🏆' : 'FINALIZAÇÕES 🏆', W/2, 1450)
   }
 
@@ -311,7 +329,7 @@ async function drawStats(d: StoryData): Promise<Blob> {
     { v: `${d.durationMin}`, u: 'min',  l: 'duração',      c: INK,   bg: SURF },
     { v: `${d.calories}`,    u: 'kcal', l: 'queimadas',    c: VOLT,  bg: '#1A2008' },
     { v: `${d.subsFor}`,     u: '',     l: 'finalizações', c: VOLT,  bg: SURF },
-    { v: `${d.rolls}`,       u: '',     l: 'rolas',        c: BLOOD, bg: SURF },
+    { v: `${d.rolls}`,       u: '',     l: 'rolas',        c: RISE,  bg: SURF },
   ]
   tiles.forEach((t, i) => {
     const x = 80 + (i % 2) * 470
@@ -326,7 +344,7 @@ async function drawStats(d: StoryData): Promise<Blob> {
       ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '900 40px Inter, sans-serif'
       ctx.fillText(t.u, x + 30 + ctx.measureText(t.v).width + 14, y + 240)
     }
-    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '700 22px Inter, sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.font = '900 22px Inter, sans-serif'
     ctx.fillText(`#${(i+1).toString().padStart(2,'0')}`, x + 360, y + 305)
   })
 
@@ -350,8 +368,8 @@ async function drawAchievement(d: StoryData): Promise<Blob> {
   const { canvas, ctx } = setupCanvas()
   ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H)
   const rg = ctx.createRadialGradient(W/2, H*0.4, 0, W/2, H*0.4, 1100)
-  rg.addColorStop(0, 'rgba(222,255,154,0.4)')
-  rg.addColorStop(0.5, 'rgba(158,11,19,0.2)')
+  rg.addColorStop(0, 'rgba(255,107,43,0.45)')
+  rg.addColorStop(0.5, 'rgba(222,255,154,0.18)')
   rg.addColorStop(1, 'rgba(8,8,8,0)')
   ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H)
 
@@ -453,7 +471,7 @@ async function drawRecord(d: StoryData): Promise<Blob> {
   ctx.save()
   ctx.translate(W/2, H/2); ctx.rotate(-Math.PI/8)
   for (let i = -6; i <= 6; i++) {
-    ctx.fillStyle = i % 2 === 0 ? 'rgba(222,255,154,0.05)' : 'rgba(158,11,19,0.08)'
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(255,107,43,0.08)' : 'rgba(222,255,154,0.05)'
     ctx.fillRect(-W, i * 250, W*2, 130)
   }
   ctx.restore()
@@ -461,12 +479,12 @@ async function drawRecord(d: StoryData): Promise<Blob> {
   drawLogo(ctx, 80, 100)
 
   ctx.textAlign = 'center'
-  ctx.fillStyle = BLOOD
+  ctx.fillStyle = RISE
   ctx.font = '900 40px Inter, sans-serif'
   ctx.fillText('⚡ NOVO RECORDE', W/2, 450)
 
   // Giant number
-  ctx.fillStyle = VOLT
+  ctx.fillStyle = RISE
   ctx.font = '900 420px Inter, sans-serif'
   ctx.fillText(`${d.durationMin}`, W/2, 920)
 
@@ -484,7 +502,7 @@ async function drawRecord(d: StoryData): Promise<Blob> {
       const x = W/2 + (i - 1) * 280
       ctx.fillStyle = 'rgba(255,255,255,0.08)'
       roundRect(ctx, x - 110, 1200, 220, 140, 24); ctx.fill()
-      ctx.fillStyle = VOLT
+      ctx.fillStyle = RISE
       ctx.font = '900 80px Inter, sans-serif'
       ctx.fillText(it.v, x, 1285)
       ctx.fillStyle = 'rgba(245,245,245,0.5)'
@@ -529,11 +547,11 @@ export const TEMPLATE_META: Record<StoryTemplate, { label: string; emoji: string
   record:      { label: 'Recorde',   emoji: '⚡', desc: 'Novo PR' },
 }
 
-export async function shareToInstagramStories(blob: Blob, filename = 'michi-story.jpg') {
+export async function shareToInstagramStories(blob: Blob, filename = 'belt-rise-story.jpg') {
   const file = new File([blob], filename, { type: 'image/jpeg' })
   if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], title: 'Meu treino no MICHI' })
+      await navigator.share({ files: [file], title: 'Meu treino no Belt Rise' })
       return { ok: true }
     } catch (err) {
       if ((err as Error).name === 'AbortError') return { ok: false, cancelled: true }

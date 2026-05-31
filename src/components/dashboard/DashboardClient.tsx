@@ -190,10 +190,18 @@ export function DashboardClient({
 
         {/* INICIAR TREINO — botao central Belt Rise */}
         <Link href="/treino/novo"
-          className="block bg-rise rounded-3xl py-5 px-6 text-center mb-4 shadow-glow-rise active:scale-[0.98] transition-transform">
+          className="block bg-rise rounded-3xl py-5 px-6 text-center mb-2 shadow-glow-rise active:scale-[0.98] transition-transform">
           <div className="text-4xl mb-1">🥊</div>
           <p className="text-white font-display text-2xl tracking-wide">INICIAR TREINO</p>
           <p className="text-white/80 text-xs mt-0.5">Registre sua sessao em segundos</p>
+        </Link>
+
+        {/* Check-in por GPS / QR */}
+        <Link href="/checkin"
+          className="block bg-brand-surface rounded-2xl border border-brand-elev py-2.5 px-4 text-center mb-4 active:bg-brand-elev">
+          <p className="text-sm text-ink-primary font-bold">
+            📍 <span className="text-rise">Check-in por GPS</span> ou QR da academia
+          </p>
         </Link>
 
         {/* Progresso da Graduacao — Belt Rise hero card */}
