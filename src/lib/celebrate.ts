@@ -24,7 +24,8 @@ export function fireConfetti() {
   })()
 }
 
-const KEY = 'michi_celebrated_sessions_v1'
+const KEY = 'belt_rise_celebrated_v1'
+const LEGACY_KEY = 'michi_celebrated_sessions_v1'
 
 /** Dispara confetti se este eh um marco (1, 10, 50, 100, 500) e ainda nao foi celebrado */
 export function maybeCelebrate(totalSessions: number) {
@@ -32,7 +33,11 @@ export function maybeCelebrate(totalSessions: number) {
   const milestones = [1, 10, 50, 100, 250, 500, 1000]
   if (!milestones.includes(totalSessions)) return
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY)
+    if (localStorage.getItem(LEGACY_KEY) && !localStorage.getItem(KEY)) {
+      localStorage.setItem(KEY, localStorage.getItem(LEGACY_KEY)!)
+      localStorage.removeItem(LEGACY_KEY)
+    }
     const set: number[] = raw ? JSON.parse(raw) : []
     if (set.includes(totalSessions)) return
     set.push(totalSessions)

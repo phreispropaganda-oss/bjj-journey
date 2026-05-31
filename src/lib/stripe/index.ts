@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 
-// MICHI Etapa 11 — Stripe (codado, gated por feature flag)
+// Belt Rise — Stripe (codado, gated por feature flag)
 // Para ATIVAR em prod: setar NEXT_PUBLIC_STRIPE_ENABLED=true + STRIPE_SECRET_KEY + STRIPE_WEBHOOK_SECRET
 
 export const STRIPE_ENABLED =

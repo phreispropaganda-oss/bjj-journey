@@ -64,6 +64,35 @@
   --gold:  #F59E0B;
   --green: var(--volt);
   --blue:  #2563EB;
+
+  /* ── Design System tokens (escalas padronizadas) ── */
+  --radius-sm:  8px;
+  --radius:     12px;
+  --radius-md:  16px;
+  --radius-lg:  20px;
+  --radius-xl:  24px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 32px;
+
+  /* Elevation/shadows padronizados (3 niveis) */
+  --elev-1: 0 1px 2px rgba(0,0,0,0.20);
+  --elev-2: 0 4px 12px rgba(0,0,0,0.30);
+  --elev-3: 0 12px 32px rgba(0,0,0,0.45);
 }
 
 /* ──────────── LIGHT ──────────── */

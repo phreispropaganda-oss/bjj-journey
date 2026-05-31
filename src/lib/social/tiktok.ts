@@ -1,4 +1,4 @@
-// MICHI TikTok integration
+// Belt Rise TikTok integration
 //
 // Status: Share Kit (download + abrir TikTok) funcional sem aprovacao;
 //         Content Posting API (Direct Post) requer aprovacao do app.

@@ -6,12 +6,34 @@ import { createClient } from '@/lib/supabase/server'
 export type Source = 'gps' | 'qr' | 'manual'
 
 interface Nearby { id: string; name: string; distance_m: number; radius_meters: number; inside: boolean }
+export interface NearbyByModality { id: string; name: string; city: string | null; address: string | null; logo_url: string | null; modality: string; distance_m: number; inside: boolean }
+export interface SearchResult { id: string; name: string; city: string | null; address: string | null; modality: string; score: number }
 
 export async function findNearby(lat: number, lng: number, radiusM = 2000): Promise<Nearby[]> {
   const supabase = await createClient()
   const { data } = await (supabase as unknown as {
     rpc: (n: string, p: Record<string, number>) => Promise<{ data: Nearby[] | null }>
   }).rpc('nearby_academies', { p_lat: lat, p_lng: lng, p_search_radius_m: radiusM })
+  return data ?? []
+}
+
+/** Frente 2: busca por modalidade (default 3km) */
+export async function findNearbyByModality(lat: number, lng: number, modality: string, radiusM = 3000): Promise<NearbyByModality[]> {
+  const supabase = await createClient()
+  const { data } = await (supabase as unknown as {
+    rpc: (n: string, p: Record<string, string | number>) => Promise<{ data: NearbyByModality[] | null }>
+  }).rpc('nearby_academies_by_modality', {
+    p_lat: lat, p_lng: lng, p_modality: modality, p_search_radius_m: radiusM,
+  })
+  return data ?? []
+}
+
+/** Fallback manual: busca por nome/cidade */
+export async function searchAcademies(query: string, modality?: string): Promise<SearchResult[]> {
+  const supabase = await createClient()
+  const { data } = await (supabase as unknown as {
+    rpc: (n: string, p: Record<string, string | number | null>) => Promise<{ data: SearchResult[] | null }>
+  }).rpc('search_academies', { p_query: query, p_modality: modality ?? null, p_limit: 20 })
   return data ?? []
 }
 

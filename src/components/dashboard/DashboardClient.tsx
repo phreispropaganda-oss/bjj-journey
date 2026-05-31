@@ -188,6 +188,11 @@ export function DashboardClient({
 
       <div className="flex-1 overflow-y-auto scrollbar-none px-4 pt-4 pb-24">
 
+        {/* Slogan restaurado — assinatura Belt Rise */}
+        <p className="text-center text-[10px] font-black uppercase tracking-[0.35em] text-ink-muted mb-3">
+          Treine. <span className="text-rise">Suba.</span> Conquiste.
+        </p>
+
         {/* INICIAR TREINO + Check-in — par compacto */}
         <div className="grid grid-cols-3 gap-2 mb-3">
           <Link href="/treino/novo"

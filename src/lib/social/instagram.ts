@@ -1,4 +1,4 @@
-// MICHI Instagram integration (Meta Graph API — Direct Login, July 2024+)
+// Belt Rise Instagram integration (Meta Graph API — Direct Login, July 2024+)
 //
 // Status: scaffolding completo, mas DESATIVADO em prod ate aprovacao do app
 // pela Meta. Variaveis de ambiente controlam ativacao.

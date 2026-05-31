@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { findNearby, startVisit, endVisit, convertVisit } from '@/app/checkin/actions'
+import { findNearby, findNearbyByModality, searchAcademies, startVisit, endVisit, convertVisit,
+  type NearbyByModality, type SearchResult } from '@/app/checkin/actions'
 
 type Nearby = { id: string; name: string; distance_m: number; radius_meters: number; inside: boolean }
 type OpenVisit = { id: string; academyId: string; academyName: string; enteredAt: string }
@@ -20,6 +21,11 @@ export default function CheckinClient({ openVisit, qrAcademy, history }: Props) 
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [geoError, setGeoError] = useState('')
   const [nearby, setNearby] = useState<Nearby[]>([])
+  const [nearbyMod, setNearbyMod] = useState<NearbyByModality[]>([])
+  const [modality, setModality] = useState<'bjj' | 'muay_thai' | 'boxe' | 'judo'>('bjj')
+  const [manualQ, setManualQ] = useState('')
+  const [manualResults, setManualResults] = useState<SearchResult[]>([])
+  const [showManual, setShowManual] = useState(false)
   const [busy, setBusy] = useState(false)
   const [now, setNow] = useState(Date.now())
   const [feedback, setFeedback] = useState('')
@@ -44,11 +50,26 @@ export default function CheckinClient({ openVisit, qrAcademy, history }: Props) 
     return () => { if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current) }
   }, [])
 
-  // Buscar academias próximas quando GPS muda
+  // Buscar academias próximas quando GPS muda (compatibilidade — qualquer modalidade)
   useEffect(() => {
     if (!coords) return
     findNearby(coords.lat, coords.lng, 5000).then(setNearby)
   }, [coords])
+
+  // Frente 2: buscar por modalidade em 3km automaticamente
+  useEffect(() => {
+    if (!coords) return
+    findNearbyByModality(coords.lat, coords.lng, modality, 3000).then(setNearbyMod)
+  }, [coords, modality])
+
+  // Manual search debounced
+  useEffect(() => {
+    if (!showManual) { setManualResults([]); return }
+    const t = setTimeout(() => {
+      searchAcademies(manualQ, modality).then(setManualResults)
+    }, 250)
+    return () => clearTimeout(t)
+  }, [manualQ, modality, showManual])
 
   const elapsedMin = openVisit
     ? Math.max(0, Math.floor((now - new Date(openVisit.enteredAt).getTime()) / 60000))
@@ -168,35 +189,94 @@ export default function CheckinClient({ openVisit, qrAcademy, history }: Props) 
         </div>
       )}
 
-      {/* GPS / nearby */}
+      {/* Frente 2 — Seletor de modalidade + busca 3km automatica */}
       {!openVisit && !askConvert && !qrAcademy && (
-        <div className="card-elev space-y-3">
-          <p className="text-[10px] font-black uppercase tracking-wider text-ink-secondary">📍 Academias próximas</p>
-          {!coords && !geoError && <p className="text-ink-secondary text-sm">Procurando GPS...</p>}
-          {geoError && (
-            <p className="text-amber-400 text-sm">⚠️ {geoError}. Use a busca manual ou um QR.</p>
-          )}
-          {coords && nearby.length === 0 && (
-            <p className="text-ink-secondary text-sm">Nenhuma academia em 5km do seu GPS. Tente check-in manual ou QR.</p>
-          )}
-          {nearby.map(a => (
-            <div key={a.id} className="flex items-center gap-3 bg-brand-bg rounded-xl p-3 border border-brand-elev">
-              <div className="flex-1 min-w-0">
-                <p className="text-ink-primary font-bold text-sm">{a.name}</p>
-                <p className="text-[10px] text-ink-muted">
-                  {a.distance_m < 1000 ? `${a.distance_m}m` : `${(a.distance_m/1000).toFixed(1)}km`}
-                  {a.inside && <span className="text-volt"> · dentro do raio</span>}
-                </p>
-              </div>
-              <button onClick={() => doCheckin(a.id, a.inside ? 'gps' : 'manual')} disabled={busy}
-                className={`text-xs font-black px-4 py-2 rounded-full min-h-tap ${
-                  a.inside ? 'bg-volt text-brand-bg' : 'bg-brand-elev text-ink-primary'
-                } disabled:opacity-40`}>
-                {a.inside ? 'Entrar' : 'Manual'}
+        <>
+          <div className="card-elev space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-black uppercase tracking-wider text-ink-secondary">Modalidade</p>
+              <button onClick={() => setShowManual(s => !s)} className="text-[10px] text-rise font-black uppercase tracking-wider">
+                {showManual ? '✕ Fechar busca' : '🔍 Busca manual'}
               </button>
             </div>
-          ))}
-        </div>
+            {/* Chips de modalidade */}
+            <div className="grid grid-cols-4 gap-1.5">
+              {([
+                { v: 'bjj',       label: 'Jiu-Jitsu', emoji: '🥋' },
+                { v: 'muay_thai', label: 'Muay Thai', emoji: '🥊' },
+                { v: 'boxe',      label: 'Boxe',      emoji: '🥊' },
+                { v: 'judo',      label: 'Judô',      emoji: '🥋' },
+              ] as const).map(m => (
+                <button key={m.v} onClick={() => setModality(m.v)}
+                  className={`flex flex-col items-center gap-0.5 py-2 rounded-xl border-2 min-h-tap ${
+                    modality === m.v ? 'bg-rise/15 border-rise text-rise' : 'border-brand-elev text-ink-secondary'
+                  }`}>
+                  <span className="text-lg leading-none">{m.emoji}</span>
+                  <span className="text-[9px] font-black uppercase tracking-wider">{m.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Resultados automaticos por modalidade (3km) */}
+          {!showManual && (
+            <div className="card-elev space-y-3">
+              <p className="text-[10px] font-black uppercase tracking-wider text-ink-secondary">
+                📍 Academias em 3km · {modality === 'bjj' ? 'Jiu-Jitsu' : modality === 'muay_thai' ? 'Muay Thai' : modality === 'boxe' ? 'Boxe' : 'Judô'}
+              </p>
+              {!coords && !geoError && <p className="text-ink-secondary text-sm">Procurando GPS...</p>}
+              {geoError && <p className="text-amber-400 text-sm">⚠️ {geoError}. Use a busca manual ou um QR.</p>}
+              {coords && nearbyMod.length === 0 && (
+                <p className="text-ink-secondary text-sm">Nenhuma academia desta modalidade em 3km. Tente outra modalidade ou use a busca manual.</p>
+              )}
+              {nearbyMod.map(a => (
+                <div key={a.id} className="flex items-center gap-3 bg-brand-bg rounded-xl p-3 border border-brand-elev">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-ink-primary font-bold text-sm truncate">{a.name}</p>
+                    <p className="text-[10px] text-ink-muted truncate">
+                      {a.distance_m < 1000 ? `${a.distance_m}m` : `${(a.distance_m/1000).toFixed(1)}km`}
+                      {a.city && ` · ${a.city}`}
+                      {a.inside && <span className="text-volt"> · dentro do raio</span>}
+                    </p>
+                  </div>
+                  <button onClick={() => doCheckin(a.id, a.inside ? 'gps' : 'manual')} disabled={busy}
+                    className={`text-xs font-black px-4 py-2 rounded-full min-h-tap ${
+                      a.inside ? 'bg-volt text-brand-bg' : 'bg-brand-elev text-ink-primary'
+                    } disabled:opacity-40`}>
+                    {a.inside ? 'Entrar' : 'Manual'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Busca manual fallback */}
+          {showManual && (
+            <div className="card-elev space-y-3">
+              <p className="text-[10px] font-black uppercase tracking-wider text-ink-secondary">🔍 Buscar academia</p>
+              <input autoFocus type="text" value={manualQ} onChange={e => setManualQ(e.target.value)}
+                placeholder="Nome ou cidade da academia"
+                className="field-input" />
+              {manualResults.length === 0 && manualQ && (
+                <p className="text-ink-secondary text-sm">Nenhuma academia encontrada.</p>
+              )}
+              {manualResults.map(a => (
+                <div key={a.id} className="flex items-center gap-3 bg-brand-bg rounded-xl p-3 border border-brand-elev">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-ink-primary font-bold text-sm truncate">{a.name}</p>
+                    <p className="text-[10px] text-ink-muted truncate">
+                      {a.city ?? a.address ?? a.modality}
+                    </p>
+                  </div>
+                  <button onClick={() => doCheckin(a.id, 'manual')} disabled={busy}
+                    className="text-xs font-black px-4 py-2 rounded-full min-h-tap bg-brand-elev text-ink-primary disabled:opacity-40">
+                    Entrar
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Histórico */}
