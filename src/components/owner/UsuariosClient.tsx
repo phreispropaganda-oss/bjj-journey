@@ -85,7 +85,7 @@ export default function UsuariosClient({ profiles, beltColor, currentUserId }: P
 
       {/* Search */}
       <input
-        className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none placeholder:text-[#555] focus:border-[#CC0000]"
+        className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2.5 text-white text-sm outline-none placeholder:text-ink-secondary focus:border-rise"
         placeholder="Buscar por nome ou username..."
         value={search}
         onChange={e => setSearch(e.target.value)}
@@ -101,7 +101,7 @@ export default function UsuariosClient({ profiles, beltColor, currentUserId }: P
         ] as { v: Filter; l: string }[]).map(f => (
           <button key={f.v} onClick={() => setFilter(f.v)}
             className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 ${
-              filter === f.v ? 'bg-[#CC0000] text-white' : 'bg-[#222] text-[#888]'
+              filter === f.v ? 'bg-rise text-white' : 'bg-brand-elev text-ink-muted'
             }`}>
             {f.l} <span className="opacity-60">· {counts[f.v]}</span>
           </button>
@@ -111,7 +111,7 @@ export default function UsuariosClient({ profiles, beltColor, currentUserId }: P
       {/* List */}
       <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden">
         {filtered.length === 0 ? (
-          <p className="text-center py-8 text-[#555] text-sm">Nenhum usuário encontrado.</p>
+          <p className="text-center py-8 text-ink-secondary text-sm">Nenhum usuário encontrado.</p>
         ) : filtered.map(p => {
           const isSelf = p.id === currentUserId
           const isDeleted = !!p.deleted_at
@@ -126,9 +126,9 @@ export default function UsuariosClient({ profiles, beltColor, currentUserId }: P
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <p className="text-white text-sm font-bold truncate">{p.name || 'Sem nome'}</p>
-                    {isSelf && <span className="text-[9px] bg-[#CC0000] text-white px-1.5 py-0.5 rounded font-bold">VOCÊ</span>}
+                    {isSelf && <span className="text-[9px] bg-rise text-white px-1.5 py-0.5 rounded font-bold">VOCÊ</span>}
                   </div>
-                  <p className="text-[#555] text-[10px]">@{p.username} · {p.xp} XP · {p.streak}d</p>
+                  <p className="text-ink-secondary text-[10px]">@{p.username} · {p.xp} XP · {p.streak}d</p>
                 </div>
                 <div className="flex-shrink-0">
                   {isDeleted ? (
@@ -146,7 +146,7 @@ export default function UsuariosClient({ profiles, beltColor, currentUserId }: P
                 <div className="flex gap-1.5 mt-2.5">
                   {isDeleted ? (
                     <button onClick={() => handleRestore(p)} disabled={pending}
-                      className="flex-1 bg-[#222] hover:bg-[#2A2A2A] border border-[#333] text-white text-xs font-bold py-1.5 rounded-lg">
+                      className="flex-1 bg-brand-elev hover:bg-[#2A2A2A] border border-brand-elev text-white text-xs font-bold py-1.5 rounded-lg">
                       ↺ Restaurar
                     </button>
                   ) : (
@@ -175,7 +175,7 @@ export default function UsuariosClient({ profiles, beltColor, currentUserId }: P
         })}
       </div>
 
-      <p className="text-[#555] text-[10px] text-center pt-2">
+      <p className="text-ink-secondary text-[10px] text-center pt-2">
         Exclusão é soft-delete: o registro é mantido para auditoria. Use Restaurar para reverter.
       </p>
     </div>

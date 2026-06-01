@@ -27,8 +27,8 @@ export default function TypeBreakdown({ sessions }: { sessions: Session[] }) {
   const sorted = Object.entries(byType).sort((a, b) => b[1].minutes - a[1].minutes)
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm">
-      <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">
+    <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
+      <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">
         Composição dos treinos
       </p>
       <div className="space-y-2.5">
@@ -40,16 +40,16 @@ export default function TypeBreakdown({ sessions }: { sessions: Session[] }) {
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm">{meta.emoji}</span>
-                  <span className="text-xs font-black text-[#0D0D0D]">{meta.label}</span>
+                  <span className="text-xs font-black text-ink-primary">{meta.label}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] text-[#888]">{data.count} treinos</span>
+                  <span className="text-[10px] text-ink-muted">{data.count} treinos</span>
                   <span className="text-xs font-black" style={{ color: meta.color }}>
                     {Math.round(pct)}%
                   </span>
                 </div>
               </div>
-              <div className="h-2 bg-[#F2F0ED] rounded-full overflow-hidden">
+              <div className="h-2 bg-brand-elev rounded-full overflow-hidden">
                 <div className="h-full rounded-full transition-all" style={{
                   width: `${pct}%`, background: meta.color,
                 }} />

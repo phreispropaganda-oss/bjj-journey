@@ -105,11 +105,11 @@ export default function FrequenciaPage() {
   const presentCount = students.filter(s => s.presentToday).length
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D]">
+    <div className="min-h-screen bg-brand-bg">
       {/* Top bar */}
-      <div className="bg-[#1A1A1A] border-b border-[#333] px-4 py-3 sticky top-0 z-10">
+      <div className="bg-[#1A1A1A] border-b border-brand-elev px-4 py-3 sticky top-0 z-10">
         <div className="flex items-center gap-2 mb-3">
-          <Link href="/academia" className="text-[#555] text-sm">← Academia</Link>
+          <Link href="/academia" className="text-ink-secondary text-sm">← Academia</Link>
           <h1 className="text-white font-black text-base flex-1">Confirmar Presenças</h1>
         </div>
         {/* Tabs */}
@@ -122,14 +122,14 @@ export default function FrequenciaPage() {
           ].map(t => (
             <Link key={t.href} href={t.href}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold ${
-                t.href === '/academia/frequencia' ? 'bg-[#CC0000] text-white' : 'bg-[#222] text-[#555]'
+                t.href === '/academia/frequencia' ? 'bg-rise text-white' : 'bg-brand-elev text-ink-secondary'
               }`}>
               {t.label}
             </Link>
           ))}
         </div>
         <input
-          className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2 text-white text-sm outline-none placeholder:text-[#444] focus:border-[#CC0000]"
+          className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2 text-white text-sm outline-none placeholder:text-ink-muted focus:border-rise"
           placeholder="Buscar aluno..."
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -140,26 +140,26 @@ export default function FrequenciaPage() {
 
         {/* Date + summary */}
         <div className="bg-[#1A1A1A] rounded-2xl p-4 border border-[#2A2A2A]">
-          <p className="text-[#555] text-xs font-bold uppercase tracking-wider mb-1">Aula de hoje</p>
+          <p className="text-ink-secondary text-xs font-bold uppercase tracking-wider mb-1">Aula de hoje</p>
           <p className="text-white font-black text-base capitalize">{todayDisplay}</p>
           <div className="flex items-center justify-between mt-3">
             <div className="flex items-center gap-4">
               <div>
-                <p className="text-[#CC0000] font-black text-2xl">{presentCount}</p>
-                <p className="text-[#555] text-[10px]">presentes</p>
+                <p className="text-rise font-black text-2xl">{presentCount}</p>
+                <p className="text-ink-secondary text-[10px]">presentes</p>
               </div>
               <div>
-                <p className="text-[#666] font-black text-2xl">{students.length - presentCount}</p>
-                <p className="text-[#555] text-[10px]">ausentes</p>
+                <p className="text-ink-secondary font-black text-2xl">{students.length - presentCount}</p>
+                <p className="text-ink-secondary text-[10px]">ausentes</p>
               </div>
               <div>
                 <p className="text-white font-black text-2xl">{students.length}</p>
-                <p className="text-[#555] text-[10px]">total</p>
+                <p className="text-ink-secondary text-[10px]">total</p>
               </div>
             </div>
             {presentCount < students.length && (
               <button onClick={markAllPresent}
-                className="bg-[#CC0000] text-white font-black text-xs px-4 py-2 rounded-full">
+                className="bg-rise text-white font-black text-xs px-4 py-2 rounded-full">
                 ✅ Marcar todos
               </button>
             )}
@@ -168,9 +168,9 @@ export default function FrequenciaPage() {
 
         {/* Student list */}
         {loading ? (
-          <div className="text-center py-8 text-[#555]">Carregando...</div>
+          <div className="text-center py-8 text-ink-secondary">Carregando...</div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-8 text-[#555]">
+          <div className="text-center py-8 text-ink-secondary">
             {students.length === 0 ? 'Nenhum aluno cadastrado como "student".' : 'Nenhum aluno encontrado.'}
           </div>
         ) : (
@@ -191,10 +191,10 @@ export default function FrequenciaPage() {
                   <div className="flex items-center gap-2 mt-0.5">
                     <div className="w-2.5 h-2 rounded-sm border border-white/10"
                       style={{ background: BELT_COLOR[s.belt_id] }} />
-                    <span className="text-[#555] text-[10px]">
+                    <span className="text-ink-secondary text-[10px]">
                       Faixa {BELT_NAME[s.belt_id] ?? s.belt_id}
                     </span>
-                    <span className="text-[#444] text-[10px]">· {s.totalTrains} treinos</span>
+                    <span className="text-ink-muted text-[10px]">· {s.totalTrains} treinos</span>
                   </div>
                 </div>
 
@@ -205,7 +205,7 @@ export default function FrequenciaPage() {
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl font-black text-xs transition-all flex-shrink-0 ${
                     s.presentToday
                       ? 'bg-green-900/30 border border-green-700 text-green-400'
-                      : 'bg-[#222] border border-[#333] text-[#555]'
+                      : 'bg-brand-elev border border-brand-elev text-ink-secondary'
                   }`}>
                   {marking === s.id ? (
                     <span className="animate-spin">⟳</span>

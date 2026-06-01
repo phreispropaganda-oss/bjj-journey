@@ -48,8 +48,8 @@ export default function ActivityRings({ weekMinutes, weekTrainings, currentStrea
   const padding = 2
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm">
-      <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Metas da semana</p>
+    <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
+      <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">Metas da semana</p>
       <div className="flex items-center gap-4">
         <svg width={size} height={size} className="flex-shrink-0">
           {RINGS.map((r, i) => (
@@ -71,12 +71,12 @@ export default function ActivityRings({ weekMinutes, weekTrainings, currentStrea
                 <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: r.color }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-[#0D0D0D] text-xs font-black">{r.label}</span>
+                    <span className="text-ink-primary text-xs font-black">{r.label}</span>
                     <span className="text-[11px] font-black" style={{ color: r.color }}>
-                      {values[i]}{r.unit}<span className="text-[#AAA]">/{r.target}{r.unit}</span>
+                      {values[i]}{r.unit}<span className="text-ink-muted">/{r.target}{r.unit}</span>
                     </span>
                   </div>
-                  <div className="h-1 bg-[#F2F0ED] rounded-full mt-0.5">
+                  <div className="h-1 bg-brand-elev rounded-full mt-0.5">
                     <div className="h-full rounded-full" style={{ width: `${pct}%`, background: r.color }} />
                   </div>
                 </div>

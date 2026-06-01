@@ -31,8 +31,8 @@ export default function ViewAsStudentToggle({
   }
 
   const colors = variant === 'dark'
-    ? 'bg-[#222] border-[#333] text-white hover:bg-[#2A2A2A]'
-    : 'bg-white border-[#E5E5E5] text-[#0D0D0D] hover:bg-[#F8F7F5]'
+    ? 'bg-brand-elev border-brand-elev text-white hover:bg-[#2A2A2A]'
+    : 'bg-brand-surface border-brand-elev text-ink-primary hover:bg-brand-bg'
 
   return (
     <button onClick={toggle} disabled={pending}

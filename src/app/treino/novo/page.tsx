@@ -301,7 +301,7 @@ function NovoTreinoPage() {
         </div>
 
         {/* Duration presets + input */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
           <label className="field-label">Duração da aula (minutos)</label>
           <div className="flex gap-1.5 flex-wrap mb-2.5">
             {DURATION_PRESETS.map(m => (
@@ -327,7 +327,7 @@ function NovoTreinoPage() {
         </div>
 
         {/* Date — defaults today, allows past (treino retroativo) */}
-        <div className={`rounded-2xl p-4 ${isRetro ? 'bg-rise/10 border-2 border-rise' : 'bg-white shadow-sm'}`}>
+        <div className={`rounded-2xl p-4 ${isRetro ? 'bg-rise/10 border-2 border-rise' : 'bg-brand-surface shadow-sm'}`}>
           <label className="field-label">
             {isRetro ? '🕐 Data do treino retroativo' : 'Data do treino'}
           </label>
@@ -372,7 +372,7 @@ function NovoTreinoPage() {
         </div>
 
         {/* Academia + Professor */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <div className="bg-brand-surface rounded-2xl p-4 shadow-sm space-y-3">
           <div>
             <label className="field-label">Academia</label>
             {academies.length > 0 && (
@@ -404,7 +404,7 @@ function NovoTreinoPage() {
         </div>
 
         {/* Counters */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
           <p className="field-label mb-3">Performance</p>
           <div className="grid grid-cols-3 gap-2">
             {[
@@ -417,7 +417,7 @@ function NovoTreinoPage() {
                 <p className="font-black text-2xl mb-2" style={{ color: c.color }}>{c.value}</p>
                 <div className="flex gap-1.5 justify-center">
                   <button onClick={() => c.setter(Math.max(0, c.value - 1))}
-                    className="w-7 h-7 rounded-full bg-white border border-brand-elev text-ink-secondary font-black">−</button>
+                    className="w-7 h-7 rounded-full bg-brand-elev border border-brand-elev text-ink-secondary font-black">−</button>
                   <button onClick={() => c.setter(c.value + 1)}
                     className="w-7 h-7 rounded-full text-white font-black"
                     style={{ background: c.color }}>+</button>
@@ -437,7 +437,7 @@ function NovoTreinoPage() {
         </div>
 
         {/* Photo */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
           <p className="field-label mb-2">Foto (opcional)</p>
           {photoPreview ? (
             <div className="relative">
@@ -488,7 +488,7 @@ function NovoTreinoPage() {
         )}
 
         {/* Feeling */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
           <p className="field-label mb-3">Como foi o treino?</p>
           <div className="grid grid-cols-5 gap-1.5">
             {FEELINGS.map(f => (
@@ -496,7 +496,7 @@ function NovoTreinoPage() {
                 className={`py-3 rounded-xl border-2 transition-all ${
                   feeling === f.value
                     ? 'border-rise bg-rise/10 scale-105'
-                    : 'border-brand-elev bg-white'
+                    : 'border-brand-elev bg-brand-surface'
                 }`}>
                 <div className="text-xl">{f.emoji}</div>
                 <p className={`text-[9px] font-black mt-0.5 ${feeling === f.value ? 'text-rise' : 'text-ink-muted'}`}>
@@ -514,7 +514,7 @@ function NovoTreinoPage() {
         </div>
 
         {/* Visibility */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
           <p className="field-label mb-3">Quem pode ver este treino?</p>
           <div className="grid grid-cols-3 gap-2">
             {([
@@ -526,7 +526,7 @@ function NovoTreinoPage() {
                 className={`py-3 px-2 rounded-xl border-2 text-center transition-all ${
                   visibility === opt.v
                     ? 'border-rise bg-rise/10'
-                    : 'border-brand-elev bg-white'
+                    : 'border-brand-elev bg-brand-surface'
                 }`}>
                 <div className="text-lg mb-1">{opt.icon}</div>
                 <p className={`text-xs font-black ${visibility === opt.v ? 'text-rise' : 'text-ink-secondary'}`}>{opt.label}</p>

@@ -26,11 +26,11 @@ export default async function UsuariosPage() {
   }[]
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D]">
+    <div className="min-h-screen bg-brand-bg">
       <div className="bg-[#1A1A1A] border-b border-[#333] px-4 py-3 sticky top-0 z-10 flex items-center gap-3">
-        <Link href="/owner" className="text-[#666] text-sm">← Owner</Link>
+        <Link href="/owner" className="text-ink-secondary text-sm">← Owner</Link>
         <h1 className="text-white font-black text-base flex-1">Usuários</h1>
-        <span className="bg-[#2A2A2A] text-[#888] text-xs px-2 py-0.5 rounded-full font-bold">
+        <span className="bg-[#2A2A2A] text-ink-muted text-xs px-2 py-0.5 rounded-full font-bold">
           {profiles.length}
         </span>
       </div>

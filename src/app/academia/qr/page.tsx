@@ -42,7 +42,7 @@ export default async function AcademyQrPage() {
             <div key={a.id} className="card-elev text-center">
               <p className="font-display text-ink-primary text-lg mb-3">{a.name}</p>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrImg} alt={`QR ${a.name}`} className="w-64 h-64 mx-auto bg-white rounded-2xl p-3" />
+              <img src={qrImg} alt={`QR ${a.name}`} className="w-64 h-64 mx-auto bg-brand-surface rounded-2xl p-3" />
               <p className="text-xs text-ink-secondary mt-3">Imprima e cole na entrada do tatame.</p>
               <p className="text-[10px] text-ink-muted mt-1 break-all">{url}</p>
               <a href={qrImg} download={`qr-${a.name}.png`}

@@ -35,7 +35,7 @@ export default function FollowButton({
       className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black transition-all ${
         following
           ? 'bg-white/10 text-white border border-white/20'
-          : 'bg-[#CC0000] text-white shadow-md shadow-red-900/30'
+          : 'bg-rise text-white shadow-md shadow-red-900/30'
       }`}>
       {following ? '✓ Seguindo' : '+ Seguir'}
       {count > 0 && <span className="opacity-60">· {count}</span>}

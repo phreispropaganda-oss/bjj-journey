@@ -144,11 +144,11 @@ export default function ProfileClient({
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top bar */}
-      <div className="bg-white border-b border-brand-elev px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex items-center justify-between flex-shrink-0">
         <h1 className="font-black text-base tracking-tight">Meu Perfil</h1>
         <button onClick={() => { setEditing(e => !e); setError('') }}
           className={`text-xs font-bold px-3 py-1.5 rounded-full transition-colors ${
-            editing ? 'bg-[#CC0000] text-white' : 'bg-[#F2F0ED] text-ink-secondary'
+            editing ? 'bg-rise text-white' : 'bg-brand-elev text-ink-secondary'
           }`}>
           {editing ? 'Cancelar' : '✏️ Editar'}
         </button>
@@ -171,7 +171,7 @@ export default function ProfileClient({
         {/* Hero card */}
         <div className="relative overflow-hidden rounded-2xl text-white"
           style={{ background: 'linear-gradient(160deg, #0D0D0D 0%, #1A1A1A 100%)' }}>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#CC0000] rounded-full opacity-10 -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-rise rounded-full opacity-10 -translate-y-1/2 translate-x-1/2" />
           <div className="px-5 pt-6 pb-5 relative z-10">
             <div className="flex items-center gap-4 mb-4">
               <label className="relative cursor-pointer group">
@@ -180,7 +180,7 @@ export default function ProfileClient({
                   <img src={avatarUrl} alt={profile.name}
                     className="w-16 h-16 rounded-full object-cover border-2 border-white/20" />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-2xl border-2 border-white/20">
+                  <div className="w-16 h-16 rounded-full bg-rise flex items-center justify-center text-white font-black text-2xl border-2 border-white/20">
                     {initial}
                   </div>
                 )}
@@ -256,7 +256,7 @@ export default function ProfileClient({
 
         {/* ── EDIT FORM ── */}
         {editing && (
-          <div className="bg-white rounded-2xl p-4 shadow-sm space-y-4">
+          <div className="bg-brand-surface rounded-2xl p-4 shadow-sm space-y-4">
             <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">Editar perfil</p>
 
             {/* Belt selector */}
@@ -286,8 +286,8 @@ export default function ProfileClient({
                   <button key={i} onClick={() => setDegrees(i)}
                     className={`w-10 h-10 rounded-full border-2 font-black text-sm transition-all ${
                       degrees === i
-                        ? 'bg-[#CC0000] border-rise text-white shadow-md shadow-red-900/20'
-                        : 'bg-white border-brand-elev text-ink-secondary'
+                        ? 'bg-rise border-rise text-white shadow-md shadow-red-900/20'
+                        : 'bg-brand-surface border-brand-elev text-ink-secondary'
                     }`}>
                     {i}
                   </button>
@@ -387,13 +387,13 @@ export default function ProfileClient({
                 <p className="text-xs text-ink-muted mt-0.5">Aparece em rankings, feed e link de compartilhamento</p>
               </div>
               <button onClick={() => setIsPublic(p => !p)}
-                className={`w-12 h-6 rounded-full transition-colors relative flex-shrink-0 ${isPublic ? 'bg-[#CC0000]' : 'bg-[#E5E5E5]'}`}>
+                className={`w-12 h-6 rounded-full transition-colors relative flex-shrink-0 ${isPublic ? 'bg-rise' : 'bg-[#E5E5E5]'}`}>
                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${isPublic ? 'translate-x-7' : 'translate-x-1'}`} />
               </button>
             </div>
 
             <button onClick={save} disabled={saving || !name.trim()}
-              className="w-full bg-[#CC0000] text-white font-black py-3.5 rounded-full text-sm disabled:opacity-50 shadow-lg shadow-red-900/20">
+              className="w-full bg-rise text-white font-black py-3.5 rounded-full text-sm disabled:opacity-50 shadow-lg shadow-red-900/20">
               {saving ? 'Salvando...' : '✓ Salvar alterações'}
             </button>
           </div>
@@ -411,7 +411,7 @@ export default function ProfileClient({
 
         {/* Achievements */}
         {achievements.length > 0 && (
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
             <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">
               Conquistas ({achievements.length})
             </p>
@@ -435,7 +435,7 @@ export default function ProfileClient({
         {/* Profile public link */}
         {profile.is_public && profile.username && (
           <Link href={`/profile/${profile.username}`}
-            className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:bg-brand-bg transition-colors">
+            className="flex items-center gap-3 bg-brand-surface rounded-2xl p-4 shadow-sm hover:bg-brand-bg transition-colors">
             <div className="w-9 h-9 rounded-xl bg-rise/10 flex items-center justify-center text-rise text-lg">👤</div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-ink-primary">Ver perfil público</p>
@@ -448,8 +448,8 @@ export default function ProfileClient({
         {/* Admin links — only for owner */}
         {isOwner && (
           <Link href="/owner"
-            className="flex items-center gap-3 bg-[#0D0D0D] rounded-2xl p-4 hover:bg-[#1A1A1A] transition-colors">
-            <div className="w-9 h-9 rounded-xl bg-[#CC0000]/20 flex items-center justify-center text-rise text-lg">⚙️</div>
+            className="flex items-center gap-3 bg-brand-bg rounded-2xl p-4 hover:bg-[#1A1A1A] transition-colors">
+            <div className="w-9 h-9 rounded-xl bg-rise/20 flex items-center justify-center text-rise text-lg">⚙️</div>
             <div className="flex-1">
               <p className="text-sm font-bold text-white">Painel Owner</p>
               <p className="text-xs text-white/40">Gestão completa da plataforma</p>
@@ -461,7 +461,7 @@ export default function ProfileClient({
         {/* Academia link — only for academy admins/instructors */}
         {isAcademyAdmin && (
           <Link href="/academia"
-            className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:bg-brand-bg transition-colors border border-brand-elev">
+            className="flex items-center gap-3 bg-brand-surface rounded-2xl p-4 shadow-sm hover:bg-brand-bg transition-colors border border-brand-elev">
             <div className="w-9 h-9 rounded-xl bg-rise/10 flex items-center justify-center text-lg">🏢</div>
             <div className="flex-1">
               <p className="text-sm font-bold text-ink-primary">Painel Academia</p>
@@ -472,7 +472,7 @@ export default function ProfileClient({
         )}
 
         {/* Logout */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-brand-surface rounded-2xl shadow-sm overflow-hidden">
           <form action={signOut}>
             <button type="submit"
               className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-red-50 transition-colors">

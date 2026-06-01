@@ -133,7 +133,7 @@ html[data-theme='light'] {
 html, body { background: var(--bg-base); }
 
 body {
-  font-family: 'Urbanist', 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Barlow', 'Urbanist', 'DM Sans', system-ui, -apple-system, sans-serif;
   color: var(--text-primary);
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
@@ -150,10 +150,12 @@ input, textarea, select {
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0); }
 .pt-safe { padding-top:    env(safe-area-inset-top, 0); }
 
-/* ── Headings de impacto (PRD §2.2) ── */
+/* ── Headings de impacto — Barlow Condensed (sports/athletic) ── */
 .font-display {
-  font-family: 'Archivo Black', 'Urbanist', sans-serif;
-  letter-spacing: -0.02em;
+  font-family: 'Barlow Condensed', 'Archivo Black', 'Urbanist', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: none;
 }
 
 .scrollbar-none { scrollbar-width: none; }

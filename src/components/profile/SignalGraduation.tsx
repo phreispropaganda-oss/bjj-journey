@@ -63,11 +63,11 @@ export default function SignalGraduation({ currentBelt, currentDegrees, username
 
   if (done) {
     return (
-      <div className="bg-[#F0FDF4] border border-[#86EFAC] rounded-2xl p-4 space-y-3">
+      <div className="bg-volt/15 border border-[#86EFAC] rounded-2xl p-4 space-y-3">
         <div className="text-center">
           <p className="text-3xl mb-2">🎉</p>
-          <p className="font-black text-[#16A34A] text-base">Graduação registrada!</p>
-          <p className="text-xs text-[#555] mt-1">Faixa {beltObj.name}, {toDegrees}° grau</p>
+          <p className="font-black text-volt-deep text-base">Graduação registrada!</p>
+          <p className="text-xs text-ink-secondary mt-1">Faixa {beltObj.name}, {toDegrees}° grau</p>
         </div>
         <div className="flex gap-2">
           <button onClick={shareWhatsApp}
@@ -75,7 +75,7 @@ export default function SignalGraduation({ currentBelt, currentDegrees, username
             📱 WhatsApp
           </button>
           <button onClick={() => { setOpen(false); setDone(false) }}
-            className="px-4 bg-white border border-[#E5E5E5] rounded-full text-sm font-bold text-[#555]">
+            className="px-4 bg-white border border-brand-elev rounded-full text-sm font-bold text-ink-secondary">
             Fechar
           </button>
         </div>
@@ -84,20 +84,20 @@ export default function SignalGraduation({ currentBelt, currentDegrees, username
   }
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3 border-2 border-[#CC0000]/30">
+    <div className="bg-brand-surface rounded-2xl p-4 shadow-sm space-y-3 border-2 border-rise/30">
       <div className="flex items-center justify-between">
-        <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">Sinalizar graduação</p>
-        <button onClick={() => setOpen(false)} className="text-[#AAA] text-lg">✕</button>
+        <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">Sinalizar graduação</p>
+        <button onClick={() => setOpen(false)} className="text-ink-muted text-lg">✕</button>
       </div>
 
       {/* Belt selector */}
       <div>
-        <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-2">Nova faixa</label>
+        <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-2">Nova faixa</label>
         <div className="grid grid-cols-5 gap-1.5">
           {BELTS.map(b => (
             <button key={b.id} onClick={() => { setToBelt(b.id); setToDegrees(0) }}
               className={`py-3 rounded-xl border-2 transition-all ${
-                toBelt === b.id ? 'border-[#CC0000] bg-[#FFF0F0]' : 'border-[#E5E5E5]'
+                toBelt === b.id ? 'border-rise bg-rise/10' : 'border-brand-elev'
               }`}>
               <div className="w-6 h-3 mx-auto rounded-sm" style={{ background: b.color }} />
               <p className="text-[9px] font-black mt-1">{b.name}</p>
@@ -108,14 +108,14 @@ export default function SignalGraduation({ currentBelt, currentDegrees, username
 
       {/* Degrees */}
       <div>
-        <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-2">
+        <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-2">
           Grau na faixa {beltObj.name}
         </label>
         <div className="flex gap-2 flex-wrap">
           {Array.from({ length: beltObj.maxDeg + 1 }, (_, i) => (
             <button key={i} onClick={() => setToDegrees(i)}
               className={`w-9 h-9 rounded-full border-2 font-black text-sm transition-all ${
-                toDegrees === i ? 'bg-[#CC0000] border-[#CC0000] text-white' : 'border-[#E5E5E5]'
+                toDegrees === i ? 'bg-rise border-rise text-white' : 'border-brand-elev'
               }`}>
               {i}
             </button>
@@ -125,9 +125,9 @@ export default function SignalGraduation({ currentBelt, currentDegrees, username
 
       {/* Note */}
       <div>
-        <label className="text-[10px] font-black uppercase tracking-wider text-[#555] block mb-1.5">Observação</label>
+        <label className="text-[10px] font-black uppercase tracking-wider text-ink-secondary block mb-1.5">Observação</label>
         <input
-          className="w-full bg-[#F8F7F5] border border-[#E5E5E5] rounded-xl px-3 py-2 text-sm outline-none focus:border-[#CC0000]"
+          className="w-full bg-brand-bg border border-brand-elev rounded-xl px-3 py-2 text-sm outline-none focus:border-rise"
           placeholder="Ex: Aprovado pelo mestre João"
           value={note}
           onChange={e => setNote(e.target.value)}
@@ -135,7 +135,7 @@ export default function SignalGraduation({ currentBelt, currentDegrees, username
       </div>
 
       <button onClick={submit} disabled={saving}
-        className="w-full bg-[#CC0000] text-white font-black py-3 rounded-full text-sm disabled:opacity-50">
+        className="w-full bg-rise text-white font-black py-3 rounded-full text-sm disabled:opacity-50">
         {saving ? 'Registrando...' : '🏅 Registrar e compartilhar'}
       </button>
     </div>

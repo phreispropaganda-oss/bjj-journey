@@ -40,9 +40,9 @@ export default function MinutesBarChart({ sessions }: { sessions: Session[] }) {
   const avgPerDay = Math.round(monthlyTotal / 30)
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm">
+    <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">
+        <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">
           Carga semanal · últimos 30 dias
         </p>
       </div>
@@ -50,22 +50,22 @@ export default function MinutesBarChart({ sessions }: { sessions: Session[] }) {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-2 mb-4">
         <div>
-          <p className="text-[10px] text-[#888] uppercase tracking-wider font-bold">7 dias</p>
-          <p className="text-[#0D0D0D] font-black text-lg leading-none">
-            {Math.floor(weeklyTotal / 60)}<span className="text-xs text-[#888]">h</span>
-            {weeklyTotal % 60 > 0 && <span> {weeklyTotal % 60}<span className="text-xs text-[#888]">min</span></span>}
+          <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold">7 dias</p>
+          <p className="text-ink-primary font-black text-lg leading-none">
+            {Math.floor(weeklyTotal / 60)}<span className="text-xs text-ink-muted">h</span>
+            {weeklyTotal % 60 > 0 && <span> {weeklyTotal % 60}<span className="text-xs text-ink-muted">min</span></span>}
           </p>
         </div>
         <div>
-          <p className="text-[10px] text-[#888] uppercase tracking-wider font-bold">30 dias</p>
-          <p className="text-[#0D0D0D] font-black text-lg leading-none">
-            {Math.floor(monthlyTotal / 60)}<span className="text-xs text-[#888]">h</span>
+          <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold">30 dias</p>
+          <p className="text-ink-primary font-black text-lg leading-none">
+            {Math.floor(monthlyTotal / 60)}<span className="text-xs text-ink-muted">h</span>
           </p>
         </div>
         <div>
-          <p className="text-[10px] text-[#888] uppercase tracking-wider font-bold">Média/dia</p>
-          <p className="text-[#CC0000] font-black text-lg leading-none">
-            {avgPerDay}<span className="text-xs text-[#888]">min</span>
+          <p className="text-[10px] text-ink-muted uppercase tracking-wider font-bold">Média/dia</p>
+          <p className="text-rise font-black text-lg leading-none">
+            {avgPerDay}<span className="text-xs text-ink-muted">min</span>
           </p>
         </div>
       </div>
@@ -86,11 +86,11 @@ export default function MinutesBarChart({ sessions }: { sessions: Session[] }) {
                   ))}
                 </div>
               ) : (
-                <div className="w-full h-0.5 bg-[#F2F0ED]" />
+                <div className="w-full h-0.5 bg-brand-elev" />
               )}
               {/* Tooltip */}
               {d.total > 0 && (
-                <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#0D0D0D] text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-brand-bg text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                   {d.total}min
                 </div>
               )}
@@ -100,13 +100,13 @@ export default function MinutesBarChart({ sessions }: { sessions: Session[] }) {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-[#F2F0ED]">
+      <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-brand-elev">
         {Object.entries(TYPE_COLOR).filter(([k]) => sessions.some(s => s.type === k)).map(([type, color]) => {
           const labels: Record<string, string> = { gi: 'Gi', no_gi: 'No-Gi', drilling: 'Drilling', competition: 'Comp.', open_mat: 'Open Mat' }
           return (
             <div key={type} className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-sm" style={{ background: color }} />
-              <span className="text-[10px] text-[#555] font-bold">{labels[type]}</span>
+              <span className="text-[10px] text-ink-secondary font-bold">{labels[type]}</span>
             </div>
           )
         })}

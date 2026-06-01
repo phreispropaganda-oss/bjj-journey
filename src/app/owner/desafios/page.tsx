@@ -25,9 +25,9 @@ export default async function OwnerDesafiosPage() {
     .from('academies').select('id, name').order('name')
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D]">
+    <div className="min-h-screen bg-brand-bg">
       <div className="bg-[#1A1A1A] border-b border-[#333] px-4 py-3 sticky top-0 z-10 flex items-center gap-3">
-        <Link href={isOwner ? '/owner' : '/academia'} className="text-[#666] text-sm">← Voltar</Link>
+        <Link href={isOwner ? '/owner' : '/academia'} className="text-ink-secondary text-sm">← Voltar</Link>
         <h1 className="text-white font-black text-base flex-1">Gerenciar Desafios</h1>
       </div>
 

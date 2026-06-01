@@ -97,29 +97,29 @@ export default function DesafiosManager({
   return (
     <div className="space-y-4">
       {feedback && (
-        <div className="bg-[#1A1A1A] border border-[#333] rounded-xl px-3 py-2 text-sm text-white">{feedback}</div>
+        <div className="bg-[#1A1A1A] border border-brand-elev rounded-xl px-3 py-2 text-sm text-white">{feedback}</div>
       )}
 
       {!showForm ? (
         <button onClick={() => setShowForm(true)}
-          className="w-full bg-[#CC0000] text-white font-black py-3 rounded-2xl text-sm">
+          className="w-full bg-rise text-white font-black py-3 rounded-2xl text-sm">
           + Criar novo desafio
         </button>
       ) : (
-        <div className="bg-[#1A1A1A] rounded-2xl p-4 border-2 border-[#CC0000] space-y-3">
+        <div className="bg-[#1A1A1A] rounded-2xl p-4 border-2 border-rise space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-black uppercase tracking-wider text-[#888]">Novo desafio</p>
-            <button onClick={() => setShowForm(false)} className="text-[#666] text-lg">✕</button>
+            <p className="text-[11px] font-black uppercase tracking-wider text-ink-muted">Novo desafio</p>
+            <button onClick={() => setShowForm(false)} className="text-ink-secondary text-lg">✕</button>
           </div>
 
           {/* Emoji */}
           <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider text-[#555] block mb-1.5">Ícone</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary block mb-1.5">Ícone</label>
             <div className="flex gap-1.5 flex-wrap">
               {EMOJI_PICKER.map(e => (
                 <button key={e} onClick={() => set('emoji', e)}
                   className={`w-9 h-9 rounded-lg text-base transition-all ${
-                    form.emoji === e ? 'bg-[#CC0000]/30 border border-[#CC0000]' : 'bg-[#222] border border-[#333]'
+                    form.emoji === e ? 'bg-rise/30 border border-rise' : 'bg-brand-elev border border-brand-elev'
                   }`}>{e}</button>
               ))}
             </div>
@@ -127,9 +127,9 @@ export default function DesafiosManager({
 
           {/* Title */}
           <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider text-[#555] block mb-1.5">Título</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary block mb-1.5">Título</label>
             <input
-              className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-[#CC0000]"
+              className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-rise"
               placeholder="Ex: Mestre da Meia Guarda"
               value={form.title}
               onChange={e => set('title', e.target.value)} />
@@ -137,9 +137,9 @@ export default function DesafiosManager({
 
           {/* Description */}
           <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider text-[#555] block mb-1.5">Descrição</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary block mb-1.5">Descrição</label>
             <textarea rows={2}
-              className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-[#CC0000] resize-none"
+              className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-rise resize-none"
               placeholder="Conte aos atletas o que devem fazer"
               value={form.description}
               onChange={e => set('description', e.target.value)} />
@@ -148,18 +148,18 @@ export default function DesafiosManager({
           {/* Metric + target */}
           <div className="grid grid-cols-3 gap-2">
             <div className="col-span-2">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-[#555] block mb-1.5">Métrica</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary block mb-1.5">Métrica</label>
               <select
-                className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-[#CC0000]"
+                className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-rise"
                 value={form.metric}
                 onChange={e => set('metric', e.target.value)}>
                 {METRICS.map(m => <option key={m.v} value={m.v}>{m.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-[#555] block mb-1.5">Meta</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary block mb-1.5">Meta</label>
               <input type="number" min={1}
-                className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-[#CC0000]"
+                className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-rise"
                 value={form.target}
                 onChange={e => set('target', parseInt(e.target.value) || 0)} />
             </div>
@@ -168,16 +168,16 @@ export default function DesafiosManager({
           {/* Dates */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-[#555] block mb-1.5">Início</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary block mb-1.5">Início</label>
               <input type="date"
-                className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-[#CC0000]"
+                className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-rise"
                 value={form.starts_at}
                 onChange={e => set('starts_at', e.target.value)} />
             </div>
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-[#555] block mb-1.5">Fim</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary block mb-1.5">Fim</label>
               <input type="date"
-                className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-[#CC0000]"
+                className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-rise"
                 value={form.ends_at}
                 onChange={e => set('ends_at', e.target.value)} />
             </div>
@@ -185,22 +185,22 @@ export default function DesafiosManager({
 
           {/* Scope */}
           <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider text-[#555] block mb-1.5">Alcance</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary block mb-1.5">Alcance</label>
             <div className="grid grid-cols-2 gap-2">
               {isOwner && (
                 <button onClick={() => set('scope', 'global')}
                   className={`py-2 px-3 rounded-xl border-2 text-xs font-black ${
-                    form.scope === 'global' ? 'border-[#CC0000] bg-[#CC0000]/10 text-[#CC0000]' : 'border-[#333] text-[#888]'
+                    form.scope === 'global' ? 'border-rise bg-rise/10 text-rise' : 'border-brand-elev text-ink-muted'
                   }`}>🌍 Global</button>
               )}
               <button onClick={() => set('scope', 'academy')}
                 className={`py-2 px-3 rounded-xl border-2 text-xs font-black ${
-                  form.scope === 'academy' ? 'border-[#CC0000] bg-[#CC0000]/10 text-[#CC0000]' : 'border-[#333] text-[#888]'
+                  form.scope === 'academy' ? 'border-rise bg-rise/10 text-rise' : 'border-brand-elev text-ink-muted'
                 }`}>🏢 Academia</button>
             </div>
             {form.scope === 'academy' && (
               <select
-                className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-[#CC0000] mt-2"
+                className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-rise mt-2"
                 value={form.academy_id}
                 onChange={e => set('academy_id', e.target.value)}
                 disabled={!isOwner && !!academyAdminId}>
@@ -211,7 +211,7 @@ export default function DesafiosManager({
           </div>
 
           <button onClick={handleCreate} disabled={pending}
-            className="w-full bg-[#CC0000] text-white font-black py-3 rounded-full text-sm disabled:opacity-50 mt-2">
+            className="w-full bg-rise text-white font-black py-3 rounded-full text-sm disabled:opacity-50 mt-2">
             {pending ? 'Criando...' : '✓ Criar desafio'}
           </button>
         </div>
@@ -220,22 +220,22 @@ export default function DesafiosManager({
       {/* List existing */}
       <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden">
         <div className="px-4 py-3 border-b border-[#2A2A2A]">
-          <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">
+          <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">
             Desafios existentes ({challenges.length})
           </p>
         </div>
         {challenges.length === 0 ? (
-          <p className="text-center py-8 text-[#555] text-sm">Nenhum desafio ainda.</p>
+          <p className="text-center py-8 text-ink-secondary text-sm">Nenhum desafio ainda.</p>
         ) : challenges.map(c => (
           <div key={c.id} className="px-4 py-3 border-b border-[#1E1E1E] last:border-none">
             <div className="flex items-start gap-3">
               <div className="text-2xl">{c.emoji}</div>
               <div className="flex-1 min-w-0">
                 <p className="text-white text-sm font-black truncate">{c.title}</p>
-                <p className="text-[#555] text-[11px]">
+                <p className="text-ink-secondary text-[11px]">
                   {METRICS.find(m => m.v === c.metric)?.label ?? c.metric} · meta {c.target}
                 </p>
-                <p className="text-[#444] text-[10px] mt-0.5">
+                <p className="text-ink-muted text-[10px] mt-0.5">
                   {new Date(c.starts_at).toLocaleDateString('pt-BR')} → {new Date(c.ends_at).toLocaleDateString('pt-BR')}
                   {c.scope === 'academy' && ' · 🏢 academia'}
                 </p>

@@ -110,7 +110,7 @@ function NextTechniqueCard({ beltId, completions }: {
 
   return (
     <Link href={`/modules/${beltId}`}
-      className="bg-[#0D0D0D] rounded-2xl p-4 mb-3 flex items-start justify-between group block">
+      className="bg-brand-bg rounded-2xl p-4 mb-3 flex items-start justify-between group block">
       <div className="flex-1 min-w-0">
         <p className="text-[10px] text-white/40 uppercase tracking-wider font-bold mb-1">
           {nextTech ? 'Próxima técnica' : 'Faixa concluída'}
@@ -123,15 +123,15 @@ function NextTechniqueCard({ beltId, completions }: {
             <p className="text-white/40 text-xs truncate">{nextTech.modLabel} · {nextTech.catName}</p>
           </>
         ) : (
-          <p className="text-[#CC0000] font-black text-base">🏆 Faixa {belt.name} completa!</p>
+          <p className="text-rise font-black text-base">🏆 Faixa {belt.name} completa!</p>
         )}
         {/* Progress bar */}
         <div className="mt-2.5 h-1 bg-white/10 rounded-full overflow-hidden">
-          <div className="h-full bg-[#CC0000] rounded-full" style={{ width: `${pct}%` }} />
+          <div className="h-full bg-rise rounded-full" style={{ width: `${pct}%` }} />
         </div>
         <p className="text-white/30 text-[10px] mt-1">{doneTechs}/{totalTechs} técnicas · {pct}%</p>
       </div>
-      <div className="w-10 h-10 rounded-xl bg-[#CC0000] flex items-center justify-center text-white font-black text-lg ml-3 mt-0.5 group-hover:scale-110 transition-transform flex-shrink-0">
+      <div className="w-10 h-10 rounded-xl bg-rise flex items-center justify-center text-white font-black text-lg ml-3 mt-0.5 group-hover:scale-110 transition-transform flex-shrink-0">
         →
       </div>
     </Link>
@@ -305,15 +305,15 @@ export function DashboardClient({
             { label: 'Treinos', value: attendance.length, total: 50, pct: Math.min(100, Math.round((attendance.length / 50) * 100)), color: '#CC0000' },
             { label: 'Sequência', value: streak, total: 7, pct: Math.min(100, Math.round((streak / 7) * 100)), color: '#F59E0B' },
           ].map(s => (
-            <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-sm flex flex-col items-center gap-1">
+            <div key={s.label} className="bg-brand-surface rounded-2xl p-3 text-center shadow-sm flex flex-col items-center gap-1">
               <div className="relative">
                 <Ring pct={s.pct} color={s.color} size={52} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-[13px] font-black leading-none" style={{ color: s.color }}>{s.pct}%</span>
                 </div>
               </div>
-              <p className="text-[11px] font-bold text-[#555]">{s.label}</p>
-              <p className="text-xs text-[#AAA]">{s.value}{s.total ? `/${s.total}` : ''}</p>
+              <p className="text-[11px] font-bold text-ink-secondary">{s.label}</p>
+              <p className="text-xs text-ink-muted">{s.value}{s.total ? `/${s.total}` : ''}</p>
             </div>
           ))}
         </div>
@@ -429,13 +429,13 @@ export function DashboardClient({
         {/* Registrar treino — CTA principal */}
         {!trainedToday && (
           <Link href="/treino/novo"
-            className="block w-full text-center bg-[#CC0000] text-white font-black py-4 rounded-2xl text-sm shadow-lg shadow-red-900/20 mb-3 hover:bg-[#A80000] transition-colors">
+            className="block w-full text-center bg-rise text-white font-black py-4 rounded-2xl text-sm shadow-lg shadow-red-900/20 mb-3 hover:bg-rise-deep transition-colors">
             🥋 Registrar treino
           </Link>
         )}
         {trainedToday && (
           <Link href="/treino/novo"
-            className="flex items-center justify-between gap-2 py-3 px-4 mb-3 bg-[#F0FDF4] rounded-2xl text-[#16A34A] font-bold text-sm border border-[#86EFAC] hover:bg-[#DCFCE7] transition-colors">
+            className="flex items-center justify-between gap-2 py-3 px-4 mb-3 bg-volt/15 rounded-2xl text-volt-deep font-bold text-sm border border-[#86EFAC] hover:bg-[#DCFCE7] transition-colors">
             <div className="flex items-center gap-2">
               <span>✅</span> Treino de hoje registrado!
             </div>
@@ -444,15 +444,15 @@ export function DashboardClient({
         )}
 
         {/* Explore belts */}
-        <div className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Explorar faixas</p>
+        <div className="bg-brand-surface rounded-2xl p-4 mb-3 shadow-sm">
+          <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">Explorar faixas</p>
           <div className="flex gap-2 overflow-x-auto scrollbar-none -mx-1 px-1 pb-1">
             {BELTS.map(b => (
               <Link key={b.id} href={`/modules/${b.id}`}
                 className={`flex items-center gap-2 px-3 py-2 rounded-full border-2 flex-shrink-0 text-sm font-bold transition-all ${
                   b.id === profile.belt_id
                     ? 'text-white border-transparent'
-                    : 'bg-white border-[#E5E5E5] text-[#555] hover:border-[#CC0000] hover:text-[#CC0000]'
+                    : 'bg-brand-surface border-brand-elev text-ink-secondary hover:border-rise hover:text-rise'
                 }`}
                 style={b.id === profile.belt_id ? { background: b.color, borderColor: b.color } : {}}>
                 <div className="w-4 h-3 rounded-sm border border-black/10" style={{ background: b.color }} />

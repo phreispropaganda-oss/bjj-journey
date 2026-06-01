@@ -76,33 +76,33 @@ export default async function DesafiosPage() {
               <div key={c.id}
                 className={`rounded-2xl p-4 shadow-sm border-2 transition-all ${
                   completed
-                    ? 'bg-[#F0FDF4] border-[#86EFAC]'
+                    ? 'bg-volt/15 border-[#86EFAC]'
                     : 'bg-brand-elev border-transparent text-ink-primary'
                 }`}>
                 <div className="flex items-start gap-3">
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl ${
-                    completed ? 'bg-[#16A34A]' : 'bg-[#FFF0F0]'
+                    completed ? 'bg-[#16A34A]' : 'bg-rise/10'
                   }`}>
                     {c.emoji}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-black text-ink-primary text-base leading-tight tracking-tight">
                       {c.title}
-                      {completed && <span className="ml-2 text-[#16A34A]">✓</span>}
+                      {completed && <span className="ml-2 text-volt-deep">✓</span>}
                     </p>
-                    <p className="text-xs text-[#666] mt-0.5 leading-snug">{c.description}</p>
+                    <p className="text-xs text-ink-secondary mt-0.5 leading-snug">{c.description}</p>
                   </div>
                 </div>
 
                 {/* Progress bar */}
                 <div className="mt-3">
                   <div className="flex items-center justify-between mb-1.5">
-                    <p className={`text-xs font-black ${completed ? 'text-[#16A34A]' : 'text-rise'}`}>
+                    <p className={`text-xs font-black ${completed ? 'text-volt-deep' : 'text-rise'}`}>
                       {progress.toLocaleString()} / {c.target.toLocaleString()} {METRIC_LABEL[c.metric] ?? ''}
                     </p>
                     <p className="text-[10px] font-bold text-ink-muted">{pct}%</p>
                   </div>
-                  <div className="h-2 bg-[#F2F0ED] rounded-full overflow-hidden">
+                  <div className="h-2 bg-brand-elev rounded-full overflow-hidden">
                     <div className={`h-full rounded-full transition-all ${completed ? 'bg-[#16A34A]' : 'bg-rise'}`}
                       style={{ width: `${pct}%` }} />
                   </div>

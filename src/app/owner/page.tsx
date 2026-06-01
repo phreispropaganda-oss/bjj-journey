@@ -69,19 +69,19 @@ export default async function OwnerPage() {
   const totalXP = allUsers.reduce((a, u) => a + (u.xp ?? 0), 0)
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D]">
+    <div className="min-h-screen bg-brand-bg">
       {/* Top bar */}
-      <div className="bg-[#1A1A1A] border-b border-[#333] px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+      <div className="bg-[#1A1A1A] border-b border-brand-elev px-4 py-3 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#CC0000] rounded-lg flex items-center justify-center">
+          <div className="w-7 h-7 bg-rise rounded-lg flex items-center justify-center">
             <span className="text-white font-black text-[10px]">BR</span>
           </div>
           <span className="text-white font-black text-base">Owner Panel</span>
-          <span className="bg-[#CC0000] text-white text-[10px] font-black rounded-full px-2 py-0.5 ml-1">OWNER</span>
+          <span className="bg-rise text-white text-[10px] font-black rounded-full px-2 py-0.5 ml-1">OWNER</span>
         </div>
         <div className="flex items-center gap-2">
           <ViewAsStudentToggle active={viewAsStudent} variant="dark" />
-          <Link href="/dashboard" className="text-[#666] text-sm">← App</Link>
+          <Link href="/dashboard" className="text-ink-secondary text-sm">← App</Link>
         </div>
       </div>
 
@@ -102,14 +102,14 @@ export default async function OwnerPage() {
             <div key={k.label} className="bg-[#1A1A1A] rounded-2xl p-3.5 border border-[#2A2A2A]">
               <p className="text-3xl font-black" style={{ color: k.color }}>{k.value.toLocaleString()}</p>
               <p className="text-white text-xs font-bold mt-0.5">{k.label}</p>
-              <p className="text-[#555] text-[10px] mt-0.5">{k.sub}</p>
+              <p className="text-ink-secondary text-[10px] mt-0.5">{k.sub}</p>
             </div>
           ))}
         </div>
 
         {/* Belt distribution */}
         <div className="bg-[#1A1A1A] rounded-2xl p-4 border border-[#2A2A2A]">
-          <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Distribuição por faixa</p>
+          <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">Distribuição por faixa</p>
           <div className="space-y-2">
             {Object.entries(beltDist).sort((a, b) => b[1] - a[1]).map(([belt, count]) => {
               const pct = allUsers.length > 0 ? Math.round((count / allUsers.length) * 100) : 0
@@ -120,7 +120,7 @@ export default async function OwnerPage() {
                   <div className="flex-1 h-1.5 bg-[#2A2A2A] rounded-full overflow-hidden">
                     <div className="h-full rounded-full" style={{ width: `${pct}%`, background: BELT_COLOR[belt] }} />
                   </div>
-                  <span className="text-[#666] text-xs w-12 text-right">{count} ({pct}%)</span>
+                  <span className="text-ink-secondary text-xs w-12 text-right">{count} ({pct}%)</span>
                 </div>
               )
             })}
@@ -130,13 +130,13 @@ export default async function OwnerPage() {
         {/* Academias */}
         <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden">
           <div className="px-4 py-3 border-b border-[#2A2A2A] flex items-center justify-between">
-            <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">Academias</p>
-            <Link href="/owner/academias/nova" className="text-[#CC0000] text-xs font-bold">+ Nova</Link>
+            <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">Academias</p>
+            <Link href="/owner/academias/nova" className="text-rise text-xs font-bold">+ Nova</Link>
           </div>
           {allAcads.length === 0 ? (
             <div className="px-4 py-6 text-center">
-              <p className="text-[#555] text-sm mb-3">Nenhuma academia cadastrada</p>
-              <Link href="/owner/academias/nova" className="inline-flex items-center gap-2 bg-[#CC0000] text-white text-sm font-bold px-4 py-2 rounded-full">
+              <p className="text-ink-secondary text-sm mb-3">Nenhuma academia cadastrada</p>
+              <Link href="/owner/academias/nova" className="inline-flex items-center gap-2 bg-rise text-white text-sm font-bold px-4 py-2 rounded-full">
                 + Cadastrar primeira academia
               </Link>
             </div>
@@ -144,17 +144,17 @@ export default async function OwnerPage() {
             const memberCount = allMembers.filter(m => m.academy_id === a.id).length
             return (
               <Link key={a.id} href={`/owner/academias/${a.id}`}
-                className="flex items-center gap-3 px-4 py-3 border-b border-[#1E1E1E] hover:bg-[#222] transition-colors">
+                className="flex items-center gap-3 px-4 py-3 border-b border-[#1E1E1E] hover:bg-brand-elev transition-colors">
                 <div className={`w-2 h-2 rounded-full flex-shrink-0 ${a.active ? 'bg-green-500' : 'bg-[#555]'}`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-sm font-bold truncate">{a.name}</p>
-                  <p className="text-[#555] text-[11px]">{a.city ?? '—'} · {memberCount} alunos</p>
+                  <p className="text-ink-secondary text-[11px]">{a.city ?? '—'} · {memberCount} alunos</p>
                 </div>
                 <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-                  a.plan === 'enterprise' ? 'bg-[#CC0000] text-white' :
-                  a.plan === 'pro' ? 'bg-[#F59E0B] text-black' : 'bg-[#2A2A2A] text-[#555]'
+                  a.plan === 'enterprise' ? 'bg-rise text-white' :
+                  a.plan === 'pro' ? 'bg-[#F59E0B] text-black' : 'bg-[#2A2A2A] text-ink-secondary'
                 }`}>{a.plan.toUpperCase()}</span>
-                <span className="text-[#555] text-sm">›</span>
+                <span className="text-ink-secondary text-sm">›</span>
               </Link>
             )
           })}
@@ -162,17 +162,17 @@ export default async function OwnerPage() {
 
         {/* Quick actions */}
         <div className="grid grid-cols-4 gap-2">
-          <Link href="/owner/usuarios" className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-3 text-center hover:bg-[#222]">
+          <Link href="/owner/usuarios" className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-3 text-center hover:bg-brand-elev">
             <p className="text-xl mb-1">👥</p>
             <p className="text-white text-xs font-black">Usuários</p>
           </Link>
-          <Link href="/owner/academias/nova" className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-3 text-center hover:bg-[#222]">
+          <Link href="/owner/academias/nova" className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-3 text-center hover:bg-brand-elev">
             <p className="text-xl mb-1">🏢</p>
             <p className="text-white text-[10px] font-black">+ Academia</p>
           </Link>
           <Link href="/owner/desafios" className="bg-[#9E0B13]/15 border border-[#9E0B13]/40 rounded-xl p-3 text-center hover:bg-[#9E0B13]/25">
             <p className="text-xl mb-1">🎯</p>
-            <p className="text-[#FF6B6B] text-xs font-black">Desafios</p>
+            <p className="text-rise text-xs font-black">Desafios</p>
           </Link>
           <Link href="/owner/moderacao" className="bg-amber-500/15 border border-amber-500/40 rounded-xl p-3 text-center hover:bg-amber-500/25">
             <p className="text-xl mb-1">🛡️</p>
@@ -183,24 +183,24 @@ export default async function OwnerPage() {
         {/* Últimos usuários */}
         <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden">
           <div className="px-4 py-3 border-b border-[#2A2A2A] flex items-center justify-between">
-            <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">Usuários recentes</p>
-            <Link href="/owner/usuarios" className="text-[#CC0000] text-xs font-bold">Ver todos →</Link>
+            <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">Usuários recentes</p>
+            <Link href="/owner/usuarios" className="text-rise text-xs font-bold">Ver todos →</Link>
           </div>
           {allUsers.slice(0, 8).map(u => {
             const sub = allSubs.find(s => s.user_id === u.id)
             return (
               <div key={u.id} className="flex items-center gap-3 px-4 py-3 border-b border-[#1E1E1E]">
-                <div className="w-8 h-8 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-xs flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-rise flex items-center justify-center text-white font-black text-xs flex-shrink-0">
                   {(u.name?.charAt(0) ?? '?').toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-sm font-bold truncate">{u.name || 'Sem nome'}</p>
-                  <p className="text-[#555] text-[11px]">@{u.username} · {u.xp} XP</p>
+                  <p className="text-ink-secondary text-[11px]">@{u.username} · {u.xp} XP</p>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                   <div className="w-3 h-2 rounded-sm border border-white/10" style={{ background: BELT_COLOR[u.belt_id] }} />
                   {sub && sub.plan !== 'free' && (
-                    <span className="text-[10px] bg-[#CC0000] text-white px-1.5 py-0.5 rounded font-bold">{sub.plan}</span>
+                    <span className="text-[10px] bg-rise text-white px-1.5 py-0.5 rounded font-bold">{sub.plan}</span>
                   )}
                 </div>
               </div>
@@ -212,7 +212,7 @@ export default async function OwnerPage() {
         {allPromos.length > 0 && (
           <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden">
             <div className="px-4 py-3 border-b border-[#2A2A2A]">
-              <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">Últimas promoções</p>
+              <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">Últimas promoções</p>
             </div>
             {allPromos.map(p => {
               const u = allUsers.find(x => x.id === p.user_id)
@@ -222,7 +222,7 @@ export default async function OwnerPage() {
                   <span className="text-lg">🏅</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm font-bold truncate">{u?.name ?? 'Usuário'}</p>
-                    <p className="text-[#555] text-[11px]">
+                    <p className="text-ink-secondary text-[11px]">
                       Promovido para Faixa {BELT_NAME[p.to_belt] ?? p.to_belt} · {new Date(p.promoted_at).toLocaleDateString('pt-BR')}
                     </p>
                   </div>

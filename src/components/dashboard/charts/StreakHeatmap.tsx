@@ -59,12 +59,12 @@ export default function StreakHeatmap({ attendance, trainingSessions = [] }: Pro
   const COLORS = ['#F2F0ED', '#FFCCCC', '#FF9999', '#E52222', '#A80000']
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm">
+    <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">
+        <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">
           Frequência · últimos 90 dias
         </p>
-        <span className="text-[10px] text-[#888]">
+        <span className="text-[10px] text-ink-muted">
           {activeDays} dias · máx {longestStreak}d seguidos
         </span>
       </div>
@@ -84,14 +84,14 @@ export default function StreakHeatmap({ attendance, trainingSessions = [] }: Pro
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#F2F0ED]">
-        <span className="text-[10px] text-[#AAA]">Menos</span>
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-brand-elev">
+        <span className="text-[10px] text-ink-muted">Menos</span>
         <div className="flex gap-1">
           {COLORS.map((c, i) => (
             <div key={i} className="w-3 h-3 rounded-sm" style={{ background: c }} />
           ))}
         </div>
-        <span className="text-[10px] text-[#AAA]">Mais</span>
+        <span className="text-[10px] text-ink-muted">Mais</span>
       </div>
     </div>
   )

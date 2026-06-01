@@ -29,9 +29,9 @@ export default function ShareButton({ username, appUrl }: Props) {
   return (
     <div className="space-y-3">
       {/* URL preview */}
-      <div className="flex items-center gap-2 bg-[#F2F0ED] rounded-xl px-3 py-2">
-        <p className="flex-1 text-xs text-[#555] truncate">{url}</p>
-        <button onClick={copy} className="text-[#CC0000] flex-shrink-0">
+      <div className="flex items-center gap-2 bg-brand-elev rounded-xl px-3 py-2">
+        <p className="flex-1 text-xs text-ink-secondary truncate">{url}</p>
+        <button onClick={copy} className="text-rise flex-shrink-0">
           {copied ? '✓' : '📋'}
         </button>
       </div>
@@ -39,7 +39,7 @@ export default function ShareButton({ username, appUrl }: Props) {
       {/* Share buttons */}
       <div className="flex gap-2">
         <button onClick={copy}
-          className="flex-1 flex items-center justify-center gap-1.5 border-2 border-[#E5E5E5] rounded-full py-2.5 text-sm font-bold text-[#555] hover:border-[#CC0000] hover:text-[#CC0000] transition-colors">
+          className="flex-1 flex items-center justify-center gap-1.5 border-2 border-brand-elev rounded-full py-2.5 text-sm font-bold text-ink-secondary hover:border-rise hover:text-rise transition-colors">
           {copied ? '✓ Copiado!' : '🔗 Copiar link'}
         </button>
         <button onClick={whatsapp}
@@ -47,7 +47,7 @@ export default function ShareButton({ username, appUrl }: Props) {
           📱 WhatsApp
         </button>
         <button onClick={nativeShare}
-          className="px-3 flex items-center justify-center bg-[#CC0000] text-white rounded-full hover:bg-[#A80000] transition-colors">
+          className="px-3 flex items-center justify-center bg-rise text-white rounded-full hover:bg-rise-deep transition-colors">
           ↗
         </button>
       </div>

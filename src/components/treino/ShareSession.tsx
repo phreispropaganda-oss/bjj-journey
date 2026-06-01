@@ -152,7 +152,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top bar */}
-      <div className="bg-white border-b border-brand-elev px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+      <div className="bg-brand-surface border-b border-brand-elev px-4 py-3 flex items-center justify-between sticky top-0 z-10">
         <Link href="/dashboard" className="text-ink-secondary text-sm">← Início</Link>
         <h1 className="font-black text-base tracking-tight">Treino salvo!</h1>
         <Link href="/feed" className="text-rise text-sm font-bold">Feed</Link>
@@ -174,7 +174,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
           {/* Logo + url */}
           <div className="flex items-center justify-between px-5 pt-5">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#CC0000] rounded-xl flex items-center justify-center">
+              <div className="w-8 h-8 bg-rise rounded-xl flex items-center justify-center">
                 <span className="text-white font-black text-[11px]">BR</span>
               </div>
               <span className="text-white font-black text-sm tracking-tight">Belt Rise</span>
@@ -196,7 +196,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
               // eslint-disable-next-line @next/next/no-img-element
               <img src={profile.avatar_url} alt={profile.name} className="w-12 h-12 rounded-full object-cover border-2 border-white/20" />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-base border-2 border-white/20">
+              <div className="w-12 h-12 rounded-full bg-rise flex items-center justify-center text-white font-black text-base border-2 border-white/20">
                 {initial}
               </div>
             )}
@@ -218,7 +218,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
                 {session.duration_min}<span className="text-base text-white/40">min</span>
               </p>
             </div>
-            <div className="bg-[#CC0000]/20 backdrop-blur rounded-2xl p-3 border border-rise/30">
+            <div className="bg-rise/20 backdrop-blur rounded-2xl p-3 border border-rise/30">
               <p className="text-[#FFCCCC] text-[9px] uppercase tracking-wider font-bold mb-1">Queimadas</p>
               <p className="text-white font-black text-3xl tabular-nums tracking-tight leading-none">
                 {calories}<span className="text-base text-[#FFCCCC]">kcal</span>
@@ -294,20 +294,20 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
 
         {/* Toggle photo */}
         {session.photo_url && (
-          <div className="bg-white rounded-2xl p-3 shadow-sm flex items-center justify-between">
+          <div className="bg-brand-surface rounded-2xl p-3 shadow-sm flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-base">📷</span>
               <p className="text-sm font-bold">Incluir foto no card</p>
             </div>
             <button onClick={() => setShowPhoto(s => !s)}
-              className={`w-12 h-6 rounded-full relative transition-colors ${showPhoto ? 'bg-[#CC0000]' : 'bg-[#E5E5E5]'}`}>
+              className={`w-12 h-6 rounded-full relative transition-colors ${showPhoto ? 'bg-rise' : 'bg-[#E5E5E5]'}`}>
               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${showPhoto ? 'translate-x-7' : 'translate-x-1'}`} />
             </button>
           </div>
         )}
 
         {/* Share buttons */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
           <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">Compartilhar nas redes</p>
 
           {/* Template picker — 3 layouts */}
@@ -352,7 +352,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
           connections={shareConnections} />
 
         {/* Visibilidade + Apagar */}
-        <div className="bg-white rounded-2xl p-3 shadow-sm">
+        <div className="bg-brand-surface rounded-2xl p-3 shadow-sm">
           <p className="text-[10px] font-black uppercase tracking-wider text-ink-secondary mb-2">Gestão do treino</p>
           <div className="grid grid-cols-3 gap-2 mb-2">
             <button onClick={() => handleVisibility('public')} disabled={visBusy}
@@ -387,7 +387,7 @@ export default function ShareSession({ session, profile, calories, profileUrl }:
             Voltar ao início
           </Link>
           <Link href="/treino/novo"
-            className="text-center bg-[#CC0000] text-white font-black py-3 rounded-2xl text-sm hover:bg-[#9E0B13] transition-colors">
+            className="text-center bg-rise text-white font-black py-3 rounded-2xl text-sm hover:bg-[#9E0B13] transition-colors">
             + Outro treino
           </Link>
         </div>

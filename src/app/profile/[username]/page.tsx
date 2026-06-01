@@ -165,10 +165,10 @@ export default async function PublicProfilePage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5]">
+    <div className="min-h-screen bg-brand-bg">
       {/* Hero — dark with red accent */}
       <div className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #0D0D0D 0%, #1A1A1A 100%)' }}>
-        <div className="absolute top-0 right-0 w-48 h-48 bg-[#CC0000] rounded-full opacity-10 -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-48 h-48 bg-rise rounded-full opacity-10 -translate-y-1/2 translate-x-1/2" />
 
         <div className="px-5 pt-10 pb-6 relative z-10">
           {/* Avatar central (estilo WhatsApp) */}
@@ -179,7 +179,7 @@ export default async function PublicProfilePage({ params }: Props) {
                 <img src={profile.avatar_url} alt={profile.name}
                   className="w-28 h-28 rounded-full object-cover border-4 border-white/20 shadow-2xl shadow-red-900/40" />
               ) : (
-                <div className="w-28 h-28 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-5xl border-4 border-white/20 shadow-2xl shadow-red-900/40">
+                <div className="w-28 h-28 rounded-full bg-rise flex items-center justify-center text-white font-black text-5xl border-4 border-white/20 shadow-2xl shadow-red-900/40">
                   {profile.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -204,7 +204,7 @@ export default async function PublicProfilePage({ params }: Props) {
             <div className="mt-4 flex gap-2 flex-wrap justify-center">
               {isOwner ? (
                 <>
-                  <Link href="/profile/editar" className="text-white text-xs font-black bg-[#CC0000] px-4 py-2 rounded-full">
+                  <Link href="/profile/editar" className="text-white text-xs font-black bg-rise px-4 py-2 rounded-full">
                     ✏️ Editar
                   </Link>
                   <Link href="/profile/menu" className="text-white text-xs font-bold bg-white/10 border border-white/20 px-4 py-2 rounded-full">
@@ -234,7 +234,7 @@ export default async function PublicProfilePage({ params }: Props) {
               </span>
             )}
             {totalSessions >= 100 && (
-              <span className="bg-[#CC0000]/30 text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-[#CC0000]/50">
+              <span className="bg-rise/30 text-white text-[10px] font-black px-2.5 py-1 rounded-full border border-rise/50">
                 🏆 +{Math.floor(totalSessions / 100) * 100} treinos
               </span>
             )}
@@ -274,7 +274,7 @@ export default async function PublicProfilePage({ params }: Props) {
             </div>
             <span className="text-white font-black text-sm flex-shrink-0">Faixa {belt.name}</span>
             {profile.belt_verified_status === 'verified' && (
-              <span title="Faixa verificada pelo professor" className="text-[#DEFF9A] text-sm flex-shrink-0">✓</span>
+              <span title="Faixa verificada pelo professor" className="text-volt text-sm flex-shrink-0">✓</span>
             )}
             {profile.degrees > 0 && (
               <span className="text-white/40 text-xs">· {profile.degrees}° grau</span>
@@ -324,22 +324,22 @@ export default async function PublicProfilePage({ params }: Props) {
 
         {/* Streak + progress */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-2xl p-3.5 shadow-sm">
+          <div className="bg-brand-surface rounded-2xl p-3.5 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xl">🔥</span>
-              <span className="font-black text-2xl text-[#0D0D0D]">{profile.streak}</span>
+              <span className="font-black text-2xl text-ink-primary">{profile.streak}</span>
             </div>
-            <p className="text-[#555] text-xs font-bold">Dias consecutivos</p>
+            <p className="text-ink-secondary text-xs font-bold">Dias consecutivos</p>
           </div>
-          <div className="bg-white rounded-2xl p-3.5 shadow-sm">
+          <div className="bg-brand-surface rounded-2xl p-3.5 shadow-sm">
             <div className="flex items-center justify-between mb-1.5">
               <span className="font-black text-lg" style={{ color: belt.color }}>{pct}%</span>
-              <span className="text-[#AAA] text-[10px]">{doneTech}/{totalTech}</span>
+              <span className="text-ink-muted text-[10px]">{doneTech}/{totalTech}</span>
             </div>
-            <div className="h-1.5 bg-[#F2F0ED] rounded-full overflow-hidden">
+            <div className="h-1.5 bg-brand-elev rounded-full overflow-hidden">
               <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: belt.color }} />
             </div>
-            <p className="text-[#555] text-xs font-bold mt-1.5">Progresso Faixa {belt.name}</p>
+            <p className="text-ink-secondary text-xs font-bold mt-1.5">Progresso Faixa {belt.name}</p>
           </div>
         </div>
 
@@ -352,16 +352,16 @@ export default async function PublicProfilePage({ params }: Props) {
 
         {/* Belt timeline */}
         {promotions.length > 0 && (
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Jornada de faixas</p>
+          <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
+            <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">Jornada de faixas</p>
             <div className="relative pl-6">
-              <div className="absolute left-2 top-0 bottom-0 w-0.5 bg-[#F2F0ED]" />
+              <div className="absolute left-2 top-0 bottom-0 w-0.5 bg-brand-elev" />
               {promotions.map((pr, i) => (
                 <div key={i} className="relative mb-3 last:mb-0">
                   <div className="absolute -left-4 top-1 w-3 h-3 rounded-full border-2 border-white shadow-sm"
                     style={{ background: BELT_COLOR[pr.to_belt] ?? '#ccc' }} />
-                  <p className="text-sm font-black text-[#0D0D0D]">Faixa {BELT_NAME[pr.to_belt] ?? pr.to_belt}, {pr.to_degrees}° grau</p>
-                  <p className="text-[11px] text-[#AAA]">{new Date(pr.promoted_at).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
+                  <p className="text-sm font-black text-ink-primary">Faixa {BELT_NAME[pr.to_belt] ?? pr.to_belt}, {pr.to_degrees}° grau</p>
+                  <p className="text-[11px] text-ink-muted">{new Date(pr.promoted_at).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
                 </div>
               ))}
               {/* Current */}
@@ -369,7 +369,7 @@ export default async function PublicProfilePage({ params }: Props) {
                 <div className="absolute -left-4 top-1 w-3 h-3 rounded-full border-2 border-white shadow-sm animate-pulse"
                   style={{ background: belt.color }} />
                 <p className="text-sm font-black" style={{ color: belt.color }}>Faixa {belt.name} — hoje</p>
-                <p className="text-[11px] text-[#AAA]">Em evolução 🥋</p>
+                <p className="text-[11px] text-ink-muted">Em evolução 🥋</p>
               </div>
             </div>
           </div>
@@ -385,18 +385,18 @@ export default async function PublicProfilePage({ params }: Props) {
         <ProfilePosts userId={profile.id} />
 
         {/* Share */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">Compartilhar perfil</p>
+        <div className="bg-brand-surface rounded-2xl p-4 shadow-sm">
+          <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">Compartilhar perfil</p>
           <ShareButton username={username} appUrl={appUrl} />
         </div>
 
         {/* CTA para visitantes */}
         {!isOwner && (
-          <div className="bg-[#0D0D0D] rounded-2xl p-5 text-center">
+          <div className="bg-brand-bg rounded-2xl p-5 text-center">
             <p className="text-white font-black text-lg mb-1 tracking-tight">Comece sua jornada 🥋</p>
             <p className="text-white/50 text-sm mb-4">Acompanhe técnicas, presença e progresso igual a {profile.name}.</p>
             <Link href="/login"
-              className="inline-block bg-[#CC0000] text-white font-black px-8 py-3 rounded-full text-sm hover:bg-[#A80000] transition-colors">
+              className="inline-block bg-rise text-white font-black px-8 py-3 rounded-full text-sm hover:bg-rise-deep transition-colors">
               Criar conta grátis
             </Link>
           </div>

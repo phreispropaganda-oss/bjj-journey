@@ -158,10 +158,10 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-brand-bg flex flex-col">
       {/* Top progress bar */}
-      <div className="bg-white border-b border-brand-elev px-5 py-4 flex items-center gap-4">
+      <div className="bg-brand-surface border-b border-brand-elev px-5 py-4 flex items-center gap-4">
         <button
           onClick={() => step > 1 ? setStep(s => s - 1) : router.push('/login')}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-[#F2F0ED] text-ink-secondary text-lg"
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-brand-elev text-ink-secondary text-lg"
         >
           ←
         </button>
@@ -169,9 +169,9 @@ export default function OnboardingPage() {
           <div className="flex justify-between items-center mb-1.5">
             <span className="text-xs font-bold text-ink-secondary uppercase tracking-wider">Etapa {step} de {TOTAL_STEPS}</span>
           </div>
-          <div className="h-1.5 bg-[#F2F0ED] rounded-full overflow-hidden">
+          <div className="h-1.5 bg-brand-elev rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#CC0000] rounded-full transition-all duration-500"
+              className="h-full bg-rise rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -184,7 +184,7 @@ export default function OnboardingPage() {
           <div style={{ animation: 'fadeUp .25s ease' }}>
             <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">👤</div>
             <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Olá! Vamos começar</h1>
-            <p className="text-sm text-[#666] mb-6 leading-relaxed">Conta um pouco sobre você para personalizar sua jornada.</p>
+            <p className="text-sm text-ink-secondary mb-6 leading-relaxed">Conta um pouco sobre você para personalizar sua jornada.</p>
             <div className="mb-4">
               <label className="field-label">Seu nome</label>
               <input
@@ -214,7 +214,7 @@ export default function OnboardingPage() {
           <div style={{ animation: 'fadeUp .25s ease' }}>
             <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">🥋</div>
             <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Sua faixa atual</h1>
-            <p className="text-sm text-[#666] mb-6 leading-relaxed">Selecione a faixa que você possui hoje.</p>
+            <p className="text-sm text-ink-secondary mb-6 leading-relaxed">Selecione a faixa que você possui hoje.</p>
             <div className="space-y-2 mb-6">
               {BELTS.map(b => (
                 <div
@@ -223,7 +223,7 @@ export default function OnboardingPage() {
                   className={`flex items-center gap-3 p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
                     beltId === b.id
                       ? 'border-rise bg-rise/10'
-                      : 'border-brand-elev bg-white'
+                      : 'border-brand-elev bg-brand-surface'
                   }`}
                 >
                   <div className="w-10 h-6 rounded-md flex-shrink-0 border border-black/10" style={{ background: b.color }} />
@@ -243,9 +243,9 @@ export default function OnboardingPage() {
           <div style={{ animation: 'fadeUp .25s ease' }}>
             <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">🏅</div>
             <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Quantos graus?</h1>
-            <p className="text-sm text-[#666] mb-2 leading-relaxed">Graus na faixa <strong>{belt.name}</strong> (0 = sem grau).</p>
+            <p className="text-sm text-ink-secondary mb-2 leading-relaxed">Graus na faixa <strong>{belt.name}</strong> (0 = sem grau).</p>
             {/* Belt preview */}
-            <div className="flex items-center gap-2 bg-white rounded-2xl p-3 mb-6 border border-brand-elev">
+            <div className="flex items-center gap-2 bg-brand-surface rounded-2xl p-3 mb-6 border border-brand-elev">
               <div className="flex-1 h-5 rounded flex items-center overflow-hidden" style={{ background: belt.color }}>
                 <div className="flex-1" />
                 {Array.from({ length: degrees }).map((_, i) => (
@@ -262,8 +262,8 @@ export default function OnboardingPage() {
                   onClick={() => setDegrees(i)}
                   className={`w-12 h-12 rounded-full border-2 font-black text-base transition-all ${
                     degrees === i
-                      ? 'bg-[#CC0000] border-rise text-white shadow-lg shadow-red-900/30'
-                      : 'bg-white border-brand-elev text-ink-primary'
+                      ? 'bg-rise border-rise text-white shadow-lg shadow-red-900/30'
+                      : 'bg-brand-surface border-brand-elev text-ink-primary'
                   }`}
                 >
                   {i}
@@ -278,7 +278,7 @@ export default function OnboardingPage() {
           <div style={{ animation: 'fadeUp .25s ease' }}>
             <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">📊</div>
             <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Seu histórico</h1>
-            <p className="text-sm text-[#666] mb-6 leading-relaxed">Há quanto tempo você pratica e com que frequência treina?</p>
+            <p className="text-sm text-ink-secondary mb-6 leading-relaxed">Há quanto tempo você pratica e com que frequência treina?</p>
             <div className="mb-4">
               <label className="field-label">Tempo de prática</label>
               <div className="space-y-2">
@@ -289,7 +289,7 @@ export default function OnboardingPage() {
                     className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 cursor-pointer transition-all ${
                       practiceTime === p.value
                         ? 'border-rise bg-rise/10'
-                        : 'border-brand-elev bg-white'
+                        : 'border-brand-elev bg-brand-surface'
                     }`}
                   >
                     <span className="text-sm font-medium">{p.label}</span>
@@ -307,8 +307,8 @@ export default function OnboardingPage() {
                     onClick={() => setFrequency(f.value)}
                     className={`flex items-center justify-center px-3 py-3 rounded-xl border-2 cursor-pointer transition-all text-sm font-bold ${
                       frequency === f.value
-                        ? 'border-rise bg-[#CC0000] text-white'
-                        : 'border-brand-elev bg-white text-ink-secondary'
+                        ? 'border-rise bg-rise text-white'
+                        : 'border-brand-elev bg-brand-surface text-ink-secondary'
                     }`}
                   >
                     {f.label}
@@ -324,7 +324,7 @@ export default function OnboardingPage() {
           <div style={{ animation: 'fadeUp .25s ease' }}>
             <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">🏢</div>
             <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">Sua academia</h1>
-            <p className="text-sm text-[#666] mb-6 leading-relaxed">Selecione ou escreva o nome da sua academia.</p>
+            <p className="text-sm text-ink-secondary mb-6 leading-relaxed">Selecione ou escreva o nome da sua academia.</p>
             <div className="grid grid-cols-2 gap-2 mb-4">
               {ACADEMIES.map(a => (
                 <div
@@ -333,7 +333,7 @@ export default function OnboardingPage() {
                   className={`py-3 px-3 rounded-xl border-2 cursor-pointer transition-all text-center text-sm font-bold ${
                     academy === a.name && !academyCustom
                       ? 'border-rise bg-rise/10 text-rise'
-                      : 'border-brand-elev bg-white text-ink-secondary'
+                      : 'border-brand-elev bg-brand-surface text-ink-secondary'
                   }`}
                 >
                   {a.name}
@@ -357,7 +357,7 @@ export default function OnboardingPage() {
           <div style={{ animation: 'fadeUp .25s ease' }}>
             <div className="w-12 h-12 bg-rise/10 rounded-2xl flex items-center justify-center mb-4 text-2xl">🎯</div>
             <h1 className="text-2xl font-black text-ink-primary mb-1 tracking-tight">O que quer melhorar?</h1>
-            <p className="text-sm text-[#666] mb-6 leading-relaxed">Selecione as áreas que quer priorizar (múltipla escolha).</p>
+            <p className="text-sm text-ink-secondary mb-6 leading-relaxed">Selecione as áreas que quer priorizar (múltipla escolha).</p>
             <div className="flex flex-wrap gap-2 mb-6">
               {GOALS.map(g => (
                 <button
@@ -365,8 +365,8 @@ export default function OnboardingPage() {
                   onClick={() => toggleGoal(g)}
                   className={`px-3.5 py-2 rounded-full border-2 text-sm font-bold transition-all ${
                     goals.includes(g)
-                      ? 'border-rise bg-[#CC0000] text-white'
-                      : 'border-brand-elev bg-white text-ink-secondary'
+                      ? 'border-rise bg-rise text-white'
+                      : 'border-brand-elev bg-brand-surface text-ink-secondary'
                   }`}
                 >
                   {g}
@@ -383,7 +383,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Bottom CTA */}
-      <div className="bg-white border-t border-brand-elev px-5 py-4">
+      <div className="bg-brand-surface border-t border-brand-elev px-5 py-4">
         <button
           onClick={next}
           disabled={!canAdvance() || saving}

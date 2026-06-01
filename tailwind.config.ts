@@ -44,8 +44,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['"Archivo Black"', 'Urbanist', 'sans-serif'],
-        sans:    ['Urbanist', 'DM Sans', 'system-ui', 'sans-serif'],
+        // Display: Barlow Condensed — sports/fitness condensed (recomendado para BJJ/luta)
+        display: ['"Barlow Condensed"', '"Archivo Black"', 'Urbanist', 'sans-serif'],
+        // Body: Barlow — companheiro do Barlow Condensed
+        sans:    ['Barlow', 'Urbanist', 'DM Sans', 'system-ui', 'sans-serif'],
       },
       minHeight: {
         'tap':    '44px',

@@ -154,12 +154,12 @@ export default function AlunosPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D]">
-      <div className="bg-[#1A1A1A] border-b border-[#333] px-4 py-3 sticky top-0 z-10">
+    <div className="min-h-screen bg-brand-bg">
+      <div className="bg-[#1A1A1A] border-b border-brand-elev px-4 py-3 sticky top-0 z-10">
         <div className="flex items-center gap-2 mb-3">
-          <Link href="/academia" className="text-[#555] text-sm">← Academia</Link>
+          <Link href="/academia" className="text-ink-secondary text-sm">← Academia</Link>
           <h1 className="text-white font-black text-base flex-1">Alunos</h1>
-          <span className="bg-[#2A2A2A] text-[#555] text-xs px-2 py-0.5 rounded-full font-bold">{students.length}</span>
+          <span className="bg-[#2A2A2A] text-ink-secondary text-xs px-2 py-0.5 rounded-full font-bold">{students.length}</span>
         </div>
         <div className="flex gap-3 overflow-x-auto scrollbar-none mb-3">
           {[
@@ -170,14 +170,14 @@ export default function AlunosPage() {
           ].map(t => (
             <Link key={t.href} href={t.href}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold ${
-                t.href === '/academia/alunos' ? 'bg-[#CC0000] text-white' : 'bg-[#222] text-[#555]'
+                t.href === '/academia/alunos' ? 'bg-rise text-white' : 'bg-brand-elev text-ink-secondary'
               }`}>
               {t.label}
             </Link>
           ))}
         </div>
         <input
-          className="w-full bg-[#222] border border-[#333] rounded-xl px-3 py-2 text-white text-sm outline-none placeholder:text-[#444] focus:border-[#CC0000]"
+          className="w-full bg-brand-elev border border-brand-elev rounded-xl px-3 py-2 text-white text-sm outline-none placeholder:text-ink-muted focus:border-rise"
           placeholder="Buscar aluno..."
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -193,7 +193,7 @@ export default function AlunosPage() {
           return (
             <div className="bg-[#1A1A1A] rounded-2xl p-4 border border-[#2A2A2A]">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-[11px] font-black uppercase tracking-wider text-[#555]">Capacidade</p>
+                <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary">Capacidade</p>
                 <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
                   atLimit ? 'bg-red-900/40 text-red-400' :
                   pct > 80 ? 'bg-yellow-900/40 text-yellow-400' :
@@ -204,13 +204,13 @@ export default function AlunosPage() {
               </div>
               <div className="flex items-end justify-between mb-1.5">
                 <span className="text-white font-black text-2xl">
-                  {activeCount}<span className="text-base text-[#555]"> / {studentLimit === 9999 ? '∞' : studentLimit}</span>
+                  {activeCount}<span className="text-base text-ink-secondary"> / {studentLimit === 9999 ? '∞' : studentLimit}</span>
                 </span>
-                <span className="text-[#555] text-xs">alunos ativos</span>
+                <span className="text-ink-secondary text-xs">alunos ativos</span>
               </div>
-              <div className="h-2 bg-[#222] rounded-full overflow-hidden">
+              <div className="h-2 bg-brand-elev rounded-full overflow-hidden">
                 <div className={`h-full rounded-full transition-all ${
-                  atLimit ? 'bg-red-500' : pct > 80 ? 'bg-yellow-500' : 'bg-[#CC0000]'
+                  atLimit ? 'bg-red-500' : pct > 80 ? 'bg-yellow-500' : 'bg-rise'
                 }`} style={{ width: `${pct}%` }} />
               </div>
               {atLimit && (
@@ -222,54 +222,54 @@ export default function AlunosPage() {
 
         {/* Add student */}
         <div className="bg-[#1A1A1A] rounded-2xl p-4 border border-[#2A2A2A]">
-          <p className="text-[11px] font-black uppercase tracking-wider text-[#555] mb-3">+ Adicionar aluno</p>
+          <p className="text-[11px] font-black uppercase tracking-wider text-ink-secondary mb-3">+ Adicionar aluno</p>
           <div className="flex gap-2">
             <input
-              className="flex-1 bg-[#222] border border-[#333] rounded-xl px-3 py-2 text-white text-sm outline-none placeholder:text-[#444] focus:border-[#CC0000]"
+              className="flex-1 bg-brand-elev border border-brand-elev rounded-xl px-3 py-2 text-white text-sm outline-none placeholder:text-ink-muted focus:border-rise"
               placeholder="@username ou email@dominio.com"
               value={addEmail}
               onChange={e => setAddEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addStudent()}
             />
             <button onClick={addStudent} disabled={adding}
-              className="bg-[#CC0000] text-white font-black px-4 py-2 rounded-xl text-sm disabled:opacity-50">
+              className="bg-rise text-white font-black px-4 py-2 rounded-xl text-sm disabled:opacity-50">
               {adding ? '...' : 'Adicionar'}
             </button>
           </div>
-          {addMsg && <p className="text-sm mt-2 text-[#AAA]">{addMsg}</p>}
-          <p className="text-[10px] text-[#555] mt-2">Busque pelo @username ou pelo email do aluno (precisa ter conta no Belt Rise).</p>
+          {addMsg && <p className="text-sm mt-2 text-ink-muted">{addMsg}</p>}
+          <p className="text-[10px] text-ink-secondary mt-2">Busque pelo @username ou pelo email do aluno (precisa ter conta no Belt Rise).</p>
         </div>
 
         {/* Students list */}
         {loading ? (
-          <div className="text-center py-8 text-[#555]">Carregando...</div>
+          <div className="text-center py-8 text-ink-secondary">Carregando...</div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-8 text-[#555]">Nenhum aluno encontrado</div>
+          <div className="text-center py-8 text-ink-secondary">Nenhum aluno encontrado</div>
         ) : (
           <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden">
             {filtered.map(s => (
               <div key={s.id}
-                className="flex items-center gap-3 px-4 py-3 border-b border-[#1E1E1E] cursor-pointer hover:bg-[#222]"
+                className="flex items-center gap-3 px-4 py-3 border-b border-[#1E1E1E] cursor-pointer hover:bg-brand-elev"
                 onClick={() => setSelected(s)}>
                 <div className={`w-2 h-2 rounded-full flex-shrink-0 ${s.member_active ? 'bg-green-500' : 'bg-[#555]'}`} />
-                <div className="w-8 h-8 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black text-xs flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-rise flex items-center justify-center text-white font-black text-xs flex-shrink-0">
                   {(s.name?.charAt(0) ?? '?').toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-sm font-bold truncate">{s.name}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <div className="w-3 h-2 rounded-sm border border-white/10" style={{ background: BELT_COLOR[s.belt_id] }} />
-                    <span className="text-[#555] text-[10px]">Faixa {BELT_NAME[s.belt_id]}, {s.degrees}° grau</span>
+                    <span className="text-ink-secondary text-[10px]">Faixa {BELT_NAME[s.belt_id]}, {s.degrees}° grau</span>
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-[#CC0000] font-black text-sm">{s.trains30d}</p>
-                  <p className="text-[#555] text-[10px]">treinos/30d</p>
+                  <p className="text-rise font-black text-sm">{s.trains30d}</p>
+                  <p className="text-ink-secondary text-[10px]">treinos/30d</p>
                 </div>
                 {s.plan_override && s.plan_override !== 'free' && (
-                  <span className="text-[10px] bg-[#CC0000] text-white px-1.5 py-0.5 rounded font-bold">{s.plan_override}</span>
+                  <span className="text-[10px] bg-rise text-white px-1.5 py-0.5 rounded font-bold">{s.plan_override}</span>
                 )}
-                <span className="text-[#555] text-sm">›</span>
+                <span className="text-ink-secondary text-sm">›</span>
               </div>
             ))}
           </div>
@@ -284,15 +284,15 @@ export default function AlunosPage() {
             style={{ animation: 'slideUp .25s ease' }}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#CC0000] flex items-center justify-center text-white font-black">
+                <div className="w-10 h-10 rounded-full bg-rise flex items-center justify-center text-white font-black">
                   {(selected.name?.charAt(0) ?? '?').toUpperCase()}
                 </div>
                 <div>
                   <p className="text-white font-black">{selected.name}</p>
-                  <p className="text-[#555] text-xs">@{selected.username}</p>
+                  <p className="text-ink-secondary text-xs">@{selected.username}</p>
                 </div>
               </div>
-              <button onClick={() => setSelected(null)} className="text-[#555] text-xl">✕</button>
+              <button onClick={() => setSelected(null)} className="text-ink-secondary text-xl">✕</button>
             </div>
 
             {/* Stats */}
@@ -302,24 +302,24 @@ export default function AlunosPage() {
                 { l: 'Treinos 30d', v: selected.trains30d },
                 { l: 'Sequência', v: `${selected.streak}d` },
               ].map(s => (
-                <div key={s.l} className="bg-[#222] rounded-xl p-2.5 text-center">
+                <div key={s.l} className="bg-brand-elev rounded-xl p-2.5 text-center">
                   <p className="text-white font-black text-lg">{s.v}</p>
-                  <p className="text-[#555] text-[10px]">{s.l}</p>
+                  <p className="text-ink-secondary text-[10px]">{s.l}</p>
                 </div>
               ))}
             </div>
 
             {/* Plano override */}
             <div className="mb-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2">Plano do aluno</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-ink-secondary mb-2">Plano do aluno</p>
               <div className="flex gap-2">
                 {(['free', 'pro', 'academy'] as const).map(p => (
                   <button key={p} disabled={saving}
                     onClick={() => updateStudent(selected.id, 'plan_override', p)}
                     className={`flex-1 py-2 rounded-xl border-2 text-xs font-black transition-all ${
                       (selected.plan_override ?? 'free') === p
-                        ? 'border-[#CC0000] bg-[#CC0000]/10 text-[#CC0000]'
-                        : 'border-[#333] text-[#555]'
+                        ? 'border-rise bg-rise/10 text-rise'
+                        : 'border-brand-elev text-ink-secondary'
                     }`}>
                     {p.toUpperCase()}
                   </button>
@@ -328,17 +328,17 @@ export default function AlunosPage() {
             </div>
 
             {/* Status ativo */}
-            <div className="flex items-center justify-between p-3 bg-[#222] rounded-xl mb-4">
+            <div className="flex items-center justify-between p-3 bg-brand-elev rounded-xl mb-4">
               <p className="text-white text-sm font-bold">Aluno ativo</p>
               <button
                 onClick={() => updateStudent(selected.id, 'active', !selected.member_active)}
-                className={`w-12 h-6 rounded-full transition-colors relative ${selected.member_active ? 'bg-[#CC0000]' : 'bg-[#333]'}`}>
+                className={`w-12 h-6 rounded-full transition-colors relative ${selected.member_active ? 'bg-rise' : 'bg-[#333]'}`}>
                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${selected.member_active ? 'translate-x-7' : 'translate-x-1'}`} />
               </button>
             </div>
 
             <Link href="/academia/promover"
-              className="w-full block text-center bg-[#CC0000] text-white font-black py-3 rounded-full text-sm">
+              className="w-full block text-center bg-rise text-white font-black py-3 rounded-full text-sm">
               🏅 Promover faixa/grau
             </Link>
           </div>
